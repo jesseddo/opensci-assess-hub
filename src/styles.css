@@ -1,0 +1,112 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-surface: var(--surface);
+  --color-doc: var(--doc);
+  --color-form: var(--form);
+  --color-key: var(--key);
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --ease-out-soft: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: hsl(210 20% 98%);
+  --foreground: hsl(215 25% 12%);
+  --surface: hsl(0 0% 100%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(215 25% 12%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(215 25% 12%);
+  --primary: hsl(217 91% 60%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(215 20% 96%);
+  --secondary-foreground: hsl(215 25% 12%);
+  --muted: hsl(215 15% 45%);
+  --muted-foreground: hsl(215 15% 45%);
+  --accent: hsl(215 20% 94%);
+  --accent-foreground: hsl(215 25% 12%);
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(215 20% 90%);
+  --input: hsl(215 20% 90%);
+  --ring: hsl(217 91% 60%);
+  --doc: hsl(217 91% 60%);
+  --form: hsl(152 60% 42%);
+  --key: hsl(40 95% 55%);
+}
+
+.dark {
+  --background: hsl(215 28% 8%);
+  --foreground: hsl(210 20% 96%);
+  --surface: hsl(215 25% 12%);
+  --card: hsl(215 25% 12%);
+  --card-foreground: hsl(210 20% 96%);
+  --popover: hsl(215 25% 12%);
+  --popover-foreground: hsl(210 20% 96%);
+  --primary: hsl(217 91% 60%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(215 20% 18%);
+  --secondary-foreground: hsl(210 20% 96%);
+  --muted: hsl(215 15% 60%);
+  --muted-foreground: hsl(215 15% 60%);
+  --accent: hsl(215 20% 18%);
+  --accent-foreground: hsl(210 20% 96%);
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(215 20% 22%);
+  --input: hsl(215 20% 22%);
+  --ring: hsl(217 91% 60%);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-reveal {
+  animation: slideUp 0.4s var(--ease-out-soft) both;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+}

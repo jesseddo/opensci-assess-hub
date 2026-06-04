@@ -1,0 +1,284 @@
+{
+  "unitId": "8.1",
+  "unitTitle": "Contact Forces",
+  "description": "How forces act during collisions and impacts.",
+  "lessonCount": 16,
+  "suggestedPacingDays": 33,
+  "unitOverviewPath": "8.1 Contact Forces Unit Overview Materials.docx",
+  "ingestedFrom": "/Users/jessycaroylandry/Downloads/Grade 8/8.1 Contact Forces",
+  "ingestedAt": "2026-06-04T00:20:00.195Z",
+  "lessons": [
+    {
+      "lessonNum": 1,
+      "shortTitle": "Things hitting each other",
+      "title": "What happens when two things hit each other?",
+      "teacherEditionPath": "Lesson 1 - 8.1 Contact Forces/8.1 Lesson 1 Teacher Edition.docx",
+      "expectedDays": 3
+    },
+    {
+      "lessonNum": 2,
+      "shortTitle": "Motion and shape in collisions",
+      "title": "What causes changes in the motion and shape of colliding objects?",
+      "teacherEditionPath": "Lesson 2 - 8.1 Contact Forces/8.1 Lesson 2 Teacher Edition.docx",
+      "expectedDays": 2
+    },
+    {
+      "lessonNum": 3,
+      "shortTitle": "Do all objects bend?",
+      "title": "Do all objects change shape or bend when they are pushed in a collision?",
+      "teacherEditionPath": "Lesson 3 - 8.1 Contact Forces/8.1 Lesson 3 Teacher Edition.docx",
+      "expectedDays": 1
+    },
+    {
+      "lessonNum": 4,
+      "shortTitle": "Deformation and contact force",
+      "title": "How much do you have to push on any object to get it to deform (temporarily vs. permanently)?",
+      "teacherEditionPath": "Lesson 4 - 8.1 Contact Forces/8.1 Lesson 4 Teacher Edition.docx",
+      "expectedDays": 2
+    },
+    {
+      "lessonNum": 5,
+      "shortTitle": "Mass, speed, and collision forces",
+      "title": "How does changing the mass or speed of a moving object before it collides with another object affect the forces on those objects during the collision?",
+      "teacherEditionPath": "Lesson 5 - 8.1 Contact Forces/8.1 Lesson 5 Teacher Edition.docx",
+      "expectedDays": 2
+    },
+    {
+      "lessonNum": 6,
+      "shortTitle": "Applying collisions",
+      "title": "What have we figured out about objects interacting in collisions? How can we apply our new learning to answer questions about objects interacting in collisions?",
+      "teacherEditionPath": "Lesson 6 - 8.1 Contact Forces/8.1 Lesson 6 Teacher Edition.docx",
+      "expectedDays": 1
+    },
+    {
+      "lessonNum": 7,
+      "shortTitle": "Kinetic energy and damage",
+      "title": "How much does doubling the speed or doubling the mass affect the kinetic energy of an object and the resulting damage that it can do in a collision?",
+      "teacherEditionPath": "Lesson 7 - 8.1 Contact Forces/8.1 Lesson 7 Teacher Edition.docx",
+      "expectedDays": 2
+    },
+    {
+      "lessonNum": 8,
+      "shortTitle": "Energy in the launcher",
+      "title": "Where did the energy in our launcher system come from, and after the collisions where did it go to?",
+      "teacherEditionPath": "Lesson 8 - 8.1 Contact Forces/8.1 Lesson 8 Teacher Edition.docx",
+      "expectedDays": 1
+    },
+    {
+      "lessonNum": 9,
+      "shortTitle": "Forces from air & track",
+      "title": "How do other contact forces from interactions with the air and the track cause energy transfers in the launcher system?",
+      "teacherEditionPath": "Lesson 9 - 8.1 Contact Forces/8.1 Lesson 9 Teacher Edition.docx",
+      "expectedDays": 2
+    },
+    {
+      "lessonNum": 10,
+      "shortTitle": "Why objects break",
+      "title": "Why do some objects break or not break in a collision?",
+      "teacherEditionPath": "Lesson 10 - 8.1 Contact Forces/8.1 Lesson 10 Teacher Edition.docx",
+      "expectedDays": 2
+    },
+    {
+      "lessonNum": 11,
+      "shortTitle": "Designing collision protection",
+      "title": "What can we design to better protect objects in a collision?",
+      "teacherEditionPath": "Lesson 11 - 8.1 Contact Forces/8.1 Lesson 11 Teacher Edition.docx",
+      "expectedDays": 2
+    },
+    {
+      "lessonNum": 12,
+      "shortTitle": "Materials and peak forces",
+      "title": "What materials best reduce the peak forces in a collision?",
+      "teacherEditionPath": "Lesson 12 - 8.1 Contact Forces/8.1 Lesson 12 Teacher Edition.docx",
+      "expectedDays": 2
+    },
+    {
+      "lessonNum": 13,
+      "shortTitle": "Cushioning structure",
+      "title": "How (and why) does the structure of a cushioning material affect the peak forces produced in a collision?",
+      "teacherEditionPath": "Lesson 13 - 8.1 Contact Forces/8.1 Lesson 13 Teacher Edition.docx",
+      "expectedDays": 3
+    },
+    {
+      "lessonNum": 14,
+      "shortTitle": "Refining designs with stakeholders",
+      "title": "How can we use our science ideas and other societal wants and needs to refine our designs?",
+      "teacherEditionPath": "Lesson 14 - 8.1 Contact Forces/8.1 Lesson 14 Teacher Edition.docx",
+      "expectedDays": 2
+    },
+    {
+      "lessonNum": 15,
+      "shortTitle": "Evaluating engineer designs",
+      "title": "How can we use what we figured out to evaluate another engineer’s design?",
+      "teacherEditionPath": "Lesson 15 - 8.1 Contact Forces/8.1 Lesson 15 Teacher Edition.docx",
+      "expectedDays": 2
+    },
+    {
+      "lessonNum": 16,
+      "shortTitle": "Marketing designs (optional)",
+      "title": "OPTIONAL How can we market our designs to our potential investors?",
+      "teacherEditionPath": "Lesson 16 - 8.1 Contact Forces/8.1 Lesson 16 Teacher Edition.docx",
+      "expectedDays": 4
+    }
+  ],
+  "assessments": [
+    {
+      "id": "81-6-soccer-assessment",
+      "lesson": "Lesson 06",
+      "lessonNum": 6,
+      "title": "Soccer Assessment",
+      "assessmentType": "formative",
+      "standards": [
+        "MS-PS2-1",
+        "MS-PS2-2"
+      ],
+      "isSummative": false,
+      "description": "OpenSciEd Unit 8.1 Lesson 06 — Soccer Assessment.",
+      "files": {
+        "studentHandout": "Lesson 6 - 8.1 Contact Forces/8.1 Lesson 6 Assessment Soccer Assessment.docx",
+        "teacherGuide": "Lesson 6 - 8.1 Contact Forces/8.1 Lesson 6 Teacher Edition.docx",
+        "answerKey": "Lesson 6 - 8.1 Contact Forces/8.1 Lesson 6 Answer Key Soccer Assessment Key.docx",
+        "googleForm": null,
+        "rubric": null
+      }
+    },
+    {
+      "id": "81-7-looking-back-explaining-collisions",
+      "lesson": "Lesson 07",
+      "lessonNum": 7,
+      "title": "Looking Back — Explaining Collisions",
+      "assessmentType": "lesson-reflection",
+      "standards": [
+        "MS-PS2-3"
+      ],
+      "isSummative": false,
+      "description": "OpenSciEd Unit 8.1 Lesson 07 — Looking Back — Explaining Collisions.",
+      "files": {
+        "studentHandout": "Lesson 7 - 8.1 Contact Forces/8.1 Lesson 7 Handout Looking back Explaining.docx",
+        "teacherGuide": "Lesson 7 - 8.1 Contact Forces/8.1 Lesson 7 Teacher Edition.docx",
+        "answerKey": null,
+        "googleForm": null,
+        "rubric": null
+      }
+    },
+    {
+      "id": "81-8-modeling-other-force-interactions",
+      "lesson": "Lesson 08",
+      "lessonNum": 8,
+      "title": "Modeling Other Force Interactions",
+      "assessmentType": "formative",
+      "standards": [
+        "MS-PS2-3"
+      ],
+      "isSummative": false,
+      "description": "OpenSciEd Unit 8.1 Lesson 08 — Modeling Other Force Interactions.",
+      "files": {
+        "studentHandout": "Lesson 8 - 8.1 Contact Forces/8.1 Lesson 8 Handout Modeling other force.docx",
+        "teacherGuide": "Lesson 8 - 8.1 Contact Forces/8.1 Lesson 8 Teacher Edition.docx",
+        "answerKey": "Lesson 8 - 8.1 Contact Forces/8.1 Lesson 8 Answer Key Key for modeling.docx",
+        "googleForm": null,
+        "rubric": null
+      }
+    },
+    {
+      "id": "81-10-baseball-assessment-1",
+      "lesson": "Lesson 10",
+      "lessonNum": 10,
+      "title": "Baseball Assessment 1",
+      "assessmentType": "formative",
+      "standards": [
+        "MS-PS2-1",
+        "MS-PS2-2"
+      ],
+      "isSummative": false,
+      "description": "OpenSciEd Unit 8.1 Lesson 10 — Baseball Assessment 1.",
+      "files": {
+        "studentHandout": "Lesson 10 - 8.1 Contact Forces/8.1 Lesson 10 Assessment Baseball Assessment 1.docx",
+        "teacherGuide": "Lesson 10 - 8.1 Contact Forces/8.1 Lesson 10 Teacher Edition.docx",
+        "answerKey": "Lesson 10 - 8.1 Contact Forces/8.1 Lesson 10 Answer Key Key 1 Baseball.docx",
+        "googleForm": null,
+        "rubric": null
+      }
+    },
+    {
+      "id": "81-10-baseball-assessment-2",
+      "lesson": "Lesson 10",
+      "lessonNum": 10,
+      "title": "Baseball Assessment 2",
+      "assessmentType": "formative",
+      "standards": [
+        "MS-PS2-1",
+        "MS-PS2-2"
+      ],
+      "isSummative": false,
+      "description": "OpenSciEd Unit 8.1 Lesson 10 — Baseball Assessment 2.",
+      "files": {
+        "studentHandout": "Lesson 10 - 8.1 Contact Forces/8.1 Lesson 10 Assessment Baseball Assessment 2.docx",
+        "teacherGuide": "Lesson 10 - 8.1 Contact Forces/8.1 Lesson 10 Teacher Edition.docx",
+        "answerKey": "Lesson 10 - 8.1 Contact Forces/8.1 Lesson 10 Answer Key Key 2 Baseball.docx",
+        "googleForm": null,
+        "rubric": null
+      }
+    },
+    {
+      "id": "81-14-stakeholder-feedback-form",
+      "lesson": "Lesson 14",
+      "lessonNum": 14,
+      "title": "Stakeholder Feedback Form",
+      "assessmentType": "peer-feedback",
+      "standards": [
+        "MS-PS2-1",
+        "MS-PS2-2"
+      ],
+      "isSummative": false,
+      "description": "OpenSciEd Unit 8.1 Lesson 14 — Stakeholder Feedback Form.",
+      "files": {
+        "studentHandout": "Lesson 14 - 8.1 Contact Forces/8.1 Lesson 14 Handout Stakeholder Feedback Form.docx",
+        "teacherGuide": "Lesson 14 - 8.1 Contact Forces/8.1 Lesson 14 Teacher Edition.docx",
+        "answerKey": null,
+        "googleForm": null,
+        "rubric": null
+      }
+    },
+    {
+      "id": "81-15-cheerleading-performance-task-part-1",
+      "lesson": "Lesson 15",
+      "lessonNum": 15,
+      "title": "Cheerleading Performance Task (Part 1)",
+      "assessmentType": "summative",
+      "standards": [
+        "MS-PS2-1",
+        "MS-PS2-2"
+      ],
+      "isSummative": true,
+      "description": "OpenSciEd Unit 8.1 Lesson 15 — Cheerleading Performance Task (Part 1).",
+      "files": {
+        "studentHandout": "Lesson 15 - 8.1 Contact Forces/8.1 Lesson 15 Assessment Part 1 Cheerleading.docx",
+        "teacherGuide": "Lesson 15 - 8.1 Contact Forces/8.1 Lesson 15 Teacher Edition.docx",
+        "answerKey": "Lesson 15 - 8.1 Contact Forces/8.1 Lesson 15 Answer Key Part 1 Key.docx",
+        "googleForm": null,
+        "rubric": null
+      }
+    },
+    {
+      "id": "81-15-cheerleading-performance-task-part-2",
+      "lesson": "Lesson 15",
+      "lessonNum": 15,
+      "title": "Cheerleading Performance Task (Part 2)",
+      "assessmentType": "summative",
+      "standards": [
+        "MS-PS2-1",
+        "MS-PS2-2"
+      ],
+      "isSummative": true,
+      "description": "OpenSciEd Unit 8.1 Lesson 15 — Cheerleading Performance Task (Part 2).",
+      "files": {
+        "studentHandout": "Lesson 15 - 8.1 Contact Forces/8.1 Lesson 15 Assessment Part 2 Cheerleading.docx",
+        "teacherGuide": "Lesson 15 - 8.1 Contact Forces/8.1 Lesson 15 Teacher Edition.docx",
+        "answerKey": "Lesson 15 - 8.1 Contact Forces/8.1 Lesson 15 Answer Key Part 2 Key.docx",
+        "googleForm": null,
+        "rubric": null
+      }
+    }
+  ]
+}

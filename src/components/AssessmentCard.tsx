@@ -1,112 +1,106 @@
-import type { Assessment, ResourceType } from "@/lib/assessment-data";
-import { FileText, ClipboardList, KeyRound, Download } from "lucide-react";
+import { ChevronRight, Download, Plus } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import type { Assessment } from "@/lib/assessment-data";
+import {
+  getAssessmentMetaLine,
+  getWorkspaceBlockHint,
+  isExportReady,
+  isWorkspaceReady,
+} from "@/lib/assessment-helpers";
 
 interface Props {
   assessment: Assessment;
   delayMs?: number;
+  hideLessonBadge?: boolean;
+  onOpenDetail: (assessment: Assessment) => void;
+  onExport: (assessment: Assessment) => void;
+  onAddToWorkspace: (assessment: Assessment) => void;
 }
 
-const resourceMeta: Record<
-  ResourceType,
-  { label: string; Icon: typeof FileText; color: string }
-> = {
-  doc: { label: "Google Doc", Icon: FileText, color: "text-primary" },
-  form: { label: "Google Form", Icon: ClipboardList, color: "text-[color:var(--form)]" },
-  key: { label: "Answer Key", Icon: KeyRound, color: "text-[color:var(--key)]" },
-};
-
-export function AssessmentCard({ assessment, delayMs = 0 }: Props) {
+export function AssessmentCard({
+  assessment,
+  delayMs = 0,
+  hideLessonBadge = false,
+  onOpenDetail,
+  onExport,
+  onAddToWorkspace,
+}: Props) {
   const highlight = assessment.isSummative;
+  const exportReady = isExportReady(assessment);
+  const workspaceReady = isWorkspaceReady(assessment);
+  const blockHint = getWorkspaceBlockHint(assessment);
+
   return (
     <div
-      className={`animate-reveal group rounded-xl p-5 transition-all hover:shadow-md ${
+      className={`animate-reveal group rounded-xl p-4 sm:p-5 transition-all hover:shadow-md ${
         highlight
           ? "bg-primary/5 border border-primary/20"
           : "bg-card border border-border hover:border-primary/40"
       }`}
       style={{ animationDelay: `${delayMs}ms` }}
     >
-      <div className="flex items-start justify-between gap-6">
-        <div className="flex flex-col gap-2 min-w-0">
-          <div className="flex items-center gap-3">
-            <span
-              className={`font-mono text-[10px] px-2 py-0.5 rounded ${
-                highlight ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"
-              }`}
-            >
-              {assessment.lesson}
-            </span>
-            <h4 className="font-semibold text-lg leading-tight">{assessment.title}</h4>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            {assessment.standards.map((s) => (
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1 space-y-1.5">
+          <div className="flex items-center gap-2 flex-wrap min-w-0">
+            {!hideLessonBadge && (
               <span
-                key={s}
-                className={`text-[10px] font-mono font-medium px-1.5 py-0.5 border rounded ${
-                  highlight
-                    ? "bg-card border-primary/20 text-primary"
-                    : "border-border text-muted-foreground"
+                className={`font-mono text-[10px] px-2 py-0.5 rounded shrink-0 ${
+                  highlight ? "bg-primary/10 text-primary" : "bg-secondary text-muted-foreground"
                 }`}
               >
-                {s}
+                {assessment.lesson}
               </span>
-            ))}
-            <span
-              className={`text-xs ml-1 ${
-                highlight ? "text-primary/80 font-medium" : "text-muted-foreground"
-              }`}
+            )}
+            <button
+              type="button"
+              onClick={() => onOpenDetail(assessment)}
+              className="inline-flex items-center gap-1 min-w-0 text-left font-semibold text-base sm:text-lg leading-tight hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm"
+              aria-label={`View details for ${assessment.title}`}
             >
-              {assessment.type}
-            </span>
+              <span className="truncate">{assessment.title}</span>
+              <ChevronRight
+                className="size-4 shrink-0 text-muted-foreground group-hover:text-primary transition-colors"
+                aria-hidden
+              />
+            </button>
           </div>
+
+          <p className="text-xs text-muted-foreground leading-relaxed text-pretty">
+            {getAssessmentMetaLine(assessment)}
+          </p>
+
+          {blockHint && (
+            <p className="text-xs text-amber-700/90 dark:text-amber-500/90 leading-relaxed">
+              {blockHint}
+            </p>
+          )}
         </div>
 
-        <div className="flex items-center gap-4 shrink-0">
-          <div className="flex flex-col items-center gap-1">
-            <div className="flex items-center gap-1">
-              {(["doc", "form", "key"] as ResourceType[]).map((r) => {
-                const available = assessment.resources.includes(r);
-                const meta = resourceMeta[r];
-                const Icon = meta.Icon;
-                return (
-                  <button
-                    key={r}
-                    type="button"
-                    title={available ? `Open ${meta.label}` : `${meta.label} unavailable`}
-                    disabled={!available}
-                    className={`p-2 rounded-md border transition-colors ${
-                      available
-                        ? `border-transparent hover:bg-secondary hover:border-border ${
-                            highlight ? "bg-card border-primary/20" : ""
-                          }`
-                        : "opacity-25 cursor-not-allowed border-transparent"
-                    }`}
-                  >
-                    <Icon className={`size-4 ${meta.color}`} strokeWidth={2} />
-                  </button>
-                );
-              })}
-            </div>
-            <span
-              className={`text-[9px] uppercase tracking-tighter font-bold ${
-                highlight ? "text-primary" : "text-muted-foreground"
-              }`}
-            >
-              Resources
-            </span>
-          </div>
-          <div className={`h-10 w-px ${highlight ? "bg-primary/20" : "bg-border"}`} />
-          <button
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-2 shrink-0">
+          <Button
             type="button"
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-bold transition-colors ${
-              highlight
-                ? "bg-foreground text-background hover:opacity-90"
-                : "border border-border hover:bg-secondary"
-            }`}
+            size="sm"
+            onClick={() => onExport(assessment)}
+            disabled={!exportReady}
+            aria-label={`Export ${assessment.title}`}
           >
-            <Download className="size-3.5" />
-            EXPORT
-          </button>
+            <Download className="size-3.5" aria-hidden />
+            Export
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => onAddToWorkspace(assessment)}
+            disabled={!workspaceReady}
+            title={workspaceReady ? undefined : (blockHint ?? undefined)}
+            aria-label={`Add ${assessment.title} to Workspace`}
+          >
+            <Plus className="size-3.5" aria-hidden />
+            <span className="hidden sm:inline">Add to Workspace</span>
+            <span className="sm:hidden">Add</span>
+          </Button>
         </div>
       </div>
     </div>

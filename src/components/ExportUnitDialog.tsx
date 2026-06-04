@@ -18,7 +18,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Unit } from "@/lib/assessment-data";
-import { buildUnitExportStats, getAssessmentTypeDisplay } from "@/lib/assessment-helpers";
+import { buildUnitExportStats, getFormalTypeDisplay } from "@/lib/assessment-helpers";
+import { isTeOpportunity, TE_OPPORTUNITY_LABEL } from "@/lib/assessment-source";
 import { exportUnitPackages } from "@/lib/library-actions";
 
 interface Props {
@@ -41,7 +42,7 @@ export function ExportUnitDialog({ unit, open, onOpenChange }: Props) {
             Export Unit {unit.id}: {unit.title}
           </DialogTitle>
           <DialogDescription>
-            Export all recommended assessment packages for this unit. Edit copies in Google Drive as
+            Export all available assessment materials for this unit. Edit copies in Google Drive as
             needed.
           </DialogDescription>
         </DialogHeader>
@@ -51,7 +52,7 @@ export function ExportUnitDialog({ unit, open, onOpenChange }: Props) {
             <TableRow>
               <TableHead>Assessment</TableHead>
               <TableHead>Type</TableHead>
-              <TableHead className="text-right">Package</TableHead>
+              <TableHead className="text-right">Materials</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -64,7 +65,9 @@ export function ExportUnitDialog({ unit, open, onOpenChange }: Props) {
                   </div>
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
-                  {getAssessmentTypeDisplay(assessment)}
+                  {isTeOpportunity(assessment)
+                    ? TE_OPPORTUNITY_LABEL
+                    : (getFormalTypeDisplay(assessment) ?? "—")}
                 </TableCell>
                 <TableCell className="text-right text-xs font-mono">
                   {availableCount}/{totalCount}
@@ -92,7 +95,7 @@ export function ExportUnitDialog({ unit, open, onOpenChange }: Props) {
             }}
           >
             <Download className="size-4" aria-hidden />
-            Export all packages ({exportableCount})
+            Export all ({exportableCount})
           </Button>
         </DialogFooter>
       </DialogContent>

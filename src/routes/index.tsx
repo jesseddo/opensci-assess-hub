@@ -42,7 +42,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Browse OpenSciEd assessments by grade level, unit, and lesson. Export recommended packages or add to Eddo Workspace.",
+          "Browse OpenSciEd assessments by grade level, unit, and lesson. Export materials or add formal assessments to Eddo Workspace.",
       },
       { property: "og:title", content: "Assessment Library — OpenSciEd" },
       {

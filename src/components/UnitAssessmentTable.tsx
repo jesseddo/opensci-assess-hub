@@ -6,6 +6,10 @@ import {
   TABLE_ACTIONS_COLUMN_CLASS,
   TablePrimaryActionsRow,
 } from "@/components/TableRowAction";
+import { AssessmentTypeLabel } from "@/components/AssessmentTypeLabel";
+import { LibraryOutputLabel } from "@/components/LibraryOutputLabel";
+import { TeOpportunityLabel } from "@/components/TeOpportunityLabel";
+import { isTeOpportunity } from "@/lib/assessment-source";
 import {
   Table,
   TableBody,
@@ -16,10 +20,9 @@ import {
 } from "@/components/ui/table";
 import type { Assessment, Unit } from "@/lib/assessment-data";
 import {
-  getAssessmentTypeDisplay,
   isExportReady,
 } from "@/lib/assessment-helpers";
-import { buildUnitLessonSlots, type UnitLessonSlot } from "@/lib/unit-table-rows";
+import { buildUnitLessonSlots, formatLessonLength, type UnitLessonSlot } from "@/lib/unit-table-rows";
 import { lessonRowId } from "@/lib/unit-rhythm";
 import { cn } from "@/lib/utils";
 
@@ -64,13 +67,18 @@ export function UnitAssessmentTable({
 
   return (
     <div className="rounded-2xl border border-border overflow-hidden bg-card shadow-sm">
-      <Table>
+      <Table className="table-fixed">
+        <colgroup>
+          <col className="w-14" />
+          <col />
+          <col className="w-[38%] min-w-[12rem]" />
+          <col className={TABLE_ACTIONS_COLUMN_CLASS} />
+        </colgroup>
         <TableHeader>
           <TableRow className="bg-muted/40 hover:bg-muted/40">
-            <TableHead className="w-16 font-ui text-eddo-green font-medium">Lsn</TableHead>
-            <TableHead className="min-w-[200px] font-ui text-eddo-green font-medium">Lesson</TableHead>
-            <TableHead className="min-w-[160px] font-ui text-eddo-green font-medium">Assessment</TableHead>
-            <TableHead className="w-36 hidden lg:table-cell font-ui text-eddo-green font-medium">Type</TableHead>
+            <TableHead className="font-ui text-eddo-green font-medium">Lsn</TableHead>
+            <TableHead className="font-ui text-eddo-green font-medium">Lesson</TableHead>
+            <TableHead className="font-ui text-eddo-green font-medium">Assessment</TableHead>
             <TableHead className={cn("text-right font-ui text-eddo-green font-medium", TABLE_ACTIONS_COLUMN_CLASS)}>
               Actions
             </TableHead>
@@ -116,36 +124,8 @@ function LessonSlotRows({
   const hasDrivingQuestion =
     slot.drivingQuestion && slot.drivingQuestion !== slot.shortTitle;
 
-  if (slot.isTeOnly) {
-    return (
-      <TableRow id={lessonRowId(slot.lessonNum)} className={TABLE_ROW_CLASS}>
-        <TableCell className="align-top py-3">
-          <LessonChevron expanded={expanded} onToggle={onToggle} label={`Lesson ${padded}`} />
-          <span className="font-mono text-xs text-muted-foreground ml-1">{padded}</span>
-        </TableCell>
-        <TableCell className="align-top py-3">
-          <LessonTitleBlock
-            slot={slot}
-            expanded={expanded}
-            hasDrivingQuestion={hasDrivingQuestion}
-          />
-        </TableCell>
-        <TableCell className="align-top py-3 text-sm text-muted-foreground italic font-body">
-          In Teacher Edition
-        </TableCell>
-        <TableCell className="hidden lg:table-cell text-muted-foreground align-top py-3">—</TableCell>
-        <TableCell className={cn("align-middle py-3", TABLE_ACTIONS_COLUMN_CLASS)}>
-          <TablePrimaryActionsRow>
-            <PrimaryTableAction
-              label="View TE"
-              icon={BookOpen}
-              onClick={() => onOpenTeacherEdition(slot.lessonNum)}
-              aria-label={`View Teacher Edition for lesson ${padded}`}
-            />
-          </TablePrimaryActionsRow>
-        </TableCell>
-      </TableRow>
-    );
+  if (slot.assessments.length === 0) {
+    return null;
   }
 
   if (slot.assessments.length === 1) {
@@ -165,6 +145,8 @@ function LessonSlotRows({
         </TableCell>
         <AssessmentCells
           assessment={assessment}
+          showViewTe
+          onOpenTeacherEdition={() => onOpenTeacherEdition(slot.lessonNum)}
           onOpenDetail={onOpenDetail}
           onExport={onExport}
           onAddToWorkspace={onAddToWorkspace}
@@ -196,7 +178,8 @@ function LessonSlotRows({
           )}
           <AssessmentCells
             assessment={assessment}
-            listIndex={count > 1 ? index + 1 : undefined}
+            showViewTe={index === count - 1}
+            onOpenTeacherEdition={() => onOpenTeacherEdition(slot.lessonNum)}
             onOpenDetail={onOpenDetail}
             onExport={onExport}
             onAddToWorkspace={onAddToWorkspace}
@@ -222,9 +205,9 @@ function LessonTitleBlock({
       {slot.expectedDays != null && (
         <p
           className="text-[10px] text-muted-foreground/75 font-ui mt-0.5 tabular-nums"
-          title="Suggested instructional days from Unit Overview Materials"
+          title="Instructional length from Unit Overview Materials"
         >
-          {slot.expectedDays} day{slot.expectedDays === 1 ? "" : "s"} suggested
+          {formatLessonLength(slot.expectedDays)}
         </p>
       )}
       {expanded && hasDrivingQuestion && (
@@ -260,11 +243,9 @@ function LessonChevron({
 
 function AssessmentTitleLink({
   title,
-  listIndex,
   onClick,
 }: {
   title: string;
-  listIndex?: number;
   onClick: () => void;
 }) {
   return (
@@ -273,16 +254,14 @@ function AssessmentTitleLink({
       onClick={onClick}
       aria-label={`View details for ${title}`}
       className={cn(
-        "text-left font-ui text-sm font-normal max-w-full",
+        "block w-full min-w-0 max-w-full text-left font-ui text-sm font-normal",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
-        listIndex != null ? "flex items-start gap-1.5" : "block",
       )}
     >
-      {listIndex != null && (
-        <span className="shrink-0 tabular-nums text-muted-foreground font-medium">{listIndex}.</span>
-      )}
       <span
+        title={title}
         className={cn(
+          "min-w-0 truncate whitespace-nowrap",
           "text-eddo-green underline underline-offset-2 decoration-eddo-green/40",
           "hover:decoration-eddo-green",
         )}
@@ -295,13 +274,15 @@ function AssessmentTitleLink({
 
 function AssessmentCells({
   assessment,
-  listIndex,
+  showViewTe,
+  onOpenTeacherEdition,
   onOpenDetail,
   onExport,
   onAddToWorkspace,
 }: {
   assessment: Assessment;
-  listIndex?: number;
+  showViewTe?: boolean;
+  onOpenTeacherEdition?: () => void;
   onOpenDetail: (assessment: Assessment) => void;
   onExport: (assessment: Assessment) => void;
   onAddToWorkspace: (assessment: Assessment) => void;
@@ -310,20 +291,19 @@ function AssessmentCells({
 
   return (
     <>
-      <TableCell className="align-top py-3">
+      <TableCell className="align-top py-3 min-w-0 overflow-hidden">
         <AssessmentTitleLink
           title={assessment.title}
-          listIndex={listIndex}
           onClick={() => onOpenDetail(assessment)}
         />
-        <p className="text-xs text-muted-foreground mt-1 lg:hidden leading-relaxed font-ui">
-          {getAssessmentTypeDisplay(assessment)}
-        </p>
+        {isTeOpportunity(assessment) ? (
+          <TeOpportunityLabel className="mt-1" />
+        ) : (
+          <AssessmentTypeLabel assessment={assessment} className="mt-1" />
+        )}
+        <LibraryOutputLabel assessment={assessment} className="mt-1" />
       </TableCell>
-      <TableCell className="hidden lg:table-cell text-xs text-muted-foreground align-top py-3 font-ui">
-        {getAssessmentTypeDisplay(assessment)}
-      </TableCell>
-      <TableCell className={cn("align-middle py-3", TABLE_ACTIONS_COLUMN_CLASS)}>
+      <TableCell className={cn("align-middle py-3 whitespace-nowrap", TABLE_ACTIONS_COLUMN_CLASS)}>
         <TablePrimaryActionsRow>
           <PrimaryTableAction
             label="Export"
@@ -338,6 +318,14 @@ function AssessmentCells({
             aria-label={`Add ${assessment.title} to Workspace`}
             onClick={() => onAddToWorkspace(assessment)}
           />
+          {showViewTe && onOpenTeacherEdition && (
+            <PrimaryTableAction
+              label="View TE"
+              icon={BookOpen}
+              onClick={onOpenTeacherEdition}
+              aria-label="View Teacher Edition for lesson"
+            />
+          )}
         </TablePrimaryActionsRow>
       </TableCell>
     </>

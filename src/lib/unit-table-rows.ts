@@ -1,5 +1,6 @@
 import type { Assessment, Unit, UnitLesson } from "@/lib/assessment-data";
 import { lessonNumber } from "@/lib/assessment-data";
+import { isFormalAssessment } from "@/lib/assessment-source";
 import { assessmentMatchesSearch, lessonMatchesSearch } from "@/lib/unit-search";
 
 export interface UnitLessonSlot {
@@ -9,7 +10,11 @@ export interface UnitLessonSlot {
   teacherEditionPath?: string | null;
   expectedDays?: number;
   assessments: Assessment[];
-  isTeOnly: boolean;
+}
+
+/** Per-lesson instructional length from Unit Overview Materials. */
+export function formatLessonLength(days: number): string {
+  return `length: ${days} day${days === 1 ? "" : "s"}`;
 }
 
 export function getLessonMeta(
@@ -25,6 +30,15 @@ export function getLessonMeta(
   };
 }
 
+function sortAssessments(list: Assessment[]): Assessment[] {
+  return [...list].sort((a, b) => {
+    const aFormal = isFormalAssessment(a) ? 0 : 1;
+    const bFormal = isFormalAssessment(b) ? 0 : 1;
+    if (aFormal !== bFormal) return aFormal - bFormal;
+    return a.title.localeCompare(b.title);
+  });
+}
+
 export function buildUnitLessonSlots(unit: Unit, query: string): UnitLessonSlot[] {
   const total = unit.lessonCount ?? 8;
   const byLesson = new Map<number, Assessment[]>();
@@ -37,33 +51,17 @@ export function buildUnitLessonSlots(unit: Unit, query: string): UnitLessonSlot[
     byLesson.set(n, list);
   }
 
-  for (const [, list] of byLesson) {
-    list.sort((a, b) => a.title.localeCompare(b.title));
-  }
-
   const q = query.trim();
   const slots: UnitLessonSlot[] = [];
 
   for (let lessonNum = 1; lessonNum <= total; lessonNum += 1) {
     const meta = getLessonMeta(unit, lessonNum);
-    const assessments = byLesson.get(lessonNum) ?? [];
+    const assessments = sortAssessments(byLesson.get(lessonNum) ?? []);
     const lessonNavMatch = lessonMatchesSearch(
       lessonNum,
       meta.drivingQuestion ?? meta.shortTitle,
       q,
     );
-
-    if (assessments.length === 0) {
-      if (!q || lessonNavMatch) {
-        slots.push({
-          lessonNum,
-          ...meta,
-          assessments: [],
-          isTeOnly: true,
-        });
-      }
-      continue;
-    }
 
     const visibleAssessments = q
       ? lessonNavMatch
@@ -77,17 +75,22 @@ export function buildUnitLessonSlots(unit: Unit, query: string): UnitLessonSlot[
       lessonNum,
       ...meta,
       assessments: visibleAssessments,
-      isTeOnly: false,
     });
   }
 
   return slots;
 }
 
-export function unitBrowseMeta(unit: Unit): { lessonCount: number; packageCount: number } {
+export function unitBrowseMeta(unit: Unit): {
+  lessonCount: number;
+  formalAssessmentCount: number;
+  teOpportunityCount: number;
+} {
+  const formalAssessmentCount = unit.assessments.filter(isFormalAssessment).length;
   return {
     lessonCount: unit.lessonCount ?? 8,
-    packageCount: unit.assessments.length,
+    formalAssessmentCount,
+    teOpportunityCount: unit.assessments.length - formalAssessmentCount,
   };
 }
 

@@ -4,6 +4,10 @@ import type { Assessment, PackageItem, Unit } from "@/lib/assessment-data";
 import { getAvailablePackageItems, getUnavailablePackageItems } from "@/lib/assessment-helpers";
 
 export function openPackageItem(item: PackageItem): void {
+  if (item.url?.startsWith("/")) {
+    window.open(item.url, "_blank", "noopener,noreferrer");
+    return;
+  }
   if (item.url?.startsWith("ingest:")) {
     toast.info("Local OpenSciEd file (ingested)", {
       description: item.fileName ?? item.url.slice("ingest:".length),
@@ -17,7 +21,7 @@ export function openPackageItem(item: PackageItem): void {
   toast.info("Opens in Google Drive (prototype)", {
     description: item.available
       ? (item.fileName ?? item.label)
-      : `${item.label} is not in this package.`,
+      : `${item.label} is not available for export.`,
   });
 }
 
@@ -30,7 +34,7 @@ export function exportPackage(assessment: Assessment): {
 
   if (exported.length === 0) {
     toast.error("Nothing to export", {
-      description: "This assessment has no available package items yet.",
+      description: "This assessment has no exportable materials yet.",
     });
     return { exported, skipped };
   }
@@ -39,11 +43,11 @@ export function exportPackage(assessment: Assessment): {
 
   if (skipped.length > 0) {
     const skippedNames = skipped.map((item) => item.label).join(", ");
-    toast.success(`Package ready — ${exported.length} files (prototype)`, {
+    toast.success(`Export ready — ${exported.length} files (prototype)`, {
       description: `Exported: ${exportedNames}. Not included: ${skippedNames}. Edit copies in Google Drive.`,
     });
   } else {
-    toast.success(`Package ready — ${exported.length} files (prototype)`, {
+    toast.success(`Export ready — ${exported.length} files (prototype)`, {
       description: `Exported: ${exportedNames}. Edit copies in Google Drive as needed.`,
     });
   }
@@ -68,7 +72,7 @@ export function exportUnitPackages(unit: Unit): void {
     toast.error("No assessments to export in this unit");
     return;
   }
-  toast.success(`Exported ${ready.length} assessment packages (prototype)`, {
+  toast.success(`Exported ${ready.length} assessments (prototype)`, {
     description: `Unit ${unit.id}: ${unit.title}. Edit copies in Google Drive as needed.`,
   });
 }

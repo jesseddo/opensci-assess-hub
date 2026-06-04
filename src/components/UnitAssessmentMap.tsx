@@ -142,8 +142,8 @@ export function UnitAssessmentMap({
       )}
 
       <p className="text-xs text-muted-foreground px-1">
-        Unit {unit.id} — recommended packages from OpenSciEd and Eddo. Teacher Edition rows have
-        guidance but no export package.
+        Unit {unit.id} — formal assessments and TE opportunities from OpenSciEd. TE rows include
+        guidance PDFs; formal assessments include handouts and keys where available.
       </p>
     </div>
   );

@@ -11,6 +11,22 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const extractTitleScript = path.join(__dirname, "extract-lesson-title.py");
 const extractPacingScript = path.join(__dirname, "extract-lesson-pacing.py");
+const extractOpportunitiesScript = path.join(__dirname, "extract-te-assessment-opportunities.py");
+const repoRoot = path.join(__dirname, "..");
+const titleOverridesPath = path.join(repoRoot, "src/data/ingested/unit-8.1-title-overrides.json");
+
+function loadTitleOverrides() {
+  if (!fs.existsSync(titleOverridesPath)) return {};
+  const raw = JSON.parse(fs.readFileSync(titleOverridesPath, "utf8"));
+  const { _comment, ...overrides } = raw;
+  return overrides;
+}
+
+const TITLE_OVERRIDES = loadTitleOverrides();
+
+function applyShortTitle(id, shortTitle) {
+  return TITLE_OVERRIDES[id] ?? shortTitle;
+}
 
 const unitDir = process.argv[2];
 const outPath = process.argv[3];
@@ -214,7 +230,10 @@ for (const { name, path: lessonPath } of lessonDirs) {
       lesson: lessonLabel,
       lessonNum,
       title,
+      source: "formal-assessment",
       assessmentType,
+      opportunityType: "named-package",
+      libraryOutput: "full-package",
       standards: lessonNum <= 6 || lessonNum >= 9 ? DEFAULT_STANDARDS : ENERGY_STANDARDS,
       isSummative,
       description: `OpenSciEd Unit ${UNIT_ID} ${lessonLabel} — ${title}.`,
@@ -238,23 +257,113 @@ for (const { name, path: lessonPath } of lessonDirs) {
         lesson: lessonLabel,
         lessonNum,
         title: extra.title,
+        source: "formal-assessment",
         assessmentType: extra.assessmentType,
+        opportunityType: "handout-written",
+        libraryOutput: "handout-form-planned",
         standards: extra.standards,
         isSummative: extra.isSummative ?? false,
         description: `OpenSciEd Unit ${UNIT_ID} ${lessonLabel} — ${extra.title}.`,
-      files: {
-        studentHandout: handout ? relPath(handout) : null,
-        teacherGuide: teacherGuide ? relPath(teacherGuide) : null,
-        answerKey: key ? relPath(key) : null,
-        googleForm: null,
-        rubric: null,
-      },
+        files: {
+          studentHandout: handout ? relPath(handout) : null,
+          teacherGuide: teacherGuide ? relPath(teacherGuide) : null,
+          answerKey: key ? relPath(key) : null,
+          googleForm: null,
+          rubric: null,
+        },
       });
     }
   }
 }
 
-assessments.sort((a, b) => a.lessonNum - b.lessonNum || a.title.localeCompare(b.title));
+/** Lessons metadata for TE opportunity extraction */
+const lessonsForExtract = lessons.map((row) => {
+  const lessonPath = lessonDirs.find((d) => d.name.startsWith(`Lesson ${row.lessonNum} `))?.path;
+  const files = lessonPath ? listFiles(lessonPath) : [];
+  const en = englishLessonFiles(files);
+  const te = en.find((f) => /Teacher Edition/i.test(basename(f)));
+  const handouts = en.filter((f) => /Handout/i.test(basename(f)) && !/Answer Key/i.test(basename(f)));
+  return {
+    lessonNum: row.lessonNum,
+    shortTitle: row.shortTitle,
+    teacherEditionAbs: te ?? null,
+    handoutAbsPaths: handouts,
+  };
+});
+
+let embeddedOpportunities = [];
+try {
+  const raw = execFileSync(
+    "python3",
+    [
+      extractOpportunitiesScript,
+      repoRoot,
+      UNIT_ID,
+      JSON.stringify(lessonsForExtract.filter((l) => l.teacherEditionAbs)),
+    ],
+    { encoding: "utf8" },
+  ).trim();
+  embeddedOpportunities = JSON.parse(raw);
+} catch (err) {
+  console.warn("Could not extract TE assessment opportunities:", err.message);
+}
+
+const packagedHandouts = new Set(
+  assessments.map((a) => a.files.studentHandout).filter(Boolean),
+);
+
+for (const opp of embeddedOpportunities) {
+  const handoutRel = opp.studentHandout
+    ? path.relative(unitDir, opp.studentHandout).split(path.sep).join("/")
+    : null;
+  if (handoutRel && packagedHandouts.has(handoutRel)) {
+    continue;
+  }
+  const lessonNum = opp.lessonNum;
+  const lessonLabel = opp.lesson;
+  const teacherGuide = lessonsForExtract.find((l) => l.lessonNum === lessonNum)?.teacherEditionAbs;
+  const tgRel = teacherGuide ? relPath(teacherGuide) : null;
+  const standards =
+    lessonNum <= 6 || lessonNum >= 9 ? DEFAULT_STANDARDS : ENERGY_STANDARDS;
+
+  const shortTitle = applyShortTitle(opp.id, opp.shortTitle ?? opp.title);
+  const assessmentType = opp.assessmentType ?? "formative";
+
+  assessments.push({
+    id: opp.id,
+    lesson: lessonLabel,
+    lessonNum,
+    source: "te-opportunity",
+    title: shortTitle,
+    shortTitle,
+    peCode: opp.peCode ?? null,
+    buildingTowards: opp.buildingTowards ?? null,
+    lookListenFor: opp.lookListenFor ?? null,
+    whatToDo: opp.whatToDo ?? null,
+    assessmentType,
+    opportunityType: opp.opportunityType,
+    libraryOutput: opp.libraryOutput,
+    standards,
+    isSummative: assessmentType === "summative",
+    description: `OpenSciEd Unit ${UNIT_ID} ${lessonLabel} — assessment opportunity from Teacher Edition.`,
+    files: {
+      studentHandout: handoutRel,
+      teacherGuide: tgRel,
+      answerKey: null,
+      googleForm: null,
+      rubric: null,
+      guidanceSheet: opp.guidancePath ?? null,
+    },
+  });
+}
+
+assessments.sort((a, b) => {
+  if (a.lessonNum !== b.lessonNum) return a.lessonNum - b.lessonNum;
+  const aFormal = a.source === "formal-assessment" ? 0 : 1;
+  const bFormal = b.source === "formal-assessment" ? 0 : 1;
+  if (aFormal !== bFormal) return aFormal - bFormal;
+  return a.title.localeCompare(b.title);
+});
 
 const manifest = {
   unitId: UNIT_ID,
@@ -272,8 +381,9 @@ const manifest = {
 fs.mkdirSync(path.dirname(outPath), { recursive: true });
 fs.writeFileSync(outPath, JSON.stringify(manifest, null, 2));
 const pacingCount = Object.keys(pacing.lessons).length;
+const embeddedCount = assessments.filter((a) => a.opportunityType && a.opportunityType !== "named-package").length;
 console.log(
-  `Wrote ${assessments.length} assessments, ${lessonDirs.length} lessons` +
+  `Wrote ${assessments.length} library rows (${embeddedCount} from TE), ${lessonDirs.length} lessons` +
     (pacingCount ? `, ${pacingCount} pacing entries (${pacing.totalDays ?? "?"} days total)` : "") +
     ` → ${outPath}`,
 );

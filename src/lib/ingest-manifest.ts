@@ -1,4 +1,10 @@
 import type { Assessment, PackageItem, Unit } from "@/lib/assessment-data";
+import type { AssessmentSource } from "@/lib/assessment-source";
+import type {
+  AssessmentOpportunityType,
+  LibraryOutputKind,
+} from "@/lib/assessment-opportunity-types";
+import { opportunityTypeMeta } from "@/lib/assessment-opportunity-types";
 import {
   assessmentTypeLabel,
   normalizeAssessmentType,
@@ -11,6 +17,7 @@ export interface IngestedFileRefs {
   answerKey: string | null;
   googleForm: string | null;
   rubric: string | null;
+  guidanceSheet?: string | null;
 }
 
 export interface IngestedAssessment {
@@ -18,8 +25,16 @@ export interface IngestedAssessment {
   lesson: string;
   lessonNum: number;
   title: string;
+  shortTitle?: string;
+  peCode?: string | null;
+  buildingTowards?: string | null;
+  lookListenFor?: string | null;
+  whatToDo?: string | null;
   assessmentType?: AssessmentTypeSlug;
   typeLabel?: string;
+  source?: AssessmentSource;
+  opportunityType?: AssessmentOpportunityType;
+  libraryOutput?: LibraryOutputKind;
   standards: string[];
   isSummative?: boolean;
   description: string;
@@ -57,8 +72,39 @@ function localUrl(p: string | null): string | undefined {
   return `ingest:${p}`;
 }
 
-function buildPackageFromFiles(files: IngestedFileRefs): PackageItem[] {
+function assessmentTypeForOpportunity(oppType: AssessmentOpportunityType): AssessmentTypeSlug {
+  switch (oppType) {
+    case "engineering-design":
+      return "formative";
+    case "discussion-argument":
+      return "peer-feedback";
+    case "handout-written":
+    case "investigation-data":
+    case "observation":
+      return "formative";
+    case "named-package":
+    default:
+      return "formative";
+  }
+}
+
+function buildPackageFromFiles(
+  files: IngestedFileRefs,
+  libraryOutput?: LibraryOutputKind,
+): PackageItem[] {
+  const guidanceUrl = files.guidanceSheet?.startsWith("/")
+    ? files.guidanceSheet
+    : localUrl(files.guidanceSheet ?? null);
+
   return [
+    {
+      kind: "guidance-sheet",
+      label: "Guidance PDF",
+      fileName: files.guidanceSheet?.split("/").pop(),
+      url: guidanceUrl,
+      available: Boolean(files.guidanceSheet),
+      unavailableReason: "Not generated",
+    },
     {
       kind: "student-handout",
       label: "Student handout",
@@ -73,7 +119,8 @@ function buildPackageFromFiles(files: IngestedFileRefs): PackageItem[] {
       fileName: fileNameFromPath(files.googleForm),
       url: localUrl(files.googleForm),
       available: Boolean(files.googleForm),
-      unavailableReason: "Not yet digitized",
+      unavailableReason:
+        libraryOutput === "handout-form-planned" ? "Planned — not yet digitized" : "Not yet digitized",
     },
     {
       kind: "teacher-guide",
@@ -106,18 +153,34 @@ export function assessmentsFromManifest(manifest: IngestedUnitManifest): Assessm
   return manifest.assessments.map((row) => {
     const assessmentType =
       row.assessmentType ??
-      (row.typeLabel ? normalizeAssessmentType(row.typeLabel) : "formative");
+      (row.opportunityType
+        ? assessmentTypeForOpportunity(row.opportunityType)
+        : row.typeLabel
+          ? normalizeAssessmentType(row.typeLabel)
+          : "formative");
+    const oppMeta = row.opportunityType ? opportunityTypeMeta(row.opportunityType) : null;
+    const source: AssessmentSource =
+      row.source ??
+      (row.id.includes("-ao-") ? "te-opportunity" : "formal-assessment");
     return {
       id: row.id,
       lesson: row.lesson,
-      title: row.title,
+      title: row.shortTitle ?? row.title,
+      shortTitle: row.shortTitle ?? row.title,
+      source,
+      peCode: row.peCode ?? undefined,
+      buildingTowards: row.buildingTowards ?? undefined,
+      lookListenFor: row.lookListenFor ?? undefined,
+      whatToDo: row.whatToDo ?? undefined,
       assessmentType,
       typeLabel: assessmentTypeLabel(assessmentType),
       standards: row.standards,
       isSummative: row.isSummative,
       description: row.description,
       previewExcerpt: row.previewExcerpt,
-      package: buildPackageFromFiles(row.files),
+      opportunityType: row.opportunityType,
+      libraryOutput: row.libraryOutput ?? oppMeta?.libraryOutput,
+      package: buildPackageFromFiles(row.files, row.libraryOutput ?? oppMeta?.libraryOutput),
     };
   });
 }

@@ -1,11 +1,18 @@
 import type { Assessment, PackageItem, PackageItemKind, Unit } from "@/lib/assessment-data";
+import { isFormalAssessment } from "@/lib/assessment-source";
 import { assessmentTypeLabel, normalizeAssessmentType } from "@/lib/assessment-types";
 
 export function getAssessmentTypeDisplay(assessment: Assessment): string {
-  if (assessment.assessmentType) {
-    return assessmentTypeLabel(assessment.assessmentType);
-  }
-  return assessmentTypeLabel(normalizeAssessmentType(assessment.typeLabel));
+  const slug =
+    assessment.assessmentType ??
+    (assessment.typeLabel ? normalizeAssessmentType(assessment.typeLabel) : "formative");
+  return assessmentTypeLabel(slug);
+}
+
+/** Formative / summative / reflection / peer feedback — formal assessments only. */
+export function getFormalTypeDisplay(assessment: Assessment): string | null {
+  if (!isFormalAssessment(assessment)) return null;
+  return getAssessmentTypeDisplay(assessment);
 }
 
 export function getAvailablePackageItems(assessment: Assessment): PackageItem[] {
@@ -25,6 +32,7 @@ const SUMMARY_LABELS: Record<PackageItemKind, string> = {
   "teacher-guide": "Guide",
   "answer-key": "Key",
   rubric: "Rubric",
+  "guidance-sheet": "Guidance",
 };
 
 export function getPackageSummary(assessment: Assessment): string {
@@ -50,14 +58,14 @@ export function getAssessmentMetaLine(assessment: Assessment): string {
   }
 
   const gapSuffix = gaps.length > 0 ? ` — ${gaps.join("; ")}` : "";
-  return `${standards} · ${getAssessmentTypeDisplay(assessment)} · Package: ${pkg}${gapSuffix}`;
+  return `${standards} · ${getAssessmentTypeDisplay(assessment)} · Materials: ${pkg}${gapSuffix}`;
 }
 
 /** Shown on card only when Add to Workspace is blocked */
 export function getWorkspaceBlockHint(assessment: Assessment): string | null {
   if (isWorkspaceReady(assessment)) return null;
   if (!getPackageItem(assessment, "google-form")?.available) {
-    return "Not digitized for Workspace — export the handout package instead.";
+    return "Not digitized for Workspace — export the handout materials instead.";
   }
   return "Missing scoring materials for Workspace.";
 }

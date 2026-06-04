@@ -3,7 +3,7 @@ import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /** Fits Export + Add side-by-side with a shared right edge. */
-export const TABLE_ACTIONS_COLUMN_CLASS = "w-[10.5rem] min-w-[10.5rem] max-w-[10.5rem]";
+export const TABLE_ACTIONS_COLUMN_CLASS = "w-[13.5rem] min-w-[13.5rem] max-w-[13.5rem]";
 
 /** Horizontal pair — co-equal primary actions (Export · Add). */
 export function TablePrimaryActionsRow({ children }: { children: React.ReactNode }) {

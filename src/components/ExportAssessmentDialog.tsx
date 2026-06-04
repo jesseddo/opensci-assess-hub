@@ -32,7 +32,7 @@ export function ExportAssessmentDialog({ assessment, unit, open, onOpenChange }:
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogDescription className="font-mono text-[10px] uppercase tracking-widest">
-            Unit {unit.id} · Export package
+            Unit {unit.id} · Export materials
           </DialogDescription>
           <DialogTitle>{assessment.title}</DialogTitle>
           <DialogDescription>
@@ -44,7 +44,7 @@ export function ExportAssessmentDialog({ assessment, unit, open, onOpenChange }:
         <div className="space-y-3">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
-              Package manifest ({available.length} of {assessment.package.length})
+              Materials ({available.length} of {assessment.package.length})
             </p>
             <div className="space-y-2">
               {assessment.package.map((item) => (
@@ -55,7 +55,7 @@ export function ExportAssessmentDialog({ assessment, unit, open, onOpenChange }:
 
           {unavailable.length > 0 && (
             <p className="text-xs text-muted-foreground rounded-md border border-dashed border-border p-3">
-              <span className="font-medium text-foreground">Partial package: </span>
+              <span className="font-medium text-foreground">Partial export: </span>
               {unavailable.map((item) => item.label).join(", ")} not included. Export will include
               available items only.
             </p>
@@ -92,7 +92,7 @@ export function ExportAssessmentDialog({ assessment, unit, open, onOpenChange }:
             }}
           >
             <Download className="size-4" aria-hidden />
-            Export package
+            Export materials
           </Button>
         </DialogFooter>
       </DialogContent>

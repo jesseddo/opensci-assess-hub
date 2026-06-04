@@ -71,7 +71,7 @@ export function AddToWorkspaceDialog({ assessment, open, onOpenChange }: Props) 
                   <p className="font-medium text-foreground">Not yet digitized for Workspace</p>
                   <p className="text-muted-foreground text-xs mt-1">
                     This assessment is missing a Google Form or scoring materials. You can still
-                    export the Doc package.
+                    export the handout materials.
                   </p>
                 </div>
               </div>

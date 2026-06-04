@@ -1,4 +1,9 @@
 import { unit81 } from "@/lib/ingested/unit-8.1";
+import type { AssessmentSource } from "@/lib/assessment-source";
+import type {
+  AssessmentOpportunityType,
+  LibraryOutputKind,
+} from "@/lib/assessment-opportunity-types";
 import type { AssessmentTypeSlug } from "@/lib/assessment-types";
 import { assessmentTypeLabel, normalizeAssessmentType } from "@/lib/assessment-types";
 
@@ -7,7 +12,8 @@ export type PackageItemKind =
   | "google-form"
   | "teacher-guide"
   | "answer-key"
-  | "rubric";
+  | "rubric"
+  | "guidance-sheet";
 
 export interface PackageItem {
   kind: PackageItemKind;
@@ -30,6 +36,19 @@ export interface Assessment {
   isSummative?: boolean;
   description: string;
   previewExcerpt?: string;
+  /** TE opportunity vs formal assessment (OpenSciEd naming) */
+  source?: AssessmentSource;
+  /** Internal ingest classifier only — not shown in UI */
+  opportunityType?: AssessmentOpportunityType;
+  /** What Eddo can ship for this row */
+  libraryOutput?: LibraryOutputKind;
+  /** Display title (table); same as title when ingested */
+  shortTitle?: string;
+  /** PE element code — detail / guidance only */
+  peCode?: string;
+  buildingTowards?: string;
+  lookListenFor?: string;
+  whatToDo?: string;
   package: PackageItem[];
 }
 

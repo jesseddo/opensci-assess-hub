@@ -1,5 +1,6 @@
 import type { Assessment, Unit } from "@/lib/assessment-data";
 import { lessonNumber } from "@/lib/assessment-data";
+import { formalAssessmentsInUnit, teOpportunitiesInUnit } from "@/lib/assessment-source";
 import { normalizeAssessmentType, type AssessmentTypeSlug } from "@/lib/assessment-types";
 
 export type LessonRhythmKind = "none" | "formative" | "supporting" | "summative";
@@ -15,7 +16,8 @@ export interface LessonRhythmPoint {
 
 export interface UnitRhythmOverview {
   lessonCount: number;
-  assessmentOpportunities: number;
+  formalAssessmentCount: number;
+  teOpportunityCount: number;
   suggestedPacingDays?: number;
   points: LessonRhythmPoint[];
   summaryLine: string;
@@ -28,13 +30,13 @@ export const RHYTHM_LEGEND: {
 }[] = [
   {
     kind: "none",
-    label: "No assessment",
-    description: "Lesson content is in the Teacher Edition only",
+    label: "TE opportunities",
+    description: "Assessment opportunities in the Teacher Edition only",
   },
   {
     kind: "formative",
     label: "Formative",
-    description: "Formative check or handout assessment",
+    description: "Formal formative assessment",
   },
   {
     kind: "supporting",
@@ -91,7 +93,7 @@ function rhythmKindForAssessments(assessments: Assessment[]): LessonRhythmKind {
 }
 
 function typeHintForAssessments(assessments: Assessment[], kind: LessonRhythmKind): string {
-  if (kind === "none") return "No assessment in library";
+  if (kind === "none") return "TE opportunities";
   if (assessments.length > 1) {
     const byKind = assessments.reduce<Record<string, number>>((acc, a) => {
       const cat = categoryForAssessment(a);
@@ -129,36 +131,38 @@ export function buildUnitRhythm(unit: Unit): UnitRhythmOverview {
     byLesson.set(n, list);
   }
 
-  const assessmentOpportunities = unit.assessments.length;
+  const formalAssessmentCount = formalAssessmentsInUnit(unit.assessments).length;
+  const teOpportunityCount = teOpportunitiesInUnit(unit.assessments).length;
 
   const points: LessonRhythmPoint[] = [];
   for (let lessonNum = 1; lessonNum <= lessonCount; lessonNum += 1) {
-    const assessments = byLesson.get(lessonNum) ?? [];
+    const allInLesson = byLesson.get(lessonNum) ?? [];
+    const formalOnly = formalAssessmentsInUnit(allInLesson);
     const lessonMeta = unit.lessons?.find((l) => l.lessonNum === lessonNum);
-    const kind = rhythmKindForAssessments(assessments);
+    const kind = rhythmKindForAssessments(formalOnly);
     points.push({
       lessonNum,
       kind,
-      assessmentCount: assessments.length,
+      assessmentCount: formalOnly.length,
       expectedDays: lessonMeta?.expectedDays,
-      typeHint: typeHintForAssessments(assessments, kind),
+      typeHint: typeHintForAssessments(formalOnly, kind),
     });
   }
 
-  const opportunityLabel =
-    assessmentOpportunities === 1 ? "opportunity" : "opportunities";
   const summaryParts = [
     `${lessonCount} lessons`,
-    `${assessmentOpportunities} assessment ${opportunityLabel}`,
+    `${formalAssessmentCount} assessment${formalAssessmentCount === 1 ? "" : "s"}`,
+    `${teOpportunityCount} TE opportunit${teOpportunityCount === 1 ? "y" : "ies"}`,
   ];
   if (unit.suggestedPacingDays != null) {
-    summaryParts.push(`${unit.suggestedPacingDays} days suggested pacing`);
+    summaryParts.push(`length: ${unit.suggestedPacingDays} days`);
   }
   const summaryLine = summaryParts.join(" · ");
 
   return {
     lessonCount,
-    assessmentOpportunities,
+    formalAssessmentCount,
+    teOpportunityCount,
     suggestedPacingDays: unit.suggestedPacingDays,
     points,
     summaryLine,

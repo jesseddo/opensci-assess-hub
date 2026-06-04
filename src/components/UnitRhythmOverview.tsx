@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Unit } from "@/lib/assessment-data";
+import { rhythmMarkerClassName } from "@/lib/rhythm-markers";
 import {
   buildUnitRhythm,
   RHYTHM_LEGEND,
@@ -7,6 +8,7 @@ import {
   type LessonRhythmKind,
   type LessonRhythmPoint,
 } from "@/lib/unit-rhythm";
+import { formatLessonLength } from "@/lib/unit-table-rows";
 import { cn } from "@/lib/utils";
 
 /** Marker row height — track is vertically centered here. */
@@ -82,7 +84,7 @@ function RhythmMarker({
 }) {
   return (
     <span
-      className={cn("relative z-10 shrink-0 ring-2 ring-card", markerShape(kind), className)}
+      className={cn("relative z-10 shrink-0 ring-2 ring-card", rhythmMarkerClassName(kind, "timeline"), className)}
       aria-hidden
     />
   );
@@ -99,9 +101,7 @@ function LessonRhythmColumn({
   const label = markerLabel(point);
   const isEmpty = point.kind === "none";
   const daysLabel =
-    point.expectedDays != null
-      ? `${point.expectedDays} day${point.expectedDays === 1 ? "" : "s"}`
-      : null;
+    point.expectedDays != null ? formatLessonLength(point.expectedDays) : null;
 
   return (
     <li
@@ -110,7 +110,7 @@ function LessonRhythmColumn({
     >
       <div className={cn("flex w-full items-center justify-center", TRACK_ROW_H)}>
         {isEmpty ? (
-          <span className={cn("relative z-10 shrink-0", markerShape("none"))} aria-label={label} />
+          <span className={cn("relative z-10 shrink-0", rhythmMarkerClassName("none", "timeline"))} aria-label={label} />
         ) : (
           <button
             type="button"
@@ -120,7 +120,7 @@ function LessonRhythmColumn({
             className={cn(
               "relative z-10 shrink-0 transition-transform",
               "hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-card",
-              markerShape(point.kind),
+              rhythmMarkerClassName(point.kind, "timeline"),
             )}
           />
         )}
@@ -147,7 +147,7 @@ function LessonRhythmColumn({
         {daysLabel && (
           <span
             className="font-ui text-[8px] leading-none tabular-nums text-muted-foreground/65 whitespace-nowrap"
-            title="Suggested instructional days (Unit Overview Materials)"
+            title="Instructional length from Unit Overview Materials"
           >
             {daysLabel}
           </span>
@@ -160,19 +160,6 @@ function LessonRhythmColumn({
 /**
  * Dual encoding: size + shape (not color alone).
  */
-function markerShape(kind: LessonRhythmKind): string {
-  switch (kind) {
-    case "none":
-      return "size-1 rounded-full border border-muted-foreground/20 bg-card";
-    case "formative":
-      return "size-3 rounded-full bg-eddo-accent ring-2 ring-card";
-    case "supporting":
-      return "size-2.5 rounded-[3px] bg-eddo-navy/55 ring-2 ring-card";
-    case "summative":
-      return "size-4 rounded-full bg-eddo-green ring-2 ring-card shadow-[0_0_0_2px_var(--eddo-green)]";
-  }
-}
-
 function numberClass(kind: LessonRhythmKind): string {
   switch (kind) {
     case "formative":
@@ -189,11 +176,9 @@ function numberClass(kind: LessonRhythmKind): string {
 function markerLabel(point: LessonRhythmPoint): string {
   const padded = String(point.lessonNum).padStart(2, "0");
   const pacing =
-    point.expectedDays != null
-      ? ` · ${point.expectedDays} day${point.expectedDays === 1 ? "" : "s"} suggested`
-      : "";
+    point.expectedDays != null ? ` · ${formatLessonLength(point.expectedDays)}` : "";
   if (point.kind === "none") {
-    return `Lesson ${padded} — no assessment in library${pacing}`;
+    return `Lesson ${padded} — TE opportunities (no formal assessment)${pacing}`;
   }
   const count =
     point.assessmentCount > 1 ? ` (${point.assessmentCount} assessments)` : "";

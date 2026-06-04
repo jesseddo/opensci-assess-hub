@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import type { Assessment, Unit } from "@/lib/assessment-data";
 import { getAssessmentTypeDisplay } from "@/lib/assessment-helpers";
+import { isTeOpportunity, TE_OPPORTUNITY_LABEL } from "@/lib/assessment-source";
 
 interface Props {
   assessment: Assessment | null;
@@ -31,18 +32,24 @@ export function AssessmentDetailDialog({
 }: Props) {
   if (!assessment) return null;
 
+  const hasOseBlock =
+    Boolean(assessment.buildingTowards) ||
+    Boolean(assessment.lookListenFor) ||
+    Boolean(assessment.whatToDo);
+  const teRow = isTeOpportunity(assessment);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
             OpenSciEd Unit {unit.id} · {assessment.lesson}
+            {assessment.peCode ? ` · ${assessment.peCode}` : ""}
           </p>
           <DialogTitle className="text-xl leading-tight">{assessment.title}</DialogTitle>
           <div className="space-y-2 pt-1 text-sm text-muted-foreground">
             {assessment.lessonTitle && <p>{assessment.lessonTitle}</p>}
-            <p className="text-foreground">{assessment.description}</p>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1.5 items-center">
               {assessment.standards.map((s) => (
                 <span
                   key={s}
@@ -51,10 +58,46 @@ export function AssessmentDetailDialog({
                   {s}
                 </span>
               ))}
-              <span className="text-xs ml-1">{getAssessmentTypeDisplay(assessment)}</span>
+              <span className="text-xs">
+                {teRow ? TE_OPPORTUNITY_LABEL : getAssessmentTypeDisplay(assessment)}
+              </span>
             </div>
           </div>
         </DialogHeader>
+
+        {hasOseBlock && (
+          <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3 font-body text-sm leading-relaxed">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-eddo-green font-ui">
+              From Teacher Edition
+            </p>
+            {assessment.buildingTowards && (
+              <div>
+                <p className="text-[10px] font-ui font-medium text-eddo-navy mb-1">Building towards</p>
+                <p className="text-foreground/90 whitespace-pre-wrap">{assessment.buildingTowards}</p>
+              </div>
+            )}
+            {assessment.lookListenFor && (
+              <div>
+                <p className="text-[10px] font-ui font-medium text-eddo-navy mb-1">
+                  What to look / listen for
+                </p>
+                <p className="text-foreground/90 whitespace-pre-wrap">{assessment.lookListenFor}</p>
+              </div>
+            )}
+            {assessment.whatToDo && (
+              <div>
+                <p className="text-[10px] font-ui font-medium text-eddo-navy mb-1">What to do</p>
+                <p className="text-foreground/90 whitespace-pre-wrap">{assessment.whatToDo}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {!hasOseBlock && assessment.description && (
+          <p className="text-sm text-muted-foreground font-body leading-relaxed">
+            {assessment.description}
+          </p>
+        )}
 
         {assessment.previewExcerpt && (
           <div className="rounded-lg border border-border bg-muted/40 p-4">
@@ -67,7 +110,7 @@ export function AssessmentDetailDialog({
 
         <div className="space-y-2">
           <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            Recommended package
+            {teRow ? "From Teacher Edition" : "Materials"}
           </p>
           <div className="space-y-2">
             {assessment.package.map((item) => (

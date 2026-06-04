@@ -40,7 +40,7 @@ export function TeacherEditionDialog({ unit, lessonNum, open, onOpenChange }: Pr
         <div className="rounded-2xl border border-border bg-muted/30 px-4 py-3 space-y-2">
           <p className="text-sm font-ui font-medium text-eddo-navy">Assessment guidance in Teacher Edition</p>
           <p className="text-sm font-body text-muted-foreground leading-relaxed">
-            This lesson has no standalone export package in the library. OpenSciEd embeds assessment
+            This lesson has no formal assessment in the library yet. OpenSciEd embeds assessment
             opportunities in the lesson plan — use the Teacher Edition for timing, facilitation, and
             scoring guidance.
           </p>

@@ -1,12 +1,26 @@
 import type { Assessment } from "@/lib/assessment-data";
-import { getAssessmentTypeDisplay } from "@/lib/assessment-helpers";
+import { assessmentRowTypeDisplay } from "@/lib/unit-assessment-organization";
+import { ASSESSMENT_OPPORTUNITY_LABEL } from "@/lib/ose-vocabulary";
 
 export function assessmentMatchesSearch(assessment: Assessment, query: string): boolean {
   const q = query.trim().toLowerCase();
   if (!q) return true;
   if (assessment.title.toLowerCase().includes(q)) return true;
-  if (getAssessmentTypeDisplay(assessment).toLowerCase().includes(q)) return true;
+  const { primary, secondary } = assessmentRowTypeDisplay(assessment);
+  if (primary.toLowerCase().includes(q)) return true;
+  if (secondary?.toLowerCase().includes(q)) return true;
   if (assessment.assessmentType?.includes(q)) return true;
+  if (
+    q.includes("opportunity") &&
+    (assessment.source === "te-opportunity" || assessment.id.includes("-ao-"))
+  ) {
+    return true;
+  }
+  if (q.includes("document") && assessment.source === "formal-assessment") return true;
+  if (q === "assessment opportunity" || q === ASSESSMENT_OPPORTUNITY_LABEL.toLowerCase()) {
+    if (assessment.source === "te-opportunity" || assessment.id.includes("-ao-")) return true;
+  }
+  if (q === "assessment" && assessment.source === "formal-assessment") return true;
   if (assessment.standards.some((s) => s.toLowerCase().includes(q))) return true;
   return false;
 }

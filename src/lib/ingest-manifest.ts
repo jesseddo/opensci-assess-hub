@@ -1,5 +1,6 @@
 import type { Assessment, PackageItem, Unit } from "@/lib/assessment-data";
 import type { AssessmentSource } from "@/lib/assessment-source";
+import { ASSESSMENT_OPPORTUNITY_LABEL } from "@/lib/ose-vocabulary";
 import type {
   AssessmentOpportunityType,
   LibraryOutputKind,
@@ -72,20 +73,19 @@ function localUrl(p: string | null): string | undefined {
   return `ingest:${p}`;
 }
 
-function assessmentTypeForOpportunity(oppType: AssessmentOpportunityType): AssessmentTypeSlug {
-  switch (oppType) {
-    case "engineering-design":
-      return "formative";
-    case "discussion-argument":
-      return "peer-feedback";
-    case "handout-written":
-    case "investigation-data":
-    case "observation":
-      return "formative";
-    case "named-package":
-    default:
-      return "formative";
+function resolveAssessmentType(
+  row: IngestedAssessment,
+  source: AssessmentSource,
+): AssessmentTypeSlug | undefined {
+  const fromRow = row.assessmentType;
+  if (source === "te-opportunity") {
+    if (!fromRow || fromRow === "formative" || fromRow === "lesson-reflection") return undefined;
+    return fromRow;
   }
+  if (fromRow) return fromRow;
+  if (row.isSummative) return "summative";
+  if (row.typeLabel) return normalizeAssessmentType(row.typeLabel);
+  return "formative";
 }
 
 function buildPackageFromFiles(
@@ -99,7 +99,7 @@ function buildPackageFromFiles(
   return [
     {
       kind: "guidance-sheet",
-      label: "Guidance PDF",
+      label: "Assessment opportunity guidance",
       fileName: files.guidanceSheet?.split("/").pop(),
       url: guidanceUrl,
       available: Boolean(files.guidanceSheet),
@@ -144,24 +144,24 @@ function buildPackageFromFiles(
       fileName: fileNameFromPath(files.rubric),
       url: localUrl(files.rubric),
       available: Boolean(files.rubric),
-      unavailableReason: "Not applicable",
+      unavailableReason: "Not part of this assessment",
     },
   ];
 }
 
 export function assessmentsFromManifest(manifest: IngestedUnitManifest): Assessment[] {
   return manifest.assessments.map((row) => {
-    const assessmentType =
-      row.assessmentType ??
-      (row.opportunityType
-        ? assessmentTypeForOpportunity(row.opportunityType)
-        : row.typeLabel
-          ? normalizeAssessmentType(row.typeLabel)
-          : "formative");
     const oppMeta = row.opportunityType ? opportunityTypeMeta(row.opportunityType) : null;
     const source: AssessmentSource =
       row.source ??
       (row.id.includes("-ao-") ? "te-opportunity" : "formal-assessment");
+    const assessmentType = resolveAssessmentType(row, source);
+    const typeLabel =
+      source === "te-opportunity"
+        ? assessmentType
+          ? assessmentTypeLabel(assessmentType)
+          : ASSESSMENT_OPPORTUNITY_LABEL
+        : assessmentTypeLabel(assessmentType ?? "formative");
     return {
       id: row.id,
       lesson: row.lesson,
@@ -173,7 +173,7 @@ export function assessmentsFromManifest(manifest: IngestedUnitManifest): Assessm
       lookListenFor: row.lookListenFor ?? undefined,
       whatToDo: row.whatToDo ?? undefined,
       assessmentType,
-      typeLabel: assessmentTypeLabel(assessmentType),
+      typeLabel,
       standards: row.standards,
       isSummative: row.isSummative,
       description: row.description,

@@ -327,9 +327,11 @@ for (const opp of embeddedOpportunities) {
     lessonNum <= 6 || lessonNum >= 9 ? DEFAULT_STANDARDS : ENERGY_STANDARDS;
 
   const shortTitle = applyShortTitle(opp.id, opp.shortTitle ?? opp.title);
-  const assessmentType = opp.assessmentType ?? "formative";
+  const rawType = opp.assessmentType ?? "formative";
+  const assessmentType =
+    rawType === "formative" || rawType === "lesson-reflection" ? undefined : rawType;
 
-  assessments.push({
+  const row = {
     id: opp.id,
     lesson: lessonLabel,
     lessonNum,
@@ -340,11 +342,10 @@ for (const opp of embeddedOpportunities) {
     buildingTowards: opp.buildingTowards ?? null,
     lookListenFor: opp.lookListenFor ?? null,
     whatToDo: opp.whatToDo ?? null,
-    assessmentType,
     opportunityType: opp.opportunityType,
     libraryOutput: opp.libraryOutput,
     standards,
-    isSummative: assessmentType === "summative",
+    isSummative: rawType === "summative",
     description: `OpenSciEd Unit ${UNIT_ID} ${lessonLabel} — assessment opportunity from Teacher Edition.`,
     files: {
       studentHandout: handoutRel,
@@ -354,7 +355,9 @@ for (const opp of embeddedOpportunities) {
       rubric: null,
       guidanceSheet: opp.guidancePath ?? null,
     },
-  });
+  };
+  if (assessmentType) row.assessmentType = assessmentType;
+  assessments.push(row);
 }
 
 assessments.sort((a, b) => {

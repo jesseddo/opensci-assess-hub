@@ -142,8 +142,8 @@ export function UnitAssessmentMap({
       )}
 
       <p className="text-xs text-muted-foreground px-1">
-        Unit {unit.id} — formal assessments and TE opportunities from OpenSciEd. TE rows include
-        guidance PDFs; formal assessments include handouts and keys where available.
+        Unit {unit.id} — OpenSciEd assessments and assessment opportunities from the Teacher
+        Edition. Named assessment documents include handouts and keys where available.
       </p>
     </div>
   );

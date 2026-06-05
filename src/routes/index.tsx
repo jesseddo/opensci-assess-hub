@@ -13,6 +13,7 @@ import { ExportUnitDialog } from "@/components/ExportUnitDialog";
 import { AddToWorkspaceDialog } from "@/components/AddToWorkspaceDialog";
 import { TeacherEditionDialog } from "@/components/TeacherEditionDialog";
 import { UnitAssessmentTable } from "@/components/UnitAssessmentTable";
+import { UnitOrganizationSummary } from "@/components/UnitOrganizationSummary";
 import { UnitRhythmOverview } from "@/components/UnitRhythmOverview";
 import {
   defaultGradeForLevel,
@@ -290,6 +291,7 @@ function AssessmentLibrary() {
               Unit {unit.id}: {unit.title}
             </h1>
             <p className="text-muted-foreground text-sm text-pretty font-body">{unit.description}</p>
+            <UnitOrganizationSummary unit={unit} />
             {isSearching && (
               <p className="text-xs text-muted-foreground font-ui">Showing search results</p>
             )}

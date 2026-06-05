@@ -1,4 +1,7 @@
-/** What Eddo can provide for a row — user-facing labels (no “package”). */
+/**
+ * Internal ingest mapping only — not shown in the library UI.
+ * OpenSciEd teachers use assessment / assessment opportunity language instead.
+ */
 export type LibraryDeliverableKind =
   | "guidance-pdf"
   | "handout-guidance"

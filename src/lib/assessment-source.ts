@@ -3,7 +3,10 @@ import type { Assessment } from "@/lib/assessment-data";
 /** How this row appears in the unit table — OpenSciEd-aligned naming. */
 export type AssessmentSource = "te-opportunity" | "formal-assessment";
 
-export const TE_OPPORTUNITY_LABEL = "TE opportunity";
+export {
+  ASSESSMENT_OPPORTUNITY_LABEL,
+  TE_OPPORTUNITY_LABEL,
+} from "@/lib/ose-vocabulary";
 
 export function assessmentSource(assessment: Assessment): AssessmentSource {
   if (assessment.source) return assessment.source;

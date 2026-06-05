@@ -36,7 +36,7 @@ export interface Assessment {
   isSummative?: boolean;
   description: string;
   previewExcerpt?: string;
-  /** TE opportunity vs formal assessment (OpenSciEd naming) */
+  /** Assessment opportunity (TE) vs standalone assessment document */
   source?: AssessmentSource;
   /** Internal ingest classifier only — not shown in UI */
   opportunityType?: AssessmentOpportunityType;

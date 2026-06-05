@@ -1,5 +1,6 @@
 import { Download, Plus } from "lucide-react";
 
+import { AssessmentGuidePanel } from "@/components/AssessmentGuidePanel";
 import { PackageItemRow } from "@/components/PackageItemRow";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,8 +11,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { Assessment, Unit } from "@/lib/assessment-data";
-import { getAssessmentTypeDisplay } from "@/lib/assessment-helpers";
-import { isTeOpportunity, TE_OPPORTUNITY_LABEL } from "@/lib/assessment-source";
+import { assessmentGuideFor } from "@/lib/assessment-guide";
+import {
+  isDeliverableRow,
+  isGuidanceOnlyRow,
+  rowShowsExport,
+} from "@/lib/assessment-row-tier";
+import { getAvailablePackageItems } from "@/lib/assessment-helpers";
+import { assessmentRowTypeDisplay } from "@/lib/unit-assessment-organization";
 
 interface Props {
   assessment: Assessment | null;
@@ -36,11 +43,16 @@ export function AssessmentDetailDialog({
     Boolean(assessment.buildingTowards) ||
     Boolean(assessment.lookListenFor) ||
     Boolean(assessment.whatToDo);
-  const teRow = isTeOpportunity(assessment);
+  const { primary: rowKind, secondary: systemCategory } = assessmentRowTypeDisplay(assessment);
+  const guide = assessmentGuideFor(assessment.id);
+  const typeLine = systemCategory ? `${rowKind} · ${systemCategory}` : rowKind;
+  const deliverable = isDeliverableRow(assessment);
+  const guidanceOnly = isGuidanceOnlyRow(assessment);
+  const availableMaterials = getAvailablePackageItems(assessment);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[92vh] overflow-y-auto">
         <DialogHeader>
           <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
             OpenSciEd Unit {unit.id} · {assessment.lesson}
@@ -58,12 +70,12 @@ export function AssessmentDetailDialog({
                   {s}
                 </span>
               ))}
-              <span className="text-xs">
-                {teRow ? TE_OPPORTUNITY_LABEL : getAssessmentTypeDisplay(assessment)}
-              </span>
+              <span className="text-xs">{typeLine}</span>
             </div>
           </div>
         </DialogHeader>
+
+        {guide && <AssessmentGuidePanel guide={guide} />}
 
         {hasOseBlock && (
           <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3 font-body text-sm leading-relaxed">
@@ -108,35 +120,49 @@ export function AssessmentDetailDialog({
           </div>
         )}
 
-        <div className="space-y-2">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            {teRow ? "From Teacher Edition" : "Materials"}
-          </p>
+        {deliverable && (
           <div className="space-y-2">
-            {assessment.package.map((item) => (
-              <PackageItemRow key={item.kind} item={item} />
-            ))}
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              Materials
+            </p>
+            <div className="space-y-2">
+              {assessment.package.map((item) => (
+                <PackageItemRow key={item.kind} item={item} />
+              ))}
+            </div>
+            {availableMaterials.length > 0 && (
+              <p className="text-xs text-muted-foreground leading-relaxed pt-1">
+                Export creates copies you can edit in Google Drive.
+              </p>
+            )}
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed pt-1">
-            Recommended versions from OpenSciEd and Eddo. Export creates copies you can edit in
-            Google Drive.
+        )}
+
+        {guidanceOnly && (
+          <p className="text-sm text-muted-foreground font-body leading-relaxed border border-dashed border-border rounded-lg p-3">
+            This is Teacher Edition facilitation guidance — read the call-out above while teaching.
+            Open the full lesson in your Teacher Edition for surrounding context.
           </p>
-        </div>
+        )}
 
         <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-2">
-          <Button type="button" className="w-full sm:w-auto" onClick={onExport}>
-            <Download className="size-4" aria-hidden />
-            Export
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full sm:w-auto"
-            onClick={onAddToWorkspace}
-          >
-            <Plus className="size-4" aria-hidden />
-            Add to Workspace
-          </Button>
+          {deliverable && rowShowsExport(assessment) && (
+            <Button type="button" className="w-full sm:w-auto" onClick={onExport}>
+              <Download className="size-4" aria-hidden />
+              Export
+            </Button>
+          )}
+          {deliverable && (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={onAddToWorkspace}
+            >
+              <Plus className="size-4" aria-hidden />
+              Add to Workspace
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

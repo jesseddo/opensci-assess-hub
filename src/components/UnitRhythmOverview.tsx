@@ -12,7 +12,7 @@ import { formatLessonLength } from "@/lib/unit-table-rows";
 import { cn } from "@/lib/utils";
 
 /** Marker row height — track is vertically centered here. */
-const TRACK_ROW_H = "h-7";
+const TRACK_ROW_H = "h-8";
 
 interface Props {
   unit: Unit;
@@ -25,46 +25,44 @@ export function UnitRhythmOverview({ unit }: Props) {
 
   return (
     <section
-      className="rounded-2xl border border-border bg-card px-3 py-2 shadow-sm"
+      className="rounded-2xl border border-eddo-green/20 bg-card px-4 py-3.5 shadow-sm"
       aria-label="Unit assessment rhythm"
     >
-      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 mb-1.5">
-        <p className="text-[11px] text-muted-foreground font-ui leading-snug min-w-0">
-          {rhythm.summaryLine}
-          {hasPacing && (
-            <span className="text-muted-foreground/70"> · column width = suggested days</span>
-          )}
-        </p>
+      <p className="text-[11px] text-muted-foreground font-ui leading-snug mb-2.5">
+        {rhythm.summaryLine}
+        {hasPacing && (
+          <span className="text-muted-foreground/75"> · column width = suggested days</span>
+        )}
+      </p>
+
+      <div className="rounded-xl border border-border/80 bg-muted/25 px-3 py-3">
+        <div className="relative px-1">
+          <div
+            className="pointer-events-none absolute inset-x-2 top-4 h-px -translate-y-1/2 rounded-full bg-eddo-green/20"
+            aria-hidden
+          />
+          <ol className="relative flex list-none m-0 p-0 w-full" aria-label="Lesson sequence">
+            {rhythm.points.map((point) => (
+              <LessonRhythmColumn key={point.lessonNum} point={point} hasPacing={hasPacing} />
+            ))}
+          </ol>
+        </div>
+
         <ul
-          className="flex flex-wrap items-center justify-end gap-x-2.5 gap-y-0.5 list-none m-0 p-0 shrink-0"
+          className="flex flex-wrap items-center gap-x-3 gap-y-1 list-none m-0 p-0 mt-2.5 pt-2.5 border-t border-border/60"
           aria-label="Marker key"
         >
-          {RHYTHM_LEGEND.filter(
-            (item) => item.kind === "none" || activeKinds.has(item.kind),
-          ).map((item) => (
-            <li key={item.kind} className="flex items-center gap-1">
-              <RhythmMarker kind={item.kind} />
-              <span className="text-[9px] font-ui text-muted-foreground whitespace-nowrap">
-                {item.label}
-              </span>
-            </li>
-          ))}
+          {RHYTHM_LEGEND.filter((item) => item.kind === "none" || activeKinds.has(item.kind)).map(
+            (item) => (
+              <li key={item.kind} className="flex items-center gap-1.5">
+                <RhythmMarker kind={item.kind} />
+                <span className="text-[10px] font-ui text-muted-foreground whitespace-nowrap">
+                  {item.label}
+                </span>
+              </li>
+            ),
+          )}
         </ul>
-      </div>
-
-      <div className="relative px-1">
-        <div
-          className="pointer-events-none absolute inset-x-1 top-3.5 h-0.5 -translate-y-1/2 rounded-full bg-eddo-green/30"
-          aria-hidden
-        />
-        <ol
-          className="relative flex list-none m-0 p-0 w-full"
-          aria-label="Lesson sequence"
-        >
-          {rhythm.points.map((point) => (
-            <LessonRhythmColumn key={point.lessonNum} point={point} hasPacing={hasPacing} />
-          ))}
-        </ol>
       </div>
     </section>
   );
@@ -84,7 +82,11 @@ function RhythmMarker({
 }) {
   return (
     <span
-      className={cn("relative z-10 shrink-0 ring-2 ring-card", rhythmMarkerClassName(kind, "timeline"), className)}
+      className={cn(
+        "relative z-10 shrink-0 ring-2 ring-muted/25",
+        rhythmMarkerClassName(kind, "timeline"),
+        className,
+      )}
       aria-hidden
     />
   );
@@ -100,8 +102,6 @@ function LessonRhythmColumn({
   const padded = String(point.lessonNum).padStart(2, "0");
   const label = markerLabel(point);
   const isEmpty = point.kind === "none";
-  const daysLabel =
-    point.expectedDays != null ? formatLessonLength(point.expectedDays) : null;
 
   return (
     <li
@@ -110,7 +110,10 @@ function LessonRhythmColumn({
     >
       <div className={cn("flex w-full items-center justify-center", TRACK_ROW_H)}>
         {isEmpty ? (
-          <span className={cn("relative z-10 shrink-0", rhythmMarkerClassName("none", "timeline"))} aria-label={label} />
+          <span
+            className={cn("relative z-10 shrink-0", rhythmMarkerClassName("none", "timeline"))}
+            aria-label={label}
+          />
         ) : (
           <button
             type="button"
@@ -126,9 +129,9 @@ function LessonRhythmColumn({
         )}
       </div>
 
-      <div className="flex w-full flex-col items-center gap-0.5 pt-0.5">
+      <div className="flex w-full flex-col items-center pt-1">
         {isEmpty ? (
-          <span className="font-mono text-[9px] leading-none tabular-nums text-muted-foreground/35">
+          <span className="font-mono text-[9px] leading-none tabular-nums text-muted-foreground/30">
             {padded}
           </span>
         ) : (
@@ -136,7 +139,7 @@ function LessonRhythmColumn({
             type="button"
             onClick={() => scrollToLessonRow(point.lessonNum)}
             className={cn(
-              "font-mono text-[9px] leading-none tabular-nums",
+              "font-mono text-[10px] leading-none tabular-nums",
               "focus-visible:outline-none focus-visible:underline",
               numberClass(point.kind),
             )}
@@ -144,28 +147,19 @@ function LessonRhythmColumn({
             {padded}
           </button>
         )}
-        {daysLabel && (
-          <span
-            className="font-ui text-[8px] leading-none tabular-nums text-muted-foreground/65 whitespace-nowrap"
-            title="Instructional length from Unit Overview Materials"
-          >
-            {daysLabel}
-          </span>
-        )}
       </div>
     </li>
   );
 }
 
-/**
- * Dual encoding: size + shape (not color alone).
- */
 function numberClass(kind: LessonRhythmKind): string {
   switch (kind) {
     case "formative":
       return "font-medium text-eddo-accent hover:text-eddo-accent";
-    case "supporting":
+    case "peer-assessment":
       return "font-medium text-eddo-navy/65 hover:text-eddo-navy";
+    case "pre-assessment":
+      return "font-medium text-eddo-accent/80 hover:text-eddo-accent";
     case "summative":
       return "font-semibold text-eddo-green hover:text-eddo-green";
     default:
@@ -178,7 +172,7 @@ function markerLabel(point: LessonRhythmPoint): string {
   const pacing =
     point.expectedDays != null ? ` · ${formatLessonLength(point.expectedDays)}` : "";
   if (point.kind === "none") {
-    return `Lesson ${padded} — TE opportunities (no formal assessment)${pacing}`;
+    return `Lesson ${padded} — ${point.typeHint} only (no standalone assessment document)${pacing}`;
   }
   const count =
     point.assessmentCount > 1 ? ` (${point.assessmentCount} assessments)` : "";

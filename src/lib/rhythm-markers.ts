@@ -1,6 +1,6 @@
 import type { Assessment } from "@/lib/assessment-data";
 import { isTeOpportunity } from "@/lib/assessment-source";
-import { normalizeAssessmentType } from "@/lib/assessment-types";
+import { normalizeAssessmentType, oseRhythmCategory } from "@/lib/assessment-types";
 import type { LessonRhythmKind } from "@/lib/unit-rhythm";
 
 export function rhythmKindForAssessment(assessment: Assessment): LessonRhythmKind {
@@ -9,8 +9,7 @@ export function rhythmKindForAssessment(assessment: Assessment): LessonRhythmKin
     return "summative";
   }
   const slug = assessment.assessmentType ?? normalizeAssessmentType(assessment.typeLabel);
-  if (slug === "formative") return "formative";
-  return "supporting";
+  return oseRhythmCategory(slug);
 }
 
 /** Timeline dots (rhythm strip) vs inline table swatches. */
@@ -25,7 +24,9 @@ export function rhythmMarkerClassName(
         return `${base} rounded-full border border-muted-foreground/25 bg-card`;
       case "formative":
         return `${base} rounded-full bg-eddo-accent`;
-      case "supporting":
+      case "pre-assessment":
+        return `${base} rounded-full bg-eddo-accent/50 border border-eddo-accent`;
+      case "peer-assessment":
         return `${base} rounded-[2px] bg-eddo-navy/55`;
       case "summative":
         return `${base} rounded-full bg-eddo-green`;
@@ -33,12 +34,14 @@ export function rhythmMarkerClassName(
   }
   switch (kind) {
     case "none":
-      return "size-1 rounded-full border border-muted-foreground/20 bg-card";
+      return "size-1 rounded-full border border-muted-foreground/15 bg-transparent opacity-60";
     case "formative":
-      return "size-3 rounded-full bg-eddo-accent ring-2 ring-card";
-    case "supporting":
-      return "size-2.5 rounded-[3px] bg-eddo-navy/55 ring-2 ring-card";
+      return "size-3.5 rounded-full bg-eddo-accent ring-2 ring-card shadow-sm";
+    case "pre-assessment":
+      return "size-3 rounded-full bg-eddo-accent/70 ring-2 ring-card border border-eddo-accent/80 shadow-sm";
+    case "peer-assessment":
+      return "size-3 rounded-[3px] bg-eddo-navy/60 ring-2 ring-card shadow-sm";
     case "summative":
-      return "size-4 rounded-full bg-eddo-green ring-2 ring-card shadow-[0_0_0_2px_var(--eddo-green)]";
+      return "size-4 rounded-full bg-eddo-green ring-2 ring-card shadow-[0_1px_3px_rgb(47_74_62_/0.35)]";
   }
 }

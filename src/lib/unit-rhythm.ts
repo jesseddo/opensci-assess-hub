@@ -1,23 +1,32 @@
 import type { Assessment, Unit } from "@/lib/assessment-data";
 import { lessonNumber } from "@/lib/assessment-data";
 import { formalAssessmentsInUnit, teOpportunitiesInUnit } from "@/lib/assessment-source";
-import { normalizeAssessmentType, type AssessmentTypeSlug } from "@/lib/assessment-types";
+import { buildUnitOrganizationSummary } from "@/lib/unit-assessment-organization";
+import { ASSESSMENT_OPPORTUNITY_LABEL } from "@/lib/ose-vocabulary";
+import {
+  assessmentTypeLabel,
+  normalizeAssessmentType,
+  oseRhythmCategory,
+  type AssessmentTypeSlug,
+  type OseRhythmCategory,
+} from "@/lib/assessment-types";
 
-export type LessonRhythmKind = "none" | "formative" | "supporting" | "summative";
+/** Visual rhythm marker — maps to OpenSciEd assessment categories. */
+export type LessonRhythmKind = "none" | OseRhythmCategory;
 
 export interface LessonRhythmPoint {
   lessonNum: number;
   kind: LessonRhythmKind;
   assessmentCount: number;
   expectedDays?: number;
-  /** Short label for tooltip, e.g. "Formative" or "2 formatives" */
+  /** Short label for tooltip */
   typeHint: string;
 }
 
 export interface UnitRhythmOverview {
   lessonCount: number;
   formalAssessmentCount: number;
-  teOpportunityCount: number;
+  assessmentOpportunityCount: number;
   suggestedPacingDays?: number;
   points: LessonRhythmPoint[];
   summaryLine: string;
@@ -30,23 +39,28 @@ export const RHYTHM_LEGEND: {
 }[] = [
   {
     kind: "none",
-    label: "TE opportunities",
-    description: "Assessment opportunities in the Teacher Edition only",
+    label: ASSESSMENT_OPPORTUNITY_LABEL,
+    description: "Call-out in the Teacher Edition lesson plan",
   },
   {
     kind: "formative",
-    label: "Formative",
-    description: "Formal formative assessment",
+    label: "Formative assessment",
+    description: "Conducted during instruction to monitor and adjust teaching and learning",
   },
   {
-    kind: "supporting",
-    label: "Reflection & feedback",
-    description: "Lesson reflection, peer feedback, or similar",
+    kind: "pre-assessment",
+    label: "Pre-assessment",
+    description: "Checks prior understanding before new instruction",
+  },
+  {
+    kind: "peer-assessment",
+    label: "Peer assessment",
+    description: "Students give or receive feedback from peers",
   },
   {
     kind: "summative",
-    label: "Summative",
-    description: "End-of-unit or performance task assessment",
+    label: "Summative assessment",
+    description: "Evaluates learning at a point in time, often end of a lesson set or unit",
   },
 ];
 
@@ -72,16 +86,22 @@ function assessmentSlug(assessment: Assessment): AssessmentTypeSlug {
 
 function categoryForAssessment(assessment: Assessment): LessonRhythmKind {
   if (isSummativeAssessment(assessment)) return "summative";
-  const slug = assessmentSlug(assessment);
-  if (slug === "formative") return "formative";
-  return "supporting";
+  return oseRhythmCategory(assessmentSlug(assessment));
 }
 
 const CATEGORY_PRIORITY: LessonRhythmKind[] = [
   "summative",
+  "peer-assessment",
+  "pre-assessment",
   "formative",
-  "supporting",
 ];
+
+const RHYTHM_KIND_SHORT: Record<Exclude<LessonRhythmKind, "none">, string> = {
+  formative: "formative assessment",
+  summative: "summative assessment",
+  "pre-assessment": "pre-assessment",
+  "peer-assessment": "peer assessment",
+};
 
 function rhythmKindForAssessments(assessments: Assessment[]): LessonRhythmKind {
   if (assessments.length === 0) return "none";
@@ -89,11 +109,11 @@ function rhythmKindForAssessments(assessments: Assessment[]): LessonRhythmKind {
   for (const kind of CATEGORY_PRIORITY) {
     if (categories.has(kind)) return kind;
   }
-  return "supporting";
+  return "formative";
 }
 
 function typeHintForAssessments(assessments: Assessment[], kind: LessonRhythmKind): string {
-  if (kind === "none") return "TE opportunities";
+  if (kind === "none") return ASSESSMENT_OPPORTUNITY_LABEL;
   if (assessments.length > 1) {
     const byKind = assessments.reduce<Record<string, number>>((acc, a) => {
       const cat = categoryForAssessment(a);
@@ -101,22 +121,12 @@ function typeHintForAssessments(assessments: Assessment[], kind: LessonRhythmKin
       return acc;
     }, {});
     const parts = Object.entries(byKind).map(([cat, n]) => {
-      const label =
-        cat === "formative"
-          ? "formative"
-          : cat === "summative"
-            ? "summative"
-            : "reflection/feedback";
+      const label = RHYTHM_KIND_SHORT[cat as Exclude<LessonRhythmKind, "none">] ?? cat;
       return `${n} ${label}`;
     });
     return parts.join(", ");
   }
-  const slug = assessmentSlug(assessments[0]);
-  if (slug === "formative") return "Formative";
-  if (slug === "summative") return "Summative";
-  if (slug === "lesson-reflection") return "Lesson reflection";
-  if (slug === "peer-feedback") return "Peer feedback";
-  return "Assessment";
+  return assessmentTypeLabel(assessmentSlug(assessments[0]));
 }
 
 export function buildUnitRhythm(unit: Unit): UnitRhythmOverview {
@@ -131,8 +141,9 @@ export function buildUnitRhythm(unit: Unit): UnitRhythmOverview {
     byLesson.set(n, list);
   }
 
-  const formalAssessmentCount = formalAssessmentsInUnit(unit.assessments).length;
-  const teOpportunityCount = teOpportunitiesInUnit(unit.assessments).length;
+  const org = buildUnitOrganizationSummary(unit);
+  const formalAssessmentCount = org.assessmentDocumentCount;
+  const assessmentOpportunityCount = org.assessmentOpportunityCount;
 
   const points: LessonRhythmPoint[] = [];
   for (let lessonNum = 1; lessonNum <= lessonCount; lessonNum += 1) {
@@ -151,8 +162,8 @@ export function buildUnitRhythm(unit: Unit): UnitRhythmOverview {
 
   const summaryParts = [
     `${lessonCount} lessons`,
-    `${formalAssessmentCount} assessment${formalAssessmentCount === 1 ? "" : "s"}`,
-    `${teOpportunityCount} TE opportunit${teOpportunityCount === 1 ? "y" : "ies"}`,
+    `${assessmentOpportunityCount} TE ${assessmentOpportunityCount === 1 ? "opportunity" : "opportunities"}`,
+    `${formalAssessmentCount} named assessment${formalAssessmentCount === 1 ? "" : "s"}`,
   ];
   if (unit.suggestedPacingDays != null) {
     summaryParts.push(`length: ${unit.suggestedPacingDays} days`);
@@ -162,7 +173,7 @@ export function buildUnitRhythm(unit: Unit): UnitRhythmOverview {
   return {
     lessonCount,
     formalAssessmentCount,
-    teOpportunityCount,
+    assessmentOpportunityCount,
     suggestedPacingDays: unit.suggestedPacingDays,
     points,
     summaryLine,

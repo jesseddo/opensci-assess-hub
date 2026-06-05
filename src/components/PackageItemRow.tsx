@@ -3,6 +3,11 @@ import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { PackageItem } from "@/lib/assessment-data";
 import { openPackageItem } from "@/lib/library-actions";
+import {
+  packageItemAvailability,
+  packageItemRowClass,
+  packageItemStatusLabel,
+} from "@/lib/package-item-status";
 
 interface Props {
   item: PackageItem;
@@ -10,23 +15,29 @@ interface Props {
 }
 
 export function PackageItemRow({ item, compact = false }: Props) {
+  const availability = packageItemAvailability(item);
+  const isPermanentAbsent = availability === "not-applicable";
+  const isPlanned = availability === "planned";
+
   return (
     <div
-      className={`flex items-center justify-between gap-3 rounded-md border px-3 py-2 ${
-        item.available
-          ? "border-border bg-card"
-          : "border-dashed border-border/70 bg-muted/30 opacity-80"
-      }`}
+      className={`flex items-center justify-between gap-3 rounded-md border px-3 py-2 ${packageItemRowClass(item)}`}
     >
       <div className="min-w-0 flex-1">
         <p className={`font-medium ${compact ? "text-sm" : "text-sm"}`}>{item.label}</p>
-        {item.available && item.fileName ? (
-          <p className="text-xs text-muted-foreground truncate">{item.fileName}</p>
-        ) : (
-          <p className="text-xs text-muted-foreground">
-            {item.unavailableReason ?? "Not included"}
-          </p>
-        )}
+        <p
+          className={`text-xs ${
+            item.available
+              ? "text-muted-foreground truncate"
+              : isPlanned
+                ? "text-amber-800/80"
+                : isPermanentAbsent
+                  ? "text-muted-foreground/60"
+                  : "text-muted-foreground"
+          }`}
+        >
+          {packageItemStatusLabel(item)}
+        </p>
       </div>
       <Button
         type="button"

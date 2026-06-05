@@ -126,6 +126,8 @@ def ose_assessment_type(
         or re.search(r"part [12][:\s].*assessment", combined_all)
     ):
         return "summative"
+    if "pre-assessment" in look or "pre-assessment" in building or "pre assessment" in look:
+        return "pre-assessment"
     if (
         "looking back" in handout
         or "looking back" in building

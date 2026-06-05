@@ -2,6 +2,10 @@ import type { Assessment, Unit, UnitLesson } from "@/lib/assessment-data";
 import { lessonNumber } from "@/lib/assessment-data";
 import { isFormalAssessment } from "@/lib/assessment-source";
 import { assessmentMatchesSearch, lessonMatchesSearch } from "@/lib/unit-search";
+import { assessmentVisibleInTableFocus, type TableFocusMode } from "@/lib/assessment-row-tier";
+import { buildUnitOrganizationSummary } from "@/lib/unit-assessment-organization";
+
+export type { TableFocusMode, UnitLesson };
 
 export interface UnitLessonSlot {
   lessonNum: number;
@@ -39,7 +43,11 @@ function sortAssessments(list: Assessment[]): Assessment[] {
   });
 }
 
-export function buildUnitLessonSlots(unit: Unit, query: string): UnitLessonSlot[] {
+export function buildUnitLessonSlots(
+  unit: Unit,
+  query: string,
+  focus: TableFocusMode = "all",
+): UnitLessonSlot[] {
   const total = unit.lessonCount ?? 8;
   const byLesson = new Map<number, Assessment[]>();
 
@@ -63,11 +71,12 @@ export function buildUnitLessonSlots(unit: Unit, query: string): UnitLessonSlot[
       q,
     );
 
-    const visibleAssessments = q
+    const visibleAssessments = (q
       ? lessonNavMatch
         ? assessments
         : assessments.filter((a) => assessmentMatchesSearch(a, q))
-      : assessments;
+      : assessments
+    ).filter((a) => assessmentVisibleInTableFocus(a, focus));
 
     if (visibleAssessments.length === 0) continue;
 
@@ -81,17 +90,13 @@ export function buildUnitLessonSlots(unit: Unit, query: string): UnitLessonSlot[
   return slots;
 }
 
-export function unitBrowseMeta(unit: Unit): {
-  lessonCount: number;
-  formalAssessmentCount: number;
-  teOpportunityCount: number;
-} {
-  const formalAssessmentCount = unit.assessments.filter(isFormalAssessment).length;
+export function unitBrowseMeta(unit: Unit) {
+  const org = buildUnitOrganizationSummary(unit);
   return {
     lessonCount: unit.lessonCount ?? 8,
-    formalAssessmentCount,
-    teOpportunityCount: unit.assessments.length - formalAssessmentCount,
+    formalAssessmentCount: org.assessmentDocumentCount,
+    assessmentOpportunityCount: org.assessmentOpportunityCount,
+    headline: org.headline,
+    documentCategoryLine: org.documentCategoryLine,
   };
 }
-
-export type { UnitLesson };

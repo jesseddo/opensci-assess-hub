@@ -29,7 +29,7 @@ export function ExportAssessmentDialog({ assessment, unit, open, onOpenChange }:
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-xl max-h-[92vh] overflow-y-auto">
         <DialogHeader>
           <DialogDescription className="font-mono text-[10px] uppercase tracking-widest">
             Unit {unit.id} · Export materials

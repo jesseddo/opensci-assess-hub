@@ -1,15 +1,13 @@
 import type { Assessment, PackageItem, PackageItemKind, Unit } from "@/lib/assessment-data";
 import { isFormalAssessment } from "@/lib/assessment-source";
-import { assessmentTypeLabel, normalizeAssessmentType } from "@/lib/assessment-types";
+import { assessmentRowTypeDisplay, assessmentSystemCategoryLabel } from "@/lib/unit-assessment-organization";
 
+/** OpenSciEd system category label for any row. */
 export function getAssessmentTypeDisplay(assessment: Assessment): string {
-  const slug =
-    assessment.assessmentType ??
-    (assessment.typeLabel ? normalizeAssessmentType(assessment.typeLabel) : "formative");
-  return assessmentTypeLabel(slug);
+  return assessmentSystemCategoryLabel(assessment);
 }
 
-/** Formative / summative / reflection / peer feedback — formal assessments only. */
+/** @deprecated Use assessmentRowTypeDisplay */
 export function getFormalTypeDisplay(assessment: Assessment): string | null {
   if (!isFormalAssessment(assessment)) return null;
   return getAssessmentTypeDisplay(assessment);
@@ -32,7 +30,7 @@ const SUMMARY_LABELS: Record<PackageItemKind, string> = {
   "teacher-guide": "Guide",
   "answer-key": "Key",
   rubric: "Rubric",
-  "guidance-sheet": "Guidance",
+  "guidance-sheet": "Opportunity guidance",
 };
 
 export function getPackageSummary(assessment: Assessment): string {
@@ -45,6 +43,8 @@ export function getAssessmentMetaLine(assessment: Assessment): string {
   const standards = assessment.standards.join(", ");
   const available = getAvailablePackageItems(assessment);
   const pkg = available.map((item) => SUMMARY_LABELS[item.kind]).join(", ") || "none";
+  const { primary, secondary } = assessmentRowTypeDisplay(assessment);
+  const typePart = secondary ? `${primary} · ${secondary}` : primary;
 
   const gaps: string[] = [];
   if (!getPackageItem(assessment, "google-form")?.available) {
@@ -58,7 +58,7 @@ export function getAssessmentMetaLine(assessment: Assessment): string {
   }
 
   const gapSuffix = gaps.length > 0 ? ` — ${gaps.join("; ")}` : "";
-  return `${standards} · ${getAssessmentTypeDisplay(assessment)} · Materials: ${pkg}${gapSuffix}`;
+  return `${standards} · ${typePart} · Materials: ${pkg}${gapSuffix}`;
 }
 
 /** Shown on card only when Add to Workspace is blocked */

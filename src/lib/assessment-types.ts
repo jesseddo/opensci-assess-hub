@@ -1,11 +1,17 @@
+/**
+ * Assessment categories from the OpenSciEd assessment system.
+ * @see https://openscied.org/knowledge/what-type-of-assessments-are-available-in-an-openscied-unit/
+ */
 export const ASSESSMENT_TYPE_LABELS = {
   formative: "Formative assessment",
   summative: "Summative assessment",
-  "lesson-reflection": "Lesson reflection",
-  "peer-feedback": "Peer feedback",
-  "progress-tracker": "Progress tracker",
-  "exit-ticket": "Exit ticket",
-  "performance-task": "Performance task",
+  "pre-assessment": "Pre-assessment",
+  "peer-feedback": "Peer assessment",
+  /** Embedded in formative system; stored for ingest, displayed as formative */
+  "lesson-reflection": "Formative assessment",
+  "progress-tracker": "Formative assessment",
+  "exit-ticket": "Formative assessment",
+  "performance-task": "Formative assessment",
 } as const;
 
 export type AssessmentTypeSlug = keyof typeof ASSESSMENT_TYPE_LABELS;
@@ -13,14 +19,18 @@ export type AssessmentTypeSlug = keyof typeof ASSESSMENT_TYPE_LABELS;
 const ALIASES: Record<string, AssessmentTypeSlug> = {
   formative: "formative",
   "formative assessment": "formative",
-  "formative check": "formative",
   summative: "summative",
   "summative assessment": "summative",
-  "lesson reflection": "lesson-reflection",
+  "pre-assessment": "pre-assessment",
+  "pre assessment": "pre-assessment",
+  "peer assessment": "peer-feedback",
   "peer feedback": "peer-feedback",
+  "peer assessments": "peer-feedback",
+  "lesson reflection": "lesson-reflection",
   "progress tracker": "progress-tracker",
   "exit ticket": "exit-ticket",
   "performance task": "performance-task",
+  "transfer task": "summative",
 };
 
 export function normalizeAssessmentType(raw: string): AssessmentTypeSlug {
@@ -28,8 +38,25 @@ export function normalizeAssessmentType(raw: string): AssessmentTypeSlug {
   return ALIASES[key] ?? "formative";
 }
 
+/** Teacher-facing label for a stored slug. */
 export function assessmentTypeLabel(slug: AssessmentTypeSlug): string {
   return ASSESSMENT_TYPE_LABELS[slug];
+}
+
+/** Rhythm strip / priority grouping (OpenSciEd categories). */
+export type OseRhythmCategory = "formative" | "summative" | "pre-assessment" | "peer-assessment";
+
+export function oseRhythmCategory(slug: AssessmentTypeSlug): OseRhythmCategory {
+  switch (slug) {
+    case "summative":
+      return "summative";
+    case "pre-assessment":
+      return "pre-assessment";
+    case "peer-feedback":
+      return "peer-assessment";
+    default:
+      return "formative";
+  }
 }
 
 export function assessmentTypeFromFlags(opts: {

@@ -31,6 +31,9 @@ function oseAssessmentTypeFromFields(input) {
   ) {
     return "summative";
   }
+  if (/pre-assessment/.test(look) || /pre-assessment/.test(building) || /pre assessment/.test(look)) {
+    return "pre-assessment";
+  }
   if (
     /looking back/.test(handout) ||
     /looking back/.test(building) ||
@@ -56,8 +59,9 @@ function oseAssessmentTypeFromFields(input) {
 
 function rhythmKind(slug) {
   if (slug === "summative") return "summative (green)";
-  if (slug === "formative") return "formative (orange)";
-  return "supporting (navy)";
+  if (slug === "peer-feedback") return "peer assessment (navy)";
+  if (slug === "pre-assessment") return "pre-assessment (orange outline)";
+  return "formative (orange)";
 }
 
 const rows = manifest.assessments.map((a) => {

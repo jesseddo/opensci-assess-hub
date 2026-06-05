@@ -18,8 +18,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Unit } from "@/lib/assessment-data";
-import { buildUnitExportStats, getFormalTypeDisplay } from "@/lib/assessment-helpers";
-import { isTeOpportunity, TE_OPPORTUNITY_LABEL } from "@/lib/assessment-source";
+import { buildUnitExportStats } from "@/lib/assessment-helpers";
+import { assessmentRowTypeDisplay } from "@/lib/unit-assessment-organization";
 import { exportUnitPackages } from "@/lib/library-actions";
 
 interface Props {
@@ -36,7 +36,7 @@ export function ExportUnitDialog({ unit, open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[92vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             Export Unit {unit.id}: {unit.title}
@@ -65,9 +65,10 @@ export function ExportUnitDialog({ unit, open, onOpenChange }: Props) {
                   </div>
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
-                  {isTeOpportunity(assessment)
-                    ? TE_OPPORTUNITY_LABEL
-                    : (getFormalTypeDisplay(assessment) ?? "—")}
+                  {(() => {
+                    const { primary, secondary } = assessmentRowTypeDisplay(assessment);
+                    return secondary ? `${primary} · ${secondary}` : primary;
+                  })()}
                 </TableCell>
                 <TableCell className="text-right text-xs font-mono">
                   {availableCount}/{totalCount}

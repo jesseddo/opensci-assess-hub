@@ -1,0 +1,45 @@
+{
+  "81-6-soccer-assessment": {
+    "assessmentId": "81-6-soccer-assessment",
+    "status": "draft",
+    "progression": {
+      "early": "Students treat force as one-sided (only the head or only the ball “has” the force) or confuse speed with force strength without linking kinetic energy in the collision system.",
+      "target": "Students explain how peak force and energy transfer in soccer collisions can destabilize brain tissue, using equal-and-opposite contact forces and comparing collisions with different mass and speed."
+    },
+    "alignment": {
+      "performanceExpectations": ["MS-PS2-1", "MS-PS2-2"],
+      "lessonPe": "6.A",
+      "note": "OpenSciEd Lesson 6 performance expectation — apply science ideas about forces and energy transfer to explain instability in the brain during collisions."
+    },
+    "understanding": {
+      "strong": [
+        "Peak forces on the head and ball are equal during a header and shown on both objects in the model.",
+        "Less total kinetic energy in the collision system corresponds to lower peak forces on each object.",
+        "Contact forces are equal in strength on both objects regardless of which object was moving faster before contact."
+      ],
+      "emerging": [
+        "Correct direction of forces but incomplete link between kinetic energy and peak force magnitude.",
+        "Compares collisions qualitatively (harder/softer) without referencing mass, speed, or energy in the system."
+      ],
+      "gaps": [
+        "Forces drawn on only one object, or unequal force arrows between interacting objects.",
+        "Claims heavier or faster objects “have more force” without explaining the interaction pair."
+      ]
+    },
+    "misconceptions": [
+      "The moving object is the only thing that applies force in a collision.",
+      "A softer collision means forces disappear rather than decrease.",
+      "Peak force and energy transfer are unrelated to concussion risk."
+    ],
+    "studentSamples": [
+      {
+        "label": "Approaching target",
+        "excerpt": "“In a header the ball and head push on each other the same amount. If the ball is coming fast, there’s more energy in the system so the peak force is higher on both.”"
+      },
+      {
+        "label": "Common gap",
+        "excerpt": "“The player’s head hits the ball so the head has the force. The ball doesn’t push back as much because it’s lighter.”"
+      }
+    ]
+  }
+}

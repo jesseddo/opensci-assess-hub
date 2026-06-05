@@ -31,6 +31,10 @@ export function oseAssessmentTypeFromFields(input: OseTypeInput): AssessmentType
     return "summative";
   }
 
+  if (/pre-assessment/.test(look) || /pre-assessment/.test(building) || /pre assessment/.test(look)) {
+    return "pre-assessment";
+  }
+
   if (
     /looking back/.test(handout) ||
     /looking back/.test(building) ||

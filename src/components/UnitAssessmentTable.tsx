@@ -120,7 +120,7 @@ export function UnitAssessmentTable({
               <TableHead className="font-ui text-eddo-green font-medium py-2.5">
                 <span className="block">In this lesson</span>
                 <span className="block text-[9px] font-normal text-muted-foreground/80 normal-case tracking-normal font-body">
-                  Click for details · chevron expands TE · named rows can add to workspace
+                  Click for details · chevron expands TE · Add on named assessments
                 </span>
               </TableHead>
             </TableRow>
@@ -317,22 +317,23 @@ function AssessmentRow({
           nested && "pl-6",
         )}
       >
-        <div className="flex items-start justify-between gap-3 min-w-0">
+        <div className="flex items-start gap-2 min-w-0 flex-wrap">
           <button
             type="button"
             onClick={() => onOpenDetail(assessment)}
             aria-label={`Open ${assessment.title}`}
             className={cn(
-              "min-w-0 flex-1 text-left rounded-sm",
+              "min-w-0 max-w-full text-left rounded-sm",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
             )}
           >
             <p
               className={cn(
-                "font-ui truncate",
+                "font-ui",
                 titleEmphasis
                   ? "text-sm font-semibold text-eddo-green"
                   : "text-xs font-normal text-muted-foreground/85",
+                showTableAdd ? "whitespace-nowrap" : "truncate",
               )}
               title={assessment.title}
             >
@@ -346,7 +347,7 @@ function AssessmentRow({
           </button>
           {showTableAdd && (
             <PrimaryTableAction
-              label="Add to workspace"
+              label="Add"
               icon={Plus}
               disabled={!addReady}
               title={workspaceAddTitle(assessment)}
@@ -392,7 +393,7 @@ function TeOpportunitySummaryRow({
       <TableCell className={cn("border-0 py-1.5", TABLE_ROW_SURFACE)}>
         <div className="flex items-center gap-2 min-w-0">
           <TeExpandChevron expanded={expanded} onToggle={onToggle} count={count} oppLabel={oppLabel} />
-          <span className="min-w-0 flex-1 truncate text-xs font-ui text-muted-foreground">
+          <span className="min-w-0 truncate text-xs font-ui text-muted-foreground">
             <span
               className={cn("inline-block mr-1.5 align-middle", rhythmMarkerClassName("none", "inline"))}
               aria-hidden

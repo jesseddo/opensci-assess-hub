@@ -2,8 +2,11 @@ import type { LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-/** Fits Export, Open Teacher Edition, and/or workspace action. */
-export const TABLE_ACTIONS_COLUMN_CLASS = "w-[12.5rem] min-w-[12.5rem] max-w-[12.5rem]";
+/** Narrow trailing column for the lone workspace Add action. */
+export const TABLE_WORKSPACE_COLUMN_CLASS = "w-[9rem] min-w-[9rem] max-w-[9rem]";
+
+/** @deprecated Use TABLE_WORKSPACE_COLUMN_CLASS */
+export const TABLE_ACTIONS_COLUMN_CLASS = TABLE_WORKSPACE_COLUMN_CLASS;
 
 /** Horizontal pair — co-equal primary actions (Export · Add). */
 export function TablePrimaryActionsRow({ children }: { children: React.ReactNode }) {

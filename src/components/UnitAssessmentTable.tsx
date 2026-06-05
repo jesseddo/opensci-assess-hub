@@ -159,21 +159,13 @@ function TableToolbar({
   unitAssessmentCount: number;
 }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-      <div className="flex flex-wrap items-center gap-2.5">
-        <TableFocusToggle
-          value={focus}
-          onChange={onFocusChange}
-          unitAssessmentCount={unitAssessmentCount}
-        />
-        <TableTerminologyHelp unit={unit} />
-      </div>
-      <p className="text-[11px] text-muted-foreground font-ui">
-        <span className="font-medium text-eddo-navy/80">Prepare assessments</span> = unit
-        handouts + TE summaries ·{" "}
-        <span className="font-medium text-eddo-navy/80">Unit assessments only</span> = named
-        handouts only
-      </p>
+    <div className="flex flex-wrap items-center gap-2.5">
+      <TableFocusToggle
+        value={focus}
+        onChange={onFocusChange}
+        unitAssessmentCount={unitAssessmentCount}
+      />
+      <TableTerminologyHelp unit={unit} />
     </div>
   );
 }

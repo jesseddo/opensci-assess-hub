@@ -1,26 +1,15 @@
-import { useState } from "react";
-import { ChevronRight, Download, Plus, BookOpen } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { ChevronRight, Plus } from "lucide-react";
 
-import {
-  PrimaryTableAction,
-  TABLE_ACTIONS_COLUMN_CLASS,
-  TablePrimaryActionsRow,
-} from "@/components/TableRowAction";
+import { PrimaryTableAction } from "@/components/TableRowAction";
 import { AssessmentDocumentLabel } from "@/components/AssessmentDocumentLabel";
 import { TableFocusToggle } from "@/components/TableFocusToggle";
 import { TableTerminologyHelp } from "@/components/TableTerminologyHelp";
-import { hasAssessmentGuide } from "@/lib/assessment-guide";
 import {
-  isDeliverableRow,
-  isGuidanceOnlyRow,
   isNamedAssessmentRow,
-  isOpportunityWithHandout,
-  rowShowsAdd,
-  rowShowsExport,
+  rowShowsTableWorkspaceAdd,
   type TableFocusMode,
 } from "@/lib/assessment-row-tier";
-import { explicitOpportunityCategory } from "@/lib/unit-assessment-organization";
-import { assessmentTypeLabel } from "@/lib/assessment-types";
 import {
   Table,
   TableBody,
@@ -30,37 +19,60 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Assessment, Unit } from "@/lib/assessment-data";
-import { formalAssessmentsInUnit } from "@/lib/assessment-source";
-import { buildUnitLessonSlots, formatLessonLength, type UnitLessonSlot } from "@/lib/unit-table-rows";
+import {
+  getWorkspaceBlockHint,
+  isWorkspaceReady,
+  rowShowsWorkspaceAdd,
+} from "@/lib/assessment-helpers";
+import { formalAssessmentsInUnit, isTeOpportunity } from "@/lib/assessment-source";
+import { rhythmMarkerClassName } from "@/lib/rhythm-markers";
 import { lessonRowId } from "@/lib/unit-rhythm";
+import { buildUnitLessonSlots, formatLessonLength, type UnitLessonSlot } from "@/lib/unit-table-rows";
 import { cn } from "@/lib/utils";
+
+/** Uniform white row surface — grouping is divider-only, not fill. */
+const TABLE_ROW_SURFACE = "bg-card hover:!bg-muted/30 border-0";
 
 interface Props {
   unit: Unit;
   query: string;
   onOpenDetail: (assessment: Assessment) => void;
-  onExport: (assessment: Assessment) => void;
   onAddToWorkspace: (assessment: Assessment) => void;
-  onOpenTeacherEdition: (lessonNum: number) => void;
 }
 
 export function UnitAssessmentTable({
   unit,
   query,
   onOpenDetail,
-  onExport,
   onAddToWorkspace,
-  onOpenTeacherEdition,
 }: Props) {
-  const [focus, setFocus] = useState<TableFocusMode>("all");
-  const [expandedLessons, setExpandedLessons] = useState<Set<number>>(() => new Set());
+  const [focus, setFocus] = useState<TableFocusMode>("prepare");
+  const [expandedDrivingQuestion, setExpandedDrivingQuestion] = useState<Set<number>>(
+    () => new Set(),
+  );
+  const [expandedTeLessons, setExpandedTeLessons] = useState<Set<number>>(() => new Set());
   const slots = buildUnitLessonSlots(unit, query, focus);
 
   const unitAssessmentTotal = formalAssessmentsInUnit(unit.assessments).length;
-  const totalCount = unit.assessments.length;
 
-  const toggleLesson = (lessonNum: number) => {
-    setExpandedLessons((prev) => {
+  const handleFocusChange = (next: TableFocusMode) => {
+    setFocus(next);
+    if (next === "unit-assessments") {
+      setExpandedTeLessons(new Set());
+    }
+  };
+
+  const toggleDrivingQuestion = (lessonNum: number) => {
+    setExpandedDrivingQuestion((prev) => {
+      const next = new Set(prev);
+      if (next.has(lessonNum)) next.delete(lessonNum);
+      else next.add(lessonNum);
+      return next;
+    });
+  };
+
+  const toggleTeLesson = (lessonNum: number) => {
+    setExpandedTeLessons((prev) => {
       const next = new Set(prev);
       if (next.has(lessonNum)) next.delete(lessonNum);
       else next.add(lessonNum);
@@ -74,11 +86,10 @@ export function UnitAssessmentTable({
         <TableToolbar
           unit={unit}
           focus={focus}
-          onFocusChange={setFocus}
+          onFocusChange={handleFocusChange}
           unitAssessmentCount={unitAssessmentTotal}
-          totalCount={totalCount}
         />
-        <p className="text-sm text-muted-foreground font-body py-12 text-center border border-dashed border-eddo-green/25 rounded-2xl bg-surface/60">
+        <p className="text-sm text-muted-foreground font-body py-12 text-center border border-dashed border-border rounded-lg bg-card">
           {focus === "unit-assessments"
             ? "No unit assessments match your filter."
             : `No assessments match "${query.trim()}".`}
@@ -92,49 +103,41 @@ export function UnitAssessmentTable({
       <TableToolbar
         unit={unit}
         focus={focus}
-        onFocusChange={setFocus}
+        onFocusChange={handleFocusChange}
         unitAssessmentCount={unitAssessmentTotal}
-        totalCount={totalCount}
       />
-      <div className="rounded-2xl border border-eddo-green/20 overflow-hidden bg-card shadow-sm">
+      <div className="rounded-lg border border-border overflow-hidden bg-card">
         <Table className="table-fixed">
           <colgroup>
             <col className="w-12" />
+            <col className="w-[28%] min-w-[9rem]" />
             <col />
-            <col className="w-[40%] min-w-[12rem]" />
-            <col className={TABLE_ACTIONS_COLUMN_CLASS} />
           </colgroup>
           <TableHeader>
-            <TableRow className="bg-muted/50 hover:bg-muted/50 border-b border-border">
+            <TableRow className="bg-card hover:bg-card border-b border-border">
               <TableHead className="font-ui text-eddo-green font-medium py-2.5">Lsn</TableHead>
               <TableHead className="font-ui text-eddo-green font-medium py-2.5">Lesson</TableHead>
               <TableHead className="font-ui text-eddo-green font-medium py-2.5">
                 <span className="block">In this lesson</span>
                 <span className="block text-[9px] font-normal text-muted-foreground/80 normal-case tracking-normal font-body">
-                  Unit handout or TE guidance
+                  Click for details · chevron expands TE · named rows can add to workspace
                 </span>
-              </TableHead>
-              <TableHead
-                className={cn(
-                  "text-right font-ui text-eddo-green font-medium py-2.5",
-                  TABLE_ACTIONS_COLUMN_CLASS,
-                )}
-              >
-                Actions
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {slots.map((slot) => (
+            {slots.map((slot, lessonIndex) => (
               <LessonSlotRows
                 key={`lesson-${slot.lessonNum}`}
                 slot={slot}
-                expanded={expandedLessons.has(slot.lessonNum)}
-                onToggle={() => toggleLesson(slot.lessonNum)}
+                focus={focus}
+                showLessonDivider={lessonIndex > 0}
+                drivingQuestionExpanded={expandedDrivingQuestion.has(slot.lessonNum)}
+                teExpanded={expandedTeLessons.has(slot.lessonNum)}
+                onToggleDrivingQuestion={() => toggleDrivingQuestion(slot.lessonNum)}
+                onToggleTe={() => toggleTeLesson(slot.lessonNum)}
                 onOpenDetail={onOpenDetail}
-                onExport={onExport}
                 onAddToWorkspace={onAddToWorkspace}
-                onOpenTeacherEdition={onOpenTeacherEdition}
               />
             ))}
           </TableBody>
@@ -149,13 +152,11 @@ function TableToolbar({
   focus,
   onFocusChange,
   unitAssessmentCount,
-  totalCount,
 }: {
   unit: Unit;
   focus: TableFocusMode;
   onFocusChange: (f: TableFocusMode) => void;
   unitAssessmentCount: number;
-  totalCount: number;
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
@@ -164,15 +165,14 @@ function TableToolbar({
           value={focus}
           onChange={onFocusChange}
           unitAssessmentCount={unitAssessmentCount}
-          totalCount={totalCount}
         />
         <TableTerminologyHelp unit={unit} />
       </div>
       <p className="text-[11px] text-muted-foreground font-ui">
-        <span className="font-medium text-eddo-navy/80">Show all</span> = unit assessments + TE
-        opportunities ·{" "}
-        <span className="font-medium text-eddo-navy/80">Assessments only</span> = named unit
-        handouts
+        <span className="font-medium text-eddo-navy/80">Prepare assessments</span> = unit
+        handouts + TE summaries ·{" "}
+        <span className="font-medium text-eddo-navy/80">Unit assessments only</span> = named
+        handouts only
       </p>
     </div>
   );
@@ -180,70 +180,257 @@ function TableToolbar({
 
 function LessonSlotRows({
   slot,
-  expanded,
-  onToggle,
+  focus,
+  showLessonDivider,
+  drivingQuestionExpanded,
+  teExpanded,
+  onToggleDrivingQuestion,
+  onToggleTe,
   onOpenDetail,
-  onExport,
   onAddToWorkspace,
-  onOpenTeacherEdition,
 }: {
   slot: UnitLessonSlot;
-  expanded: boolean;
-  onToggle: () => void;
+  focus: TableFocusMode;
+  showLessonDivider: boolean;
+  drivingQuestionExpanded: boolean;
+  teExpanded: boolean;
+  onToggleDrivingQuestion: () => void;
+  onToggleTe: () => void;
   onOpenDetail: (assessment: Assessment) => void;
-  onExport: (assessment: Assessment) => void;
   onAddToWorkspace: (assessment: Assessment) => void;
-  onOpenTeacherEdition: (lessonNum: number) => void;
 }) {
   const padded = String(slot.lessonNum).padStart(2, "0");
   const hasDrivingQuestion =
     slot.drivingQuestion && slot.drivingQuestion !== slot.shortTitle;
-  const count = slot.assessments.length;
+  const primary = slot.assessments;
+  const te = slot.teOpportunities;
+  const showTeSummary = focus === "prepare" && te.length > 0;
+  const visibleTe = teExpanded ? te : [];
+  const summaryCount = showTeSummary ? 1 : 0;
+  const totalRows = primary.length + summaryCount + visibleTe.length;
+  const summaryIsFirstRow = primary.length === 0 && showTeSummary;
+
+  const lessonCells = (
+    <>
+      <TableCell rowSpan={totalRows} className={cn("align-middle py-3 pr-1 border-0", TABLE_ROW_SURFACE)}>
+        <LessonChevron
+          expanded={drivingQuestionExpanded}
+          onToggle={onToggleDrivingQuestion}
+          label={`Lesson ${padded}`}
+        />
+        <span className="font-mono text-[11px] text-muted-foreground ml-0.5">{padded}</span>
+      </TableCell>
+      <TableCell rowSpan={totalRows} className={cn("align-middle py-3 border-0", TABLE_ROW_SURFACE)}>
+        <LessonTitleBlock
+          slot={slot}
+          expanded={drivingQuestionExpanded}
+          hasDrivingQuestion={hasDrivingQuestion}
+        />
+      </TableCell>
+    </>
+  );
 
   return (
     <>
-      {slot.assessments.map((assessment, index) => (
-        <TableRow
+      {primary.map((assessment, index) => (
+        <AssessmentRow
           key={assessment.id}
+          assessment={assessment}
           id={index === 0 ? lessonRowId(slot.lessonNum) : undefined}
           className={cn(
-            "hover:!bg-transparent border-b border-border/50 last:border-b-0",
-            index === 0 && "border-t-2 border-eddo-green/25",
-            rowSurfaceClass(assessment),
+            showLessonDivider && index === 0 && "border-t border-border",
+            index > 0 && "border-t border-border/40",
           )}
-        >
-          {index === 0 && (
-            <>
-              <TableCell rowSpan={count} className="align-middle py-3 pr-1 border-0">
-                <LessonChevron expanded={expanded} onToggle={onToggle} label={`Lesson ${padded}`} />
-                <span className="font-mono text-[11px] text-muted-foreground ml-0.5">{padded}</span>
-              </TableCell>
-              <TableCell rowSpan={count} className="align-middle py-3 border-0">
-                <LessonTitleBlock
-                  slot={slot}
-                  expanded={expanded}
-                  hasDrivingQuestion={hasDrivingQuestion}
-                />
-              </TableCell>
-            </>
-          )}
-          <AssessmentCells
-            assessment={assessment}
-            onOpenTeacherEdition={() => onOpenTeacherEdition(slot.lessonNum)}
-            onOpenDetail={onOpenDetail}
-            onExport={onExport}
-            onAddToWorkspace={onAddToWorkspace}
-          />
-        </TableRow>
+          lessonCells={index === 0 ? lessonCells : undefined}
+          onOpenDetail={onOpenDetail}
+          onAddToWorkspace={onAddToWorkspace}
+        />
+      ))}
+
+      {showTeSummary && (
+        <TeOpportunitySummaryRow
+          count={te.length}
+          expanded={teExpanded}
+          onToggle={onToggleTe}
+          showLessonDivider={showLessonDivider && summaryIsFirstRow}
+          includesLessonCells={summaryIsFirstRow}
+          lessonCells={summaryIsFirstRow ? lessonCells : undefined}
+          lessonRowId={summaryIsFirstRow ? lessonRowId(slot.lessonNum) : undefined}
+        />
+      )}
+
+      {visibleTe.map((assessment) => (
+        <AssessmentRow
+          key={assessment.id}
+          assessment={assessment}
+          className="border-t border-border/40"
+          onOpenDetail={onOpenDetail}
+          onAddToWorkspace={onAddToWorkspace}
+          nested
+        />
       ))}
     </>
   );
 }
 
-function rowSurfaceClass(assessment: Assessment): string {
-  if (isNamedAssessmentRow(assessment)) return "bg-card";
-  if (isGuidanceOnlyRow(assessment)) return "bg-muted/30";
-  return "bg-surface/80";
+function workspaceAddTitle(assessment: Assessment): string | undefined {
+  if (isWorkspaceReady(assessment)) return undefined;
+  if (rowShowsWorkspaceAdd(assessment)) {
+    return getWorkspaceBlockHint(assessment) ?? "Not digitized for workspace yet";
+  }
+  return "Workspace add is for formative and summative assessments with digitized forms";
+}
+
+function AssessmentRow({
+  assessment,
+  id,
+  className,
+  lessonCells,
+  onOpenDetail,
+  onAddToWorkspace,
+  nested = false,
+}: {
+  assessment: Assessment;
+  id?: string;
+  className?: string;
+  lessonCells?: ReactNode;
+  onOpenDetail: (assessment: Assessment) => void;
+  onAddToWorkspace: (assessment: Assessment) => void;
+  nested?: boolean;
+}) {
+  const teOpportunity = isTeOpportunity(assessment);
+  const named = isNamedAssessmentRow(assessment);
+  const showTableAdd = rowShowsTableWorkspaceAdd(assessment);
+  const addReady = isWorkspaceReady(assessment);
+  const titleEmphasis = named || teOpportunity;
+
+  return (
+    <TableRow
+      id={id}
+      className={cn(TABLE_ROW_SURFACE, className)}
+    >
+      {lessonCells}
+      <TableCell
+        className={cn(
+          "align-top min-w-0 overflow-hidden border-0 py-2",
+          TABLE_ROW_SURFACE,
+          nested && "pl-6",
+        )}
+      >
+        <div className="flex items-start justify-between gap-3 min-w-0">
+          <button
+            type="button"
+            onClick={() => onOpenDetail(assessment)}
+            aria-label={`Open ${assessment.title}`}
+            className={cn(
+              "min-w-0 flex-1 text-left rounded-sm",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
+            )}
+          >
+            <p
+              className={cn(
+                "font-ui truncate",
+                titleEmphasis
+                  ? "text-sm font-semibold text-eddo-green"
+                  : "text-xs font-normal text-muted-foreground/85",
+              )}
+              title={assessment.title}
+            >
+              {assessment.title}
+            </p>
+            {titleEmphasis && (
+              <div className="mt-0.5">
+                <AssessmentDocumentLabel assessment={assessment} variant="table" />
+              </div>
+            )}
+          </button>
+          {showTableAdd && (
+            <PrimaryTableAction
+              label="Add to workspace"
+              icon={Plus}
+              disabled={!addReady}
+              title={workspaceAddTitle(assessment)}
+              aria-label={`Add ${assessment.title} to workspace`}
+              onClick={() => onAddToWorkspace(assessment)}
+            />
+          )}
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function TeOpportunitySummaryRow({
+  count,
+  expanded,
+  onToggle,
+  showLessonDivider,
+  includesLessonCells,
+  lessonCells,
+  lessonRowId: rowId,
+}: {
+  count: number;
+  expanded: boolean;
+  onToggle: () => void;
+  showLessonDivider: boolean;
+  includesLessonCells: boolean;
+  lessonCells?: ReactNode;
+  lessonRowId?: string;
+}) {
+  const oppLabel = count === 1 ? "opportunity" : "opportunities";
+
+  return (
+    <TableRow
+      id={rowId}
+      className={cn(
+        TABLE_ROW_SURFACE,
+        showLessonDivider && "border-t border-border",
+        !showLessonDivider && !includesLessonCells && "border-t border-border/40",
+      )}
+    >
+      {includesLessonCells && lessonCells}
+      <TableCell className={cn("border-0 py-1.5", TABLE_ROW_SURFACE)}>
+        <div className="flex items-center gap-2 min-w-0">
+          <TeExpandChevron expanded={expanded} onToggle={onToggle} count={count} oppLabel={oppLabel} />
+          <span className="min-w-0 flex-1 truncate text-xs font-ui text-muted-foreground">
+            <span
+              className={cn("inline-block mr-1.5 align-middle", rhythmMarkerClassName("none", "inline"))}
+              aria-hidden
+            />
+            {count} assessment {oppLabel}
+          </span>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+function TeExpandChevron({
+  expanded,
+  onToggle,
+  count,
+  oppLabel,
+}: {
+  expanded: boolean;
+  onToggle: () => void;
+  count: number;
+  oppLabel: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-expanded={expanded}
+      aria-label={`${expanded ? "Hide" : "Show"} ${count} assessment ${oppLabel} in this lesson`}
+      className={cn(
+        "inline-flex shrink-0 items-center justify-center size-6 rounded-md",
+        "text-muted-foreground/70 hover:text-eddo-green hover:bg-muted/80",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
+      )}
+    >
+      <ChevronRight className={cn("size-3.5 transition-transform", expanded && "rotate-90")} />
+    </button>
+  );
 }
 
 function LessonTitleBlock({
@@ -257,7 +444,7 @@ function LessonTitleBlock({
 }) {
   return (
     <>
-      <p className="font-ui text-[13px] font-semibold text-eddo-navy leading-snug">{slot.shortTitle}</p>
+      <p className="font-ui text-sm font-semibold text-eddo-navy leading-snug">{slot.shortTitle}</p>
       {slot.expectedDays != null && (
         <p
           className="text-[10px] text-muted-foreground/75 font-ui mt-0.5 tabular-nums"
@@ -290,117 +477,9 @@ function LessonChevron({
       onClick={onToggle}
       aria-expanded={expanded}
       aria-label={`${expanded ? "Hide" : "Show"} driving question for ${label}`}
-      className="inline-flex items-center justify-center size-5 rounded-md text-muted-foreground hover:text-eddo-green hover:bg-muted/60 transition-colors align-middle"
+      className="inline-flex items-center justify-center size-5 rounded-md text-muted-foreground hover:text-eddo-green hover:bg-muted transition-colors align-middle"
     >
       <ChevronRight className={cn("size-3.5 transition-transform", expanded && "rotate-90")} />
     </button>
-  );
-}
-
-function AssessmentCells({
-  assessment,
-  onOpenTeacherEdition,
-  onOpenDetail,
-  onExport,
-  onAddToWorkspace,
-}: {
-  assessment: Assessment;
-  onOpenTeacherEdition: () => void;
-  onOpenDetail: (assessment: Assessment) => void;
-  onExport: (assessment: Assessment) => void;
-  onAddToWorkspace: (assessment: Assessment) => void;
-}) {
-  const named = isNamedAssessmentRow(assessment);
-  const handoutOpportunity = isOpportunityWithHandout(assessment);
-  const deliverable = isDeliverableRow(assessment);
-  const guidance = isGuidanceOnlyRow(assessment);
-  const showExport = rowShowsExport(assessment);
-  const showAdd = rowShowsAdd(assessment);
-  const explicitType = explicitOpportunityCategory(assessment);
-
-  return (
-    <>
-      <TableCell
-        className={cn(
-          "align-top min-w-0 overflow-hidden border-0",
-          named ? "py-2.5" : "py-1.5",
-        )}
-      >
-        <button
-          type="button"
-          onClick={() => onOpenDetail(assessment)}
-          aria-label={`View details for ${assessment.title}`}
-          className={cn(
-            "block w-full min-w-0 max-w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-sm",
-            named &&
-              "font-ui text-sm font-semibold text-eddo-navy underline underline-offset-2 decoration-eddo-navy/25 hover:decoration-eddo-navy/60",
-            handoutOpportunity &&
-              "font-ui text-sm font-medium text-eddo-navy/75 hover:text-eddo-navy",
-            guidance &&
-              "font-ui text-xs font-normal text-muted-foreground/70 hover:text-muted-foreground",
-          )}
-        >
-          <span title={assessment.title} className="min-w-0 truncate whitespace-nowrap block">
-            {assessment.title}
-          </span>
-        </button>
-        {named && (
-          <div className="mt-1">
-            <AssessmentDocumentLabel assessment={assessment} showSwatch />
-            {hasAssessmentGuide(assessment.id) && (
-              <p className="text-[10px] text-eddo-green/80 font-ui leading-none mt-1 pl-[14px]">
-                Assessment guide
-              </p>
-            )}
-          </div>
-        )}
-        {handoutOpportunity && (
-          <div className="mt-0.5">
-            <AssessmentDocumentLabel assessment={assessment} showSwatch={false} />
-          </div>
-        )}
-        {guidance && explicitType && (
-          <p className="text-[10px] text-muted-foreground/55 font-ui leading-none mt-0.5 pl-0.5">
-            {assessmentTypeLabel(explicitType)}
-          </p>
-        )}
-      </TableCell>
-      <TableCell
-        className={cn(
-          "align-middle whitespace-nowrap border-0",
-          named ? "py-2.5" : "py-1.5",
-          TABLE_ACTIONS_COLUMN_CLASS,
-        )}
-      >
-        <TablePrimaryActionsRow>
-          {deliverable && (
-            <>
-              <PrimaryTableAction
-                label="Export"
-                icon={Download}
-                disabled={!showExport}
-                aria-label={`Export ${assessment.title}`}
-                onClick={() => onExport(assessment)}
-              />
-              <PrimaryTableAction
-                label="Add to workspace"
-                icon={Plus}
-                disabled={!showAdd}
-                aria-label={`Add ${assessment.title} to workspace`}
-                onClick={() => onAddToWorkspace(assessment)}
-              />
-            </>
-          )}
-          {guidance && (
-            <PrimaryTableAction
-              label="View TE"
-              icon={BookOpen}
-              onClick={onOpenTeacherEdition}
-              aria-label="View Teacher Edition for this lesson"
-            />
-          )}
-        </TablePrimaryActionsRow>
-      </TableCell>
-    </>
   );
 }

@@ -8,12 +8,34 @@ export function AssessmentDocumentLabel({
   assessment,
   className,
   showSwatch = true,
+  variant = "default",
 }: {
   assessment: Assessment;
   className?: string;
   showSwatch?: boolean;
+  /** Table rows: primary label only — matches TE opportunity subtitle styling. */
+  variant?: "default" | "table";
 }) {
   const { primary, secondary } = assessmentRowTypeDisplay(assessment);
+
+  if (variant === "table") {
+    const kind = rhythmKindForAssessment(assessment);
+    return (
+      <p
+        className={cn(
+          "inline-flex items-center gap-1.5 text-[10px] text-muted-foreground/75 font-ui leading-none",
+          className,
+        )}
+      >
+        <span
+          className={cn("relative shrink-0", rhythmMarkerClassName(kind, "inline"))}
+          aria-hidden
+        />
+        <span>{primary}</span>
+      </p>
+    );
+  }
+
   const kind = rhythmKindForAssessment(assessment);
 
   return (
@@ -25,7 +47,7 @@ export function AssessmentDocumentLabel({
             aria-hidden
           />
         )}
-        <span className={showSwatch ? undefined : "text-muted-foreground/75"}>{primary}</span>
+        <span>{primary}</span>
       </p>
       {secondary && (
         <p

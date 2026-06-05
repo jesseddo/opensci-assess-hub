@@ -1,5 +1,6 @@
 import type { Assessment, PackageItem, PackageItemKind, Unit } from "@/lib/assessment-data";
-import { isFormalAssessment } from "@/lib/assessment-source";
+import type { LibraryOutputKind } from "@/lib/assessment-opportunity-types";
+import { isFormalAssessment, isTeOpportunity } from "@/lib/assessment-source";
 import { assessmentRowTypeDisplay, assessmentSystemCategoryLabel } from "@/lib/unit-assessment-organization";
 
 /** OpenSciEd system category label for any row. */
@@ -13,8 +14,54 @@ export function getFormalTypeDisplay(assessment: Assessment): string | null {
   return getAssessmentTypeDisplay(assessment);
 }
 
+/** Whether a package slot is relevant for this row (excludes N/A ghosts like Form on a listen-for call-out). */
+export function packageItemKindApplies(assessment: Assessment, kind: PackageItemKind): boolean {
+  const item = getPackageItem(assessment, kind);
+  const output: LibraryOutputKind | undefined = assessment.libraryOutput;
+
+  if (kind === "guidance-sheet") {
+    return Boolean(item?.available);
+  }
+
+  if (isFormalAssessment(assessment)) {
+    if (kind === "rubric") {
+      return Boolean(assessment.isSummative || item?.available);
+    }
+    return true;
+  }
+
+  if (!isTeOpportunity(assessment)) {
+    return true;
+  }
+
+  if (kind === "teacher-guide") return true;
+
+  if (kind === "student-handout") {
+    return Boolean(item?.available);
+  }
+
+  if (kind === "google-form") {
+    return output === "handout-form-planned";
+  }
+
+  if (kind === "answer-key") {
+    return Boolean(item?.available);
+  }
+
+  if (kind === "rubric") {
+    return false;
+  }
+
+  return false;
+}
+
+/** Materials list for UI — only slots that apply to this assessment type. */
+export function getDisplayPackageItems(assessment: Assessment): PackageItem[] {
+  return assessment.package.filter((item) => packageItemKindApplies(assessment, item.kind));
+}
+
 export function getAvailablePackageItems(assessment: Assessment): PackageItem[] {
-  return assessment.package.filter((item) => item.available);
+  return getDisplayPackageItems(assessment).filter((item) => item.available);
 }
 
 export function getPackageItem(
@@ -47,13 +94,22 @@ export function getAssessmentMetaLine(assessment: Assessment): string {
   const typePart = secondary ? `${primary} · ${secondary}` : primary;
 
   const gaps: string[] = [];
-  if (!getPackageItem(assessment, "google-form")?.available) {
+  if (
+    packageItemKindApplies(assessment, "google-form") &&
+    !getPackageItem(assessment, "google-form")?.available
+  ) {
     gaps.push("Form not available");
   }
   const hasScoring =
-    getPackageItem(assessment, "answer-key")?.available ||
-    getPackageItem(assessment, "rubric")?.available;
-  if (!hasScoring) {
+    (packageItemKindApplies(assessment, "answer-key") &&
+      getPackageItem(assessment, "answer-key")?.available) ||
+    (packageItemKindApplies(assessment, "rubric") &&
+      getPackageItem(assessment, "rubric")?.available);
+  if (
+    (packageItemKindApplies(assessment, "answer-key") ||
+      packageItemKindApplies(assessment, "rubric")) &&
+    !hasScoring
+  ) {
     gaps.push("no scoring materials");
   }
 
@@ -63,7 +119,11 @@ export function getAssessmentMetaLine(assessment: Assessment): string {
 
 /** Shown on card only when Add to Workspace is blocked */
 export function getWorkspaceBlockHint(assessment: Assessment): string | null {
+  if (!isWorkspaceEligible(assessment)) return null;
   if (isWorkspaceReady(assessment)) return null;
+  if (!packageItemKindApplies(assessment, "google-form")) {
+    return null;
+  }
   if (!getPackageItem(assessment, "google-form")?.available) {
     return "Not digitized for Workspace — export the handout materials instead.";
   }
@@ -74,11 +134,32 @@ export function isExportReady(assessment: Assessment): boolean {
   return getAvailablePackageItems(assessment).length > 0;
 }
 
+export function isWorkspaceEligible(assessment: Assessment): boolean {
+  if (!isFormalAssessment(assessment)) return false;
+  const slug =
+    assessment.assessmentType ?? (assessment.isSummative ? "summative" : "formative");
+  return slug === "formative" || slug === "summative";
+}
+
+/** AI feedback / Workspace — named formative or summative assessments only. */
+export function rowShowsWorkspaceAdd(assessment: Assessment): boolean {
+  return isWorkspaceEligible(assessment);
+}
+
+/** Table/detail primary action — only when digitized (form + scoring materials). */
+export function rowShowsWorkspaceAddButton(assessment: Assessment): boolean {
+  return isWorkspaceEligible(assessment) && isWorkspaceReady(assessment);
+}
+
 export function isWorkspaceReady(assessment: Assessment): boolean {
+  if (!packageItemKindApplies(assessment, "google-form")) return false;
   const form = getPackageItem(assessment, "google-form");
   const key = getPackageItem(assessment, "answer-key");
   const rubric = getPackageItem(assessment, "rubric");
-  return Boolean(form?.available && (key?.available || rubric?.available));
+  const hasScoring =
+    (packageItemKindApplies(assessment, "answer-key") && key?.available) ||
+    (packageItemKindApplies(assessment, "rubric") && rubric?.available);
+  return Boolean(form?.available && hasScoring);
 }
 
 export function getWorkspaceAttachItems(assessment: Assessment): PackageItem[] {
@@ -89,7 +170,7 @@ export function getWorkspaceAttachItems(assessment: Assessment): PackageItem[] {
 }
 
 export function getUnavailablePackageItems(assessment: Assessment): PackageItem[] {
-  return assessment.package.filter((item) => !item.available);
+  return getDisplayPackageItems(assessment).filter((item) => !item.available);
 }
 
 export function countWorkspaceReady(unit: Unit): number {
@@ -100,7 +181,7 @@ export function buildUnitExportStats(unit: Unit) {
   return unit.assessments.map((assessment) => ({
     assessment,
     availableCount: getAvailablePackageItems(assessment).length,
-    totalCount: assessment.package.length,
+    totalCount: getDisplayPackageItems(assessment).length,
     exportReady: isExportReady(assessment),
     workspaceReady: isWorkspaceReady(assessment),
   }));

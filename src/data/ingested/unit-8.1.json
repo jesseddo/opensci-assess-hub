@@ -6,7 +6,7 @@
   "suggestedPacingDays": 33,
   "unitOverviewPath": "8.1 Contact Forces Unit Overview Materials.docx",
   "ingestedFrom": "/Users/jessycaroylandry/Downloads/Grade 8/8.1 Contact Forces",
-  "ingestedAt": "2026-06-04T18:23:54.465Z",
+  "ingestedAt": "2026-06-05T17:55:08.614Z",
   "lessons": [
     {
       "lessonNum": 1,
@@ -162,7 +162,7 @@
       "lookListenFor": "What to listen for:\nA variety of open-ended questions (how and why), instead of close-ended questions (yes and no)\nOne or more questions about the factors and variables that affect the amount of damage in a collision\nOne or more questions about the changes and/or interactions occurring during a collision (between time point 1 and time point 2)",
       "whatToDo": "What to do:\nIf students are asking mostly closed questions, you can provide a copy of the questions on the DQB and ask them to work on refining three or more of these questions so they become how and why questions that can still also address parts of the original yes or no question. This could be an in-class or home learning assignment. For practice (e.g., exit or entrance ticket) the following two questions can be answered at the end or start of any future lessons:\nWhat questions were raised for us (now or from the end of the last class)?\nHow might we investigate one or more of those questions using equipment in our classroom to collect our own data or using data that other people have collected in other places?\nIf students are not asking about the factors and variables that may contribute to damage, have students refer to the Patterns in collisions chart they created in their notebooks and think about how changing one of those factors or variables might impact the severity of the collision. This also could be a recurring home learning assignment for students to continue to discuss with family, friends, and community, as suggested at the end of day 1 of this lesson.\nIf students are not asking questions about the changes or interactions occurring between time point 1 and time point 2, have students refer to the initial consensus model and/or Initial Model: Objects During Collisions and Object Interactions During A Collision to identify areas of uncertainty.\nOrganize questions into categories. As students share, questions will naturally start clustering into similar parts of the model or similar questions. Once students have finished their sharing, ask them to identify the categories of questions and write these category names near each cluster of questions. To stay on track, save at least 8 minutes of class time for students to think about investigations. See the image in the step above for an example of student questions divided into potential categories. If you are short on time, create candidate categories yourself after this lesson, post them, and then share these with students at the start of the next class, asking them to make any suggested modifications to these if they think they don’t quite capture the themes that emerged on the board.\nAn example of a Driving Question Board created using student questions from a pilot classroom is below.\nStay in a Scientists Circle to brainstorm investigations. Show slide S. Read the slide. Give students about five minutes to individually record in their notebooks some ideas for future investigations. As students are doing this, create a new poster titled “Ideas for Investigations and Data We Need.” Put this right next to the DQB.\nTell students that you are going to record their ideas and that you want everyone’s idea to be represented. As students are sharing their ideas, underline repeated statements to keep track of common ideas among students. Emphasize that the list is what we want to do that we think might help us answer our questions and that we may need to add to this list and update our DQB throughout the unit as we go.\nSCIENTISTS CIRCLE\nOne way to ensure that all student ideas are shared and get up on the board or poster is to pass a marker to the first person nearest you in the circle. The student with the marker should share one idea. Write it on the board or poster. Once that student sees that you have almost finished writing it, that student should pass the marker to the next student. The second student then shares an idea. If the idea is on the poster already, the student should say which idea is similar and how it is similar. Put a tally mark next to that idea. In this way, the marker is passed all around the circle and all students have a chance to have their thinking represented on this poster. Remind students that if they have additional ideas that don’t end up on the poster, they should jot them down now and then raise a hand to share only after the marker makes i…",
       "opportunityType": "investigation-data",
-      "libraryOutput": "guidance-pdf",
+      "libraryOutput": "handout-guidance",
       "standards": [
         "MS-PS2-1",
         "MS-PS2-2"
@@ -170,7 +170,7 @@
       "isSummative": false,
       "description": "OpenSciEd Unit 8.1 Lesson 01 — assessment opportunity from Teacher Edition.",
       "files": {
-        "studentHandout": null,
+        "studentHandout": "Lesson 1 - 8.1 Contact Forces/8.1 Lesson 1 Handout Initial Model Objects.docx",
         "teacherGuide": "Lesson 1 - 8.1 Contact Forces/8.1 Lesson 1 Teacher Edition.docx",
         "answerKey": null,
         "googleForm": null,
@@ -189,8 +189,8 @@
       "buildingTowards": "Building towards: 2.B.1 Construct an argument supported by empirical evidence and scientific reasoning to support a model showing that changes in motion of colliding objects (connected to subsystems) result from energy transfer between them (cause) and changes in the shape of those objects result from force(s) between them (cause).",
       "lookListenFor": "What to look/listen for: Students making arguments that leverage prior knowledge about changes in kinetic energy, energy transfer, and/or forces as a mechanism or interaction causing one or more of these outcomes. It's OK if students reference only one of these rather than all of them.",
       "whatToDo": "What to do: If students struggle with identifying any mechanisms or interactions for these causes, suggest that they will share ideas in a moment to come to consensus on these ideas, and that you will check in again on their thinking when you collect Progress Trackers at the end of the period. Collect and review students’ Progress Trackers at the end of the period to see if students are referencing ideas related to kinetic energy, energy transfer, or forces that they may not have mentioned here.\nSuggested prompt\nSample student response\nI think you’ve talked about energy before in science class. Can we take a moment and think back to 6th and 7th grade and brainstorm different places where you talked about or represented energy like this before?\nWe’ve talked about energy transfer in One-way Mirror Unit, Cup Design Unit, Everest Unit, Homemade Heater Unit, Maple Syrup Unit, Palm Oil Unit.\nDo you see any connections among how energy is represented in the different systems in these units?\nAnswers may vary.\nEven though we’ve used energy thinking to explain very different phenomena related to a cup of liquid warming up, the formation of a cloud or an air mass, heating up food, or where the energy an orangutan needs to live comes from, we have always been talking about energy transfers into or out of systems. What energy transfers do you recall between systems?\nWe talked about a chemical reaction system transfering energy to our food system in Homemade Heater Unit.\nWe talked about energy transfer from a particle moving fast hitting a particle moving slowly and transferring energy in Cup Design Unit.\nEnergy is transferred from the food sources that orangutans eat (fruits) into their bodies when they consume those foods. Palm Oil Unit\nAdditional responses may vary.\nExplicitly talk about energy transfer versus forces way of thinking. If students don’t bring up forces, introduce this line of reasoning to bridge from energy transfer thinking to forces using the prompts below.\nSuggested prompts\nSample student responses\nFollow-up questions\nIn the OpenSciEd Unit 6.2: How can containers keep stuff from warming up or cooling down? (Cup Design Unit) you thought about what happens in collisions between small particles. How did you describe what happened to the energy of each particle in such collisions?\nMoving particles transfer energy into and out of systems during collisions.\nThat sounds like an energy transfer perspective way of thinking.\nWas shape change of the particles something you were considering too?\nNo.\nOK, so let’s consider some of the objects we saw change shape in this collision investigation.\nIf the CD case was motionless on a table, what would you have to do to it with your hand to change its shape?\nSqueeze it.\nPush on it.\nPoke it.\nSmash it.\nThat sounds like you would have to bring your hand into contact with it and push on it. That sort of thinking is a way of talking about what is happening from a force perspective.\nSay, We are raising issues about what is happening using ideas about pushing, which is a way of talking about interactions in the system using forces, and we are also describing what is happening to the motion of the objects using ideas about changes in energy, which is a way of talking about energy transfer. Both seem like important ideas we could use to explain what is happening in a collision. And scientists find both are really helpful ways to explain certain types of changes. Sometimes it seems more helpful to describe what is happening using forces, and sometimes it is more helpful to describe what is happening using energy transfer. But each is a different way of thinking about interactions within a system and between systems. Let’s clarify what we are talking about with respect to forces and what we are talking about with respect to energy transfer.\nAsk questions to clarify what is meant by pushing and energy transfer and add the words force and energy to the Word Wall.\nSuggested prompt\nSample student respon…",
-      "opportunityType": "discussion-argument",
-      "libraryOutput": "guidance-pdf",
+      "opportunityType": "investigation-data",
+      "libraryOutput": "handout-guidance",
       "standards": [
         "MS-PS2-1",
         "MS-PS2-2"
@@ -198,7 +198,7 @@
       "isSummative": false,
       "description": "OpenSciEd Unit 8.1 Lesson 02 — assessment opportunity from Teacher Edition.",
       "files": {
-        "studentHandout": null,
+        "studentHandout": "Lesson 2 - 8.1 Contact Forces/8.1 Lesson 2 Handout Exploring Horizontal Collisions.docx",
         "teacherGuide": "Lesson 2 - 8.1 Contact Forces/8.1 Lesson 2 Teacher Edition.docx",
         "answerKey": null,
         "googleForm": null,
@@ -462,10 +462,10 @@
       "shortTitle": "Review driving question progress",
       "peCode": null,
       "buildingTowards": "",
-      "lookListenFor": "",
-      "whatToDo": "",
-      "opportunityType": "observation",
-      "libraryOutput": "guidance-pdf",
+      "lookListenFor": "Revisiting the Driving Question Board provides a low-stakes moment for students to apply their ideas to real-world questions. As students are working, use this opportunity for formative assessment and listen to group discussions about what we can and cannot answer. Students should be able to answer questions regarding the items listed on the What We Have Discovered poster.",
+      "whatToDo": "Students are also asked to record one answer using evidence for a question of their choice on the bottom of Reviewing Our Driving Question Board. Read over these answers as students are constructing them. If students are struggling, see the questions provided in the next section to also aid students in making connections between their key science ideas and a new scenario.\nCirculate the room as students work in pairs to answer a question from the Driving Question Board. Listen carefully to student answers and listen for students to use science ideas to support their answers. If students are not using their science ideas to fully answer questions, use questioning to help students make the connection to their science ideas:\nWhat evidence do we have from past investigations that supports your answer?\nWhat patterns in past investigations and activities led you to that idea?\nWhat patterns in data support your answer?\nDid we collect any other data or evidence besides the piece you cited that helps support your answer?\nIs there anything on our What We Have Discovered poster that helps you answer this question?\nDid you see something change in our system as two objects interact in a previous investigation or activity that supports this answer? What happened?",
+      "opportunityType": "investigation-data",
+      "libraryOutput": "handout-guidance",
       "standards": [
         "MS-PS2-1",
         "MS-PS2-2"
@@ -473,7 +473,7 @@
       "isSummative": false,
       "description": "OpenSciEd Unit 8.1 Lesson 06 — assessment opportunity from Teacher Edition.",
       "files": {
-        "studentHandout": null,
+        "studentHandout": "Lesson 6 - 8.1 Contact Forces/8.1 Lesson 6 Handout Reviewing Our Driving.docx",
         "teacherGuide": "Lesson 6 - 8.1 Contact Forces/8.1 Lesson 6 Teacher Edition.docx",
         "answerKey": null,
         "googleForm": null,
@@ -618,8 +618,8 @@
       "buildingTowards": "Building towards: 9.B Respectfully provide and receive critiques about claims to identify relevant evidence to support an explanation for how energy transfers through the cart-launcher system before and right after a collision.",
       "lookListenFor": "What to look for: Students should be citing evidence and providing scientific reasoning to support their explanations. Group members ask clarifying questions to elicit details that reveal similarities and differences in their claims and to make connections between patterns in macroscopic observations and the particle nature of matter. Some parts of the student discussion should be focussed on why friction and air resistance affect the motion and kinetic energy of objects in the class collision system model as well as how the interactions that produce these forces would also affect the motion of particles in the air and on the surface of the track, box, and wheels of the cart.",
       "whatToDo": "What to do: If some groups aren’t making some of these connections, ask those groups to focus their discussions on a subset of the questions on Jigsaw feedback discussion.",
-      "opportunityType": "discussion-argument",
-      "libraryOutput": "guidance-pdf",
+      "opportunityType": "handout-written",
+      "libraryOutput": "handout-form-planned",
       "standards": [
         "MS-PS2-1",
         "MS-PS2-2"
@@ -627,7 +627,7 @@
       "isSummative": false,
       "description": "OpenSciEd Unit 8.1 Lesson 09 — assessment opportunity from Teacher Edition.",
       "files": {
-        "studentHandout": null,
+        "studentHandout": "Lesson 9 - 8.1 Contact Forces/8.1 Lesson 9 Handout Jigsaw feedback discussion.docx",
         "teacherGuide": "Lesson 9 - 8.1 Contact Forces/8.1 Lesson 9 Teacher Edition.docx",
         "answerKey": null,
         "googleForm": null,
@@ -773,8 +773,8 @@
       "source": "te-opportunity",
       "title": "Baseball assessment context",
       "shortTitle": "Baseball assessment context",
-      "peCode": null,
-      "buildingTowards": "",
+      "peCode": "10.A",
+      "buildingTowards": "Building towards: 10.A Apply scientific ideas to explain why some collision-related phenomena resulted in damage while others did not and explain how the contributing factors (energy, matter, peak forces) could change to result in different collision outcomes.",
       "lookListenFor": "What to look/listen for: Look for students to use the ideas off of the Big Ideas poster. In box 1, look for these ideas:\nrepresenting the kinetic energy of the moving object as greater than the nonmoving object\nforces due to air resistance and friction acting on the moving object before the collision\nforce arrows that are representative of the relative amounts of force acting on the moving object in the proper direction and whose arrow tips are touching the surface the force is acting on\nIn box 2 look for these ideas:\nobjects bending or deforming (momentarily or permanently)\neach object experiencing the same amount of peak force but in opposite directions\nenergy being transferred in the system between the colliding objects at the moment of contact\noptional: If the objects are made of different materials, they could show different amounts of deformation for the same amount of force. Though students know this should be the case based on ideas they figured out in Lesson 4, because they won’t know the relative elasticity of each object in the system, they may not feel it is valid to represent these relative differences in their models without having these specific data to inform which object would deform more or less than the other.\nIn box 3 look for these ideas:\nchanges in speed being represented as a larger factor than changes in mass in reducing or increasing kinetic energy of the moving object(s)\ngreater or less air resistance and friction causing the increase or reduction of kinetic energy of the moving object(s) before the collision\nchanges listed above having an effect on the amount of deformation of each object at the moment of collision\nchanges in the amount of deformation of each object corresponding to whether it exceeds the elastic limit of the object or not to account for whether it is damaged or not",
       "whatToDo": "What to do: As students hand in Explaining a Collision, check the handout for the ideas above. If an idea is missing or misrepresented, revisit the Big Ideas poster with the student(s) before the assessment on day 2. Use the Big Ideas poster for a checklist and make sure the student(s) sees that a concept is missing or that a concept may be misrepresented. Direct the student(s) to look back at representations in Lessons 6-8 that show changes in friction, air resistance, and kinetic energy. If the idea comes from Lesson Set 1, use the Lesson 6 What We Have Discovered poster as a physical checklist for the students. This more-detailed list may provide a needed scaffold for students.\nIf intervention at this stage is warranted, use the DQB check-in the next day as a secondary formative assessment. Ask questions specifically targeted to the related topics above from the DQB and have students turn and talk with a partner about their answers. Listen to those specific students who had required intervention to assess if they now are using the target understandings.",
       "opportunityType": "investigation-data",
@@ -804,7 +804,7 @@
       "peCode": "10.B",
       "buildingTowards": "Building towards: 10.B Students apply the science ideas to explain multiple baseball phenomena, including the effects of air density and wind on ball speed (changes to the stability of the system and its effect on kinetic energy changes due to air resistance), bat mass vs. bat speed (interpreting patterns in graphical and tabular data to determine the linear and nonlinear effects on increases of kinetic energy within the system), and bat type (the effect deformation has on peak forces in the system and kinetic energy) on how the game is played.",
       "lookListenFor": "What to look for:\nQuestions 1-2: Students should show a decrease in ball speed attributed to the loss of energy due to air resistance. Students should justify this idea using free-body diagrams showing the relative strengths of air resistance due to wind speed.\nQuestion 3: Students should use ideas for investigations that utilize previous labs and analogies made in class.\nQuestions 4-6: Students will plot points based upon data, then predict a data point based on the line of best fit.\nQuestion 7: Students should explain that an increase in bat mass would decrease swing speed due to the amount of energy needed to move a more-massive object.\nQuestions 8-9: Students should reflect an understanding that speed increases at a greater rate when kinetic energy is doubled. A decrease in air resistance would increase the visible effects of this relationship.\nQuestion 10: Students should argue the warning on the bat supports the coach’s claim that it produces higher peak forces in a collision than other bats, but nothing on the warning provides information to support the claim that it deforms less in a collision.\nQuestions 11-12: These answers are subjective to viewpoint; see Key 1: Baseball Assessment and Key 2: Baseball Assessment.\nSee Key 1: Baseball Assessment and Key 2: Baseball Assessment for a more-detailed assessment guidance by question.",
-      "whatToDo": "What to do: If students need additional assistance on\nquestions regarding air resistance: If students are not showing air resistance as a force acting on the ball, revisit the question 1 wind speed graph with students and ask about the factors that could be affecting the ball during its flight. Compare the points on the graph and the axes labels to determine if energy is being lost to the air or gained from the air. Look back at Lessons 8 and 9 to view representations of how air resistance on the cart was modeled and consider how this can be applied to the current model.\nquestions regarding plotting points: Revisit Lesson 9 and compare the plotted points seen on those graphs with the current graph students are constructing. Look at how the points are plotted on the x- and y-axes, and guide students in plotting the first point together.\nquestions regarding the line of best fit and data identification: Revisit the second graph on Station 2 data cards and determine how the line of best fit was determined for each color on that graph. After establishing how the line of best fit is constructed, ask students to predict what the points would be at different speeds and fuel consumptions. Once students are more comfortable with finding potential data points based upon the line of best fit, have students again try to identify the data point in question 6.",
+      "whatToDo": "What to do: If students need additional assistance on\nquestions regarding air resistance: If students are not showing air resistance as a force acting on the ball, revisit the question 1 wind speed graph with students and ask about the factors that could be affecting the ball during its flight. Compare the points on the graph and the axes labels to determine if energy is being lost to the air or gained from the air. Look back at Lessons 8 and 9 to view representations of how air resistance on the cart was modeled and consider how this can be applied to the current model.\nquestions regarding plotting points: Revisit Lesson 9 and compare the plotted points seen on those graphs with the current graph students are constructing. Look at how the points are plotted on the x- and y-axes, and guide students in plotting the first point together.\nquestions regarding the line of best fit and data identification: Revisit the second graph on Station 2 data cards and determine how the line of best fit was determined for each color on that graph. After establishing how the line of best fit is constructed, ask students to predict what the points would be at different speeds and fuel consumptions. Once students are more comfortable with finding potential data points based upon the line of best fit, have students again try to identify the data point in question 6.\nquestions regarding the mass-energy relationship: Look back at the data from the Lesson 9 cart and box model and the Lesson 7 investigation data and graph regarding the increases in mass and kinetic energy needed to speed the object up to the same point. If this is not enough, pull the student aside and have them push two objects of different masses and determine which item would require more energy to get to the same speed. Have students apply this knowledge to the bat mass and swing speed questions on the assessment.\nquestions regarding increases in mass vs. increases in speed: Revisit the data from Lesson 7 on Changes in Kinetic Energy: Investigations #1 & 2 and Graphing Kinetic Energy Relationships to compare the relationships seen in the Lesson 7 data and the data on the assessment.",
       "opportunityType": "investigation-data",
       "libraryOutput": "handout-guidance",
       "standards": [
@@ -829,11 +829,11 @@
       "source": "te-opportunity",
       "title": "Compare breakage scenarios",
       "shortTitle": "Compare breakage scenarios",
-      "peCode": null,
-      "buildingTowards": "",
+      "peCode": "10.B",
+      "buildingTowards": "Building towards: 10.B Students apply the science ideas to explain multiple baseball phenomena, including the effects of air density and wind on ball speed (changes to the stability of the system and its effect on kinetic energy changes due to air resistance), bat mass vs. bat speed (interpreting patterns in graphical and tabular data to determine the linear and nonlinear effects on increases of kinetic energy within the system), and bat type (the effect deformation has on peak forces in the system and kinetic energy) on how the game is played.",
       "lookListenFor": "",
-      "whatToDo": "",
-      "opportunityType": "observation",
+      "whatToDo": "questions regarding the mass-energy relationship: Look back at the data from the Lesson 9 cart and box model and the Lesson 7 investigation data and graph regarding the increases in mass and kinetic energy needed to speed the object up to the same point. If this is not enough, pull the student aside and have them push two objects of different masses and determine which item would require more energy to get to the same speed. Have students apply this knowledge to the bat mass and swing speed questions on the assessment.\nquestions regarding increases in mass vs. increases in speed: Revisit the data from Lesson 7 on Changes in Kinetic Energy: Investigations #1 & 2 and Graphing Kinetic Energy Relationships to compare the relationships seen in the Lesson 7 data and the data on the assessment.",
+      "opportunityType": "investigation-data",
       "libraryOutput": "guidance-pdf",
       "standards": [
         "MS-PS2-1",
@@ -859,8 +859,8 @@
       "shortTitle": "Why objects break (formative 1)",
       "peCode": "10.A",
       "buildingTowards": "Building towards: 10.A Apply scientific ideas to explain why some collision-related phenomena resulted in damage while others did not and explain how the contributing factors (energy, matter, peak forces) could change to result in different collision outcomes.",
-      "lookListenFor": "",
-      "whatToDo": "",
+      "lookListenFor": "What to look/listen for: Look for students to use the ideas off of the Big Ideas poster. In box 1, look for these ideas:\nrepresenting the kinetic energy of the moving object as greater than the nonmoving object\nforces due to air resistance and friction acting on the moving object before the collision\nforce arrows that are representative of the relative amounts of force acting on the moving object in the proper direction and whose arrow tips are touching the surface the force is acting on\nIn box 2 look for these ideas:\nobjects bending or deforming (momentarily or permanently)\neach object experiencing the same amount of peak force but in opposite directions\nenergy being transferred in the system between the colliding objects at the moment of contact\noptional: If the objects are made of different materials, they could show different amounts of deformation for the same amount of force. Though students know this should be the case based on ideas they figured out in Lesson 4, because they won’t know the relative elasticity of each object in the system, they may not feel it is valid to represent these relative differences in their models without having these specific data to inform which object would deform more or less than the other.\nIn box 3 look for these ideas:\nchanges in speed being represented as a larger factor than changes in mass in reducing or increasing kinetic energy of the moving object(s)\ngreater or less air resistance and friction causing the increase or reduction of kinetic energy of the moving object(s) before the collision\nchanges listed above having an effect on the amount of deformation of each object at the moment of collision\nchanges in the amount of deformation of each object corresponding to whether it exceeds the elastic limit of the object or not to account for whether it is damaged or not",
+      "whatToDo": "What to do: As students hand in Explaining a Collision, check the handout for the ideas above. If an idea is missing or misrepresented, revisit the Big Ideas poster with the student(s) before the assessment on day 2. Use the Big Ideas poster for a checklist and make sure the student(s) sees that a concept is missing or that a concept may be misrepresented. Direct the student(s) to look back at representations in Lessons 6-8 that show changes in friction, air resistance, and kinetic energy. If the idea comes from Lesson Set 1, use the Lesson 6 What We Have Discovered poster as a physical checklist for the students. This more-detailed list may provide a needed scaffold for students.\nIf intervention at this stage is warranted, use the DQB check-in the next day as a secondary formative assessment. Ask questions specifically targeted to the related topics above from the DQB and have students turn and talk with a partner about their answers. Listen to those specific students who had required intervention to assess if they now are using the target understandings.",
       "opportunityType": "handout-written",
       "libraryOutput": "handout-form-planned",
       "standards": [
@@ -1177,14 +1177,14 @@
       "lesson": "Lesson 15",
       "lessonNum": 15,
       "source": "te-opportunity",
-      "title": "Cheerleading task (part 1 context)",
-      "shortTitle": "Cheerleading task (part 1 context)",
+      "title": "Final Design Proposal (parts 1–2)",
+      "shortTitle": "Final Design Proposal (parts 1–2)",
       "peCode": null,
       "buildingTowards": "",
       "lookListenFor": "",
-      "whatToDo": "",
-      "opportunityType": "observation",
-      "libraryOutput": "guidance-pdf",
+      "whatToDo": "This Final Design Proposal handout can be used as a formative for pre-summative assessment readiness. As students work through the handout, check in with them and/or ask probing questions of students who might need additional assistance or guidance to gain some evidence or insight as to how ready students are for the assessment. Some examples of how to support students as they work through the different sections of this handout are included below:\nPart 1: Introduce the problem and claims for a solution\nStudents should already have thought through this and have it recorded on Stakeholder Feedback Form. If a student is stuck here and not sure what to write, ask them to look back at this handout to find the problem they identified and their solution claims that were presented to stakeholders. They can simply transfer what they wrote there to this document, or they could summarize in new wording.\nPart 2: Show off your solution\nStudents may become overly fixated on drawing a detailed example of their device. Remind students that they already have an example of their device drawn on Redesigning Your Protective Device that can be transferred over to this handout. If students have included a lot of design details on their original handout, ask them to just focus on the key features that investors would be interested in for the marketing of the device.\nPart 3: Present your research\nIn this section students explain what components they are keeping in their design and what components they are not keeping in their designs based on feedback they received on Stakeholder Feedback Form and in their notebooks when they explained constraints and prioritizations around their design. If students simply need to see what they listed as primary, secondary, and tertiary, this is available on Decision Matrix. They should be able to use these three pieces of data to complete this section. Guide students to look back at these as they complete this section.\nPart 4: Justify your design decisions\nSuggest students complete the first two columns first using what they have completed on Stakeholder Feedback Form and Decision Matrix and what they have written in their notebook around why they made the decisions they did for their design.\nStudents have already spent time at the end of Lesson 14 considering the effects of each trade-off. Refer students back to their notebooks to find their ideas over why these choices and prioritizations were made.\nSay, Though you’ve got some great ideas for how to improve your designs for our consumers, how could you use this way of thinking to evaluate and test designs that other engineers come up with for any proposed collision mitigation design solution? You will now use what you have figured out about contact forces and designing solutions and apply it to a new phenomenon scenario. This will be your final assessment of our unit.",
+      "opportunityType": "handout-written",
+      "libraryOutput": "handout-form-planned",
       "standards": [
         "MS-PS2-1",
         "MS-PS2-2"
@@ -1192,27 +1192,28 @@
       "isSummative": false,
       "description": "OpenSciEd Unit 8.1 Lesson 15 — assessment opportunity from Teacher Edition.",
       "files": {
-        "studentHandout": null,
+        "studentHandout": "Lesson 15 - 8.1 Contact Forces/8.1 Lesson 15 Handout Final Design Proposal.docx",
         "teacherGuide": "Lesson 15 - 8.1 Contact Forces/8.1 Lesson 15 Teacher Edition.docx",
         "answerKey": null,
         "googleForm": null,
         "rubric": null,
         "guidanceSheet": "/guidance/8-1/L15-AO1.html"
-      }
+      },
+      "assessmentType": "peer-feedback"
     },
     {
       "id": "81-15-ao-2",
       "lesson": "Lesson 15",
       "lessonNum": 15,
       "source": "te-opportunity",
-      "title": "Evaluate engineer designs",
-      "shortTitle": "Evaluate engineer designs",
+      "title": "Final Design Proposal (parts 3–4)",
+      "shortTitle": "Final Design Proposal (parts 3–4)",
       "peCode": null,
       "buildingTowards": "",
       "lookListenFor": "",
-      "whatToDo": "",
-      "opportunityType": "observation",
-      "libraryOutput": "guidance-pdf",
+      "whatToDo": "Part 3: Present your research\nIn this section students explain what components they are keeping in their design and what components they are not keeping in their designs based on feedback they received on Stakeholder Feedback Form and in their notebooks when they explained constraints and prioritizations around their design. If students simply need to see what they listed as primary, secondary, and tertiary, this is available on Decision Matrix. They should be able to use these three pieces of data to complete this section. Guide students to look back at these as they complete this section.\nPart 4: Justify your design decisions\nSuggest students complete the first two columns first using what they have completed on Stakeholder Feedback Form and Decision Matrix and what they have written in their notebook around why they made the decisions they did for their design.\nStudents have already spent time at the end of Lesson 14 considering the effects of each trade-off. Refer students back to their notebooks to find their ideas over why these choices and prioritizations were made.\nSay, Though you’ve got some great ideas for how to improve your designs for our consumers, how could you use this way of thinking to evaluate and test designs that other engineers come up with for any proposed collision mitigation design solution? You will now use what you have figured out about contact forces and designing solutions and apply it to a new phenomenon scenario. This will be your final assessment of our unit.",
+      "opportunityType": "investigation-data",
+      "libraryOutput": "handout-guidance",
       "standards": [
         "MS-PS2-1",
         "MS-PS2-2"
@@ -1220,13 +1221,14 @@
       "isSummative": false,
       "description": "OpenSciEd Unit 8.1 Lesson 15 — assessment opportunity from Teacher Edition.",
       "files": {
-        "studentHandout": null,
+        "studentHandout": "Lesson 15 - 8.1 Contact Forces/8.1 Lesson 15 Handout Final Design Proposal.docx",
         "teacherGuide": "Lesson 15 - 8.1 Contact Forces/8.1 Lesson 15 Teacher Edition.docx",
         "answerKey": null,
         "googleForm": null,
         "rubric": null,
         "guidanceSheet": "/guidance/8-1/L15-AO2.html"
-      }
+      },
+      "assessmentType": "peer-feedback"
     },
     {
       "id": "81-15-ao-4",

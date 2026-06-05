@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Assessment, Unit } from "@/lib/assessment-data";
-import { getAssessmentMetaLine, isExportReady, isWorkspaceReady } from "@/lib/assessment-helpers";
+import { getAssessmentMetaLine, isExportReady, rowShowsWorkspaceAddButton } from "@/lib/assessment-helpers";
 import { openTeacherEdition } from "@/lib/library-actions";
 
 interface Props {
@@ -87,16 +87,17 @@ export function UnitAssessmentMap({
                       >
                         <Download className="size-3.5" aria-hidden />
                       </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        disabled={!isWorkspaceReady(assessment)}
-                        aria-label={`Add ${assessment.title} to Workspace`}
-                        onClick={() => onAddToWorkspace(assessment)}
-                      >
-                        <Plus className="size-3.5" aria-hidden />
-                      </Button>
+                      {rowShowsWorkspaceAddButton(assessment) && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          aria-label={`Add ${assessment.title} to my workspace`}
+                          onClick={() => onAddToWorkspace(assessment)}
+                        >
+                          <Plus className="size-3.5" aria-hidden />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

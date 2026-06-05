@@ -202,6 +202,34 @@ def is_te_section_boundary(text: str) -> bool:
     return False
 
 
+def is_continuation_header(text: str) -> bool:
+    return bool(re.match(r"^continued from previous page", text.strip(), re.I))
+
+
+def infer_continuation_section(previous: Optional[Dict[str, Any]]) -> str:
+    if not previous:
+        return "narrative"
+    if previous.get("whatToDo"):
+        return "do"
+    if previous.get("lookListenFor"):
+        return "do"
+    return "narrative"
+
+
+def append_field(current: str, addition: str) -> str:
+    if not addition:
+        return current
+    if not current:
+        return addition
+    return current + "\n" + addition
+
+
+def match_handout_from_blob(blob: str, handouts: List[Dict[str, str]]) -> Optional[str]:
+    if not blob.strip():
+        return None
+    return match_handout(blob, "", handouts)
+
+
 def trim_ao_field(text: str, max_len: int = 4000) -> str:
     text = text.strip()
     if len(text) <= max_len:
@@ -223,6 +251,8 @@ def match_handout(building_towards: str, look_listen: str, handouts: List[Dict[s
         "modeling",
         "collision",
         "stakeholder",
+        "final design proposal",
+        "reviewing our driving",
     ):
         if phrase in blob:
             keywords.append(phrase)
@@ -257,6 +287,14 @@ def parse_opportunities(
         what_to_do = ""
         j = i + 1
         section = None
+        started_as_continuation = False
+        previous = opportunities[-1] if opportunities else None
+        if j < len(texts) and is_continuation_header(texts[j]):
+            started_as_continuation = True
+            section = infer_continuation_section(previous)
+            if previous and previous.get("buildingTowards"):
+                building = previous["buildingTowards"]
+            j += 1
         while j < len(texts):
             t = texts[j]
             if re.match(r"^ASSESSMENT OPPORTUNITY\s*$", t, re.I):
@@ -272,23 +310,47 @@ def parse_opportunities(
                 what_to_do = t
             elif section == "look":
                 if is_te_section_boundary(t):
-                    section = None
+                    break
                 elif not t.startswith("✱"):
-                    look_listen += ("\n" if look_listen else "") + t
+                    look_listen = append_field(look_listen, t)
             elif section == "do":
                 if is_te_section_boundary(t):
-                    section = None
+                    break
                 elif not t.startswith("✱"):
-                    what_to_do += ("\n" if what_to_do else "") + t
-            elif is_te_section_boundary(t) and (look_listen or what_to_do):
+                    what_to_do = append_field(what_to_do, t)
+            elif section == "narrative":
+                if is_te_section_boundary(t):
+                    break
+                elif not t.startswith("✱"):
+                    if re.search(r"\b(listen|circulate)\b", t, re.I) and not look_listen:
+                        look_listen = append_field(look_listen, t)
+                    else:
+                        what_to_do = append_field(what_to_do, t)
+            elif is_te_section_boundary(t) and (building or look_listen or what_to_do):
                 break
+            elif section is None and not is_te_section_boundary(t) and not t.startswith("✱"):
+                section = "narrative"
+                if re.search(r"\b(listen|circulate)\b", t, re.I):
+                    look_listen = append_field(look_listen, t)
+                else:
+                    what_to_do = append_field(what_to_do, t)
             j += 1
 
         building = trim_ao_field(building)
         look_listen = trim_ao_field(look_listen)
         what_to_do = trim_ao_field(what_to_do)
 
+        if previous and started_as_continuation:
+            previous["lookListenFor"] = trim_ao_field(
+                append_field(previous.get("lookListenFor") or "", look_listen)
+            )
+            previous["whatToDo"] = trim_ao_field(
+                append_field(previous.get("whatToDo") or "", what_to_do)
+            )
+
         handout_path = match_handout(building, look_listen, handouts)
+        if not handout_path:
+            handout_path = match_handout_from_blob(what_to_do, handouts)
         opp_type = classify_opportunity(building, look_listen, what_to_do, handout_path)
         lib_out = library_output_for_type(opp_type, bool(handout_path))
         pe_code = extract_pe_code(building)

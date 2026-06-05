@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { Assessment, Unit } from "@/lib/assessment-data";
-import { getAvailablePackageItems, getUnavailablePackageItems } from "@/lib/assessment-helpers";
+import { getAvailablePackageItems, getDisplayPackageItems, getUnavailablePackageItems } from "@/lib/assessment-helpers";
 import { copyPackageLinks, exportPackage } from "@/lib/library-actions";
 
 interface Props {
@@ -24,6 +24,7 @@ interface Props {
 export function ExportAssessmentDialog({ assessment, unit, open, onOpenChange }: Props) {
   if (!assessment) return null;
 
+  const display = getDisplayPackageItems(assessment);
   const available = getAvailablePackageItems(assessment);
   const unavailable = getUnavailablePackageItems(assessment);
 
@@ -44,10 +45,10 @@ export function ExportAssessmentDialog({ assessment, unit, open, onOpenChange }:
         <div className="space-y-3">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
-              Materials ({available.length} of {assessment.package.length})
+              Materials ({available.length} of {display.length})
             </p>
             <div className="space-y-2">
-              {assessment.package.map((item) => (
+              {display.map((item) => (
                 <PackageItemRow key={item.kind} item={item} compact />
               ))}
             </div>

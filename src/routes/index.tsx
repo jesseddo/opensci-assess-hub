@@ -11,9 +11,7 @@ import { AssessmentDetailDialog } from "@/components/AssessmentDetailDialog";
 import { ExportAssessmentDialog } from "@/components/ExportAssessmentDialog";
 import { ExportUnitDialog } from "@/components/ExportUnitDialog";
 import { AddToWorkspaceDialog } from "@/components/AddToWorkspaceDialog";
-import { TeacherEditionDialog } from "@/components/TeacherEditionDialog";
 import { UnitAssessmentTable } from "@/components/UnitAssessmentTable";
-import { UnitOrganizationSummary } from "@/components/UnitOrganizationSummary";
 import { UnitRhythmOverview } from "@/components/UnitRhythmOverview";
 import {
   defaultGradeForLevel,
@@ -71,7 +69,6 @@ function AssessmentLibrary() {
   const [query, setQuery] = useState("");
   const [dialog, setDialog] = useState<DialogKind>(null);
   const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
-  const [teLessonNum, setTeLessonNum] = useState<number | null>(null);
 
   const gradeOptions = useMemo(() => gradesForSchoolLevel(schoolLevel), [schoolLevel]);
 
@@ -144,16 +141,7 @@ function AssessmentLibrary() {
 
   return (
     <div className="relative min-h-screen bg-background text-foreground selection:bg-primary/15 overflow-x-hidden">
-      <div
-        aria-hidden
-        className="pointer-events-none fixed -top-28 -right-20 size-[22rem] rounded-full bg-eddo-green/30 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none fixed top-[40%] -left-36 size-[28rem] rounded-full bg-eddo-green/20 blur-3xl"
-      />
-
-      <header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur-md eddo-nav-shadow font-ui">
+      <header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur-md font-ui">
         <div className="max-w-7xl mx-auto px-6 py-2.5 space-y-2">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="size-8 bg-eddo-green rounded-xl flex items-center justify-center shrink-0">
@@ -291,7 +279,6 @@ function AssessmentLibrary() {
               Unit {unit.id}: {unit.title}
             </h1>
             <p className="text-muted-foreground text-sm text-pretty font-body">{unit.description}</p>
-            <UnitOrganizationSummary unit={unit} />
             {isSearching && (
               <p className="text-xs text-muted-foreground font-ui">Showing search results</p>
             )}
@@ -307,18 +294,9 @@ function AssessmentLibrary() {
           unit={unit}
           query={query}
           onOpenDetail={openDetail}
-          onExport={openExport}
           onAddToWorkspace={openAdd}
-          onOpenTeacherEdition={setTeLessonNum}
         />
       </main>
-
-      <TeacherEditionDialog
-        unit={unit}
-        lessonNum={teLessonNum}
-        open={teLessonNum != null}
-        onOpenChange={(open) => !open && setTeLessonNum(null)}
-      />
 
       <AssessmentDetailDialog
         assessment={selectedAssessment}

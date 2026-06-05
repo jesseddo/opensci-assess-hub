@@ -21,7 +21,7 @@ export function rhythmMarkerClassName(
     const base = "size-2 shrink-0";
     switch (kind) {
       case "none":
-        return `${base} rounded-full border border-muted-foreground/25 bg-card`;
+        return `${base} rounded-full bg-eddo-violet`;
       case "formative":
         return `${base} rounded-full bg-eddo-accent`;
       case "pre-assessment":
@@ -34,7 +34,7 @@ export function rhythmMarkerClassName(
   }
   switch (kind) {
     case "none":
-      return "size-1 rounded-full border border-muted-foreground/15 bg-transparent opacity-60";
+      return "size-2.5 rounded-full bg-eddo-violet ring-2 ring-card shadow-sm";
     case "formative":
       return "size-3.5 rounded-full bg-eddo-accent ring-2 ring-card shadow-sm";
     case "pre-assessment":

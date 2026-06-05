@@ -1,8 +1,8 @@
 import type { Assessment, Unit, UnitLesson } from "@/lib/assessment-data";
 import { lessonNumber } from "@/lib/assessment-data";
-import { isFormalAssessment } from "@/lib/assessment-source";
+import { isFormalAssessment, isTeOpportunity } from "@/lib/assessment-source";
 import { assessmentMatchesSearch, lessonMatchesSearch } from "@/lib/unit-search";
-import { assessmentVisibleInTableFocus, type TableFocusMode } from "@/lib/assessment-row-tier";
+import type { TableFocusMode } from "@/lib/assessment-row-tier";
 import { buildUnitOrganizationSummary } from "@/lib/unit-assessment-organization";
 
 export type { TableFocusMode, UnitLesson };
@@ -13,7 +13,10 @@ export interface UnitLessonSlot {
   drivingQuestion?: string;
   teacherEditionPath?: string | null;
   expectedDays?: number;
+  /** Named unit assessments — primary rows in prepare and unit-assessments modes. */
   assessments: Assessment[];
+  /** TE opportunities — shown when expanded in prepare mode only. */
+  teOpportunities: Assessment[];
 }
 
 /** Per-lesson instructional length from Unit Overview Materials. */
@@ -43,10 +46,23 @@ function sortAssessments(list: Assessment[]): Assessment[] {
   });
 }
 
+function visibleForSearch(
+  assessments: Assessment[],
+  lessonNum: number,
+  lessonTitle: string,
+  query: string,
+): Assessment[] {
+  const q = query.trim();
+  if (!q) return assessments;
+  const lessonNavMatch = lessonMatchesSearch(lessonNum, lessonTitle, q);
+  if (lessonNavMatch) return assessments;
+  return assessments.filter((a) => assessmentMatchesSearch(a, q));
+}
+
 export function buildUnitLessonSlots(
   unit: Unit,
   query: string,
-  focus: TableFocusMode = "all",
+  focus: TableFocusMode = "prepare",
 ): UnitLessonSlot[] {
   const total = unit.lessonCount ?? 8;
   const byLesson = new Map<number, Assessment[]>();
@@ -59,31 +75,32 @@ export function buildUnitLessonSlots(
     byLesson.set(n, list);
   }
 
-  const q = query.trim();
   const slots: UnitLessonSlot[] = [];
 
   for (let lessonNum = 1; lessonNum <= total; lessonNum += 1) {
     const meta = getLessonMeta(unit, lessonNum);
-    const assessments = sortAssessments(byLesson.get(lessonNum) ?? []);
-    const lessonNavMatch = lessonMatchesSearch(
-      lessonNum,
-      meta.drivingQuestion ?? meta.shortTitle,
-      q,
-    );
+    const lessonTitle = meta.drivingQuestion ?? meta.shortTitle;
+    const inLesson = sortAssessments(byLesson.get(lessonNum) ?? []);
+    const formal = inLesson.filter(isFormalAssessment);
+    const te = inLesson.filter(isTeOpportunity);
 
-    const visibleAssessments = (q
-      ? lessonNavMatch
-        ? assessments
-        : assessments.filter((a) => assessmentMatchesSearch(a, q))
-      : assessments
-    ).filter((a) => assessmentVisibleInTableFocus(a, focus));
+    const visibleFormal = visibleForSearch(formal, lessonNum, lessonTitle, query);
+    const visibleTe =
+      focus === "prepare" ? visibleForSearch(te, lessonNum, lessonTitle, query) : [];
 
-    if (visibleAssessments.length === 0) continue;
+    if (focus === "unit-assessments") {
+      if (visibleFormal.length === 0) continue;
+      slots.push({ lessonNum, ...meta, assessments: visibleFormal, teOpportunities: [] });
+      continue;
+    }
+
+    if (visibleFormal.length === 0 && visibleTe.length === 0) continue;
 
     slots.push({
       lessonNum,
       ...meta,
-      assessments: visibleAssessments,
+      assessments: visibleFormal,
+      teOpportunities: visibleTe,
     });
   }
 

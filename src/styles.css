@@ -33,6 +33,7 @@
   --color-eddo-cream: var(--eddo-cream);
   --color-eddo-accent: var(--eddo-accent);
   --color-eddo-navy: var(--eddo-navy);
+  --color-eddo-violet: var(--eddo-violet);
   --color-doc: var(--doc);
   --color-form: var(--form);
   --color-key: var(--key);
@@ -49,27 +50,29 @@
   --eddo-green: #2f4a3e;
   --eddo-accent: #d96b3c;
   --eddo-navy: #001242;
+  /* TE assessment opportunities — violet-700, ~5.8:1 on white (AA) */
+  --eddo-violet: #6d28d9;
   --radius: 1rem;
 
-  --background: var(--eddo-cream);
+  --background: #ffffff;
   --foreground: var(--eddo-navy);
-  --surface: #fffdf9;
-  --card: #fffdf9;
+  --surface: #ffffff;
+  --card: #ffffff;
   --card-foreground: var(--eddo-navy);
-  --popover: #fffdf9;
+  --popover: #ffffff;
   --popover-foreground: var(--eddo-navy);
   --primary: var(--eddo-accent);
   --primary-foreground: var(--eddo-cream);
-  --secondary: color-mix(in srgb, var(--eddo-green) 10%, var(--eddo-cream));
-  --secondary-foreground: var(--eddo-green);
-  --muted: color-mix(in srgb, var(--eddo-green) 11%, var(--eddo-cream));
-  --muted-foreground: color-mix(in srgb, var(--eddo-green) 65%, var(--eddo-navy));
+  --secondary: #f4f4f5;
+  --secondary-foreground: var(--eddo-navy);
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
   --accent: color-mix(in srgb, var(--eddo-accent) 12%, var(--eddo-cream));
   --accent-foreground: var(--eddo-accent);
   --destructive: #b42318;
   --destructive-foreground: #fff;
-  --border: color-mix(in srgb, var(--eddo-green) 28%, transparent);
-  --input: color-mix(in srgb, var(--eddo-green) 26%, transparent);
+  --border: #e4e4e7;
+  --input: #e4e4e7;
   --ring: var(--eddo-accent);
   --doc: var(--eddo-accent);
   --form: var(--eddo-green);
@@ -97,6 +100,7 @@
   --border: color-mix(in srgb, var(--eddo-cream) 12%, transparent);
   --input: color-mix(in srgb, var(--eddo-cream) 15%, transparent);
   --ring: var(--eddo-accent);
+  --eddo-violet: #a78bfa;
 }
 
 @keyframes slideUp {

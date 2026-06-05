@@ -1,5 +1,5 @@
 import type { Assessment } from "@/lib/assessment-data";
-import { getPackageItem, isExportReady } from "@/lib/assessment-helpers";
+import { getPackageItem, isExportReady, rowShowsWorkspaceAddButton } from "@/lib/assessment-helpers";
 import { isFormalAssessment, isTeOpportunity } from "@/lib/assessment-source";
 
 /** Named unit handout/key — primary deliverable tier. */
@@ -27,16 +27,18 @@ export function rowShowsExport(assessment: Assessment): boolean {
   return isDeliverableRow(assessment) && isExportReady(assessment);
 }
 
-export function rowShowsAdd(assessment: Assessment): boolean {
-  return isDeliverableRow(assessment);
+/** Table row — show Add on all named unit assessments (the 8). */
+export function rowShowsTableWorkspaceAdd(assessment: Assessment): boolean {
+  return isNamedAssessmentRow(assessment);
 }
 
-export type TableFocusMode = "all" | "unit-assessments";
+export function rowShowsAdd(assessment: Assessment): boolean {
+  return rowShowsWorkspaceAddButton(assessment);
+}
 
-export function assessmentVisibleInTableFocus(
-  assessment: Assessment,
-  focus: TableFocusMode,
-): boolean {
-  if (focus === "all") return true;
+/** prepare = named assessments + collapsible TE summaries; unit-assessments = named only. */
+export type TableFocusMode = "prepare" | "unit-assessments";
+
+export function isPrimaryTableRow(assessment: Assessment): boolean {
   return isNamedAssessmentRow(assessment);
 }

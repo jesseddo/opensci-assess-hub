@@ -6,7 +6,8 @@ import {
   getAssessmentMetaLine,
   getWorkspaceBlockHint,
   isExportReady,
-  isWorkspaceReady,
+  rowShowsWorkspaceAdd,
+  rowShowsWorkspaceAddButton,
 } from "@/lib/assessment-helpers";
 
 interface Props {
@@ -28,8 +29,8 @@ export function AssessmentCard({
 }: Props) {
   const highlight = assessment.isSummative;
   const exportReady = isExportReady(assessment);
-  const workspaceReady = isWorkspaceReady(assessment);
-  const blockHint = getWorkspaceBlockHint(assessment);
+  const showWorkspaceAdd = rowShowsWorkspaceAddButton(assessment);
+  const blockHint = rowShowsWorkspaceAdd(assessment) ? getWorkspaceBlockHint(assessment) : null;
 
   return (
     <div
@@ -88,19 +89,19 @@ export function AssessmentCard({
             <Download className="size-3.5" aria-hidden />
             Export
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => onAddToWorkspace(assessment)}
-            disabled={!workspaceReady}
-            title={workspaceReady ? undefined : (blockHint ?? undefined)}
-            aria-label={`Add ${assessment.title} to Workspace`}
-          >
-            <Plus className="size-3.5" aria-hidden />
-            <span className="hidden sm:inline">Add to Workspace</span>
-            <span className="sm:hidden">Add</span>
-          </Button>
+          {showWorkspaceAdd && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => onAddToWorkspace(assessment)}
+              aria-label={`Add ${assessment.title} to my workspace`}
+            >
+              <Plus className="size-3.5" aria-hidden />
+              <span className="hidden sm:inline">Add to my workspace</span>
+              <span className="sm:hidden">My workspace</span>
+            </Button>
+          )}
         </div>
       </div>
     </div>

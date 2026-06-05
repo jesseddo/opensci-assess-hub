@@ -5,7 +5,7 @@ export type PackageItemAvailability = "available" | "planned" | "not-applicable"
 export function packageItemAvailability(item: PackageItem): PackageItemAvailability {
   if (item.available) return "available";
   const reason = item.unavailabilityReason ?? "";
-  if (/not applicable/i.test(reason)) return "not-applicable";
+  if (/not applicable|not part of this assessment/i.test(reason)) return "not-applicable";
   if (/planned|digitized/i.test(reason)) return "planned";
   return "missing";
 }

@@ -2,6 +2,7 @@ import { Download, Plus } from "lucide-react";
 
 import { AssessmentGuidePanel } from "@/components/AssessmentGuidePanel";
 import { PackageItemRow } from "@/components/PackageItemRow";
+import { TeacherEditionGuidancePanel } from "@/components/TeacherEditionGuidancePanel";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,12 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import type { Assessment, Unit } from "@/lib/assessment-data";
 import { assessmentGuideFor } from "@/lib/assessment-guide";
-import {
-  isDeliverableRow,
-  isGuidanceOnlyRow,
-  rowShowsExport,
-} from "@/lib/assessment-row-tier";
-import { getAvailablePackageItems } from "@/lib/assessment-helpers";
+import { isExportReady, getDisplayPackageItems, getWorkspaceBlockHint, isWorkspaceReady, rowShowsWorkspaceAdd } from "@/lib/assessment-helpers";
+import { rowShowsTableWorkspaceAdd } from "@/lib/assessment-row-tier";
 import { assessmentRowTypeDisplay } from "@/lib/unit-assessment-organization";
 
 interface Props {
@@ -40,15 +37,21 @@ export function AssessmentDetailDialog({
   if (!assessment) return null;
 
   const hasOseBlock =
-    Boolean(assessment.buildingTowards) ||
-    Boolean(assessment.lookListenFor) ||
-    Boolean(assessment.whatToDo);
+    Boolean(assessment.buildingTowards?.trim()) ||
+    Boolean(assessment.lookListenFor?.trim()) ||
+    Boolean(assessment.whatToDo?.trim());
   const { primary: rowKind, secondary: systemCategory } = assessmentRowTypeDisplay(assessment);
   const guide = assessmentGuideFor(assessment.id);
   const typeLine = systemCategory ? `${rowKind} · ${systemCategory}` : rowKind;
-  const deliverable = isDeliverableRow(assessment);
-  const guidanceOnly = isGuidanceOnlyRow(assessment);
-  const availableMaterials = getAvailablePackageItems(assessment);
+  const displayMaterials = getDisplayPackageItems(assessment);
+  const exportReady = isExportReady(assessment);
+  const showWorkspaceAdd = rowShowsTableWorkspaceAdd(assessment);
+  const workspaceAddReady = isWorkspaceReady(assessment);
+  const workspaceBlockHint = rowShowsWorkspaceAdd(assessment)
+    ? getWorkspaceBlockHint(assessment)
+    : showWorkspaceAdd && !workspaceAddReady
+      ? "Workspace add is for formative and summative assessments with digitized forms"
+      : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -77,33 +80,7 @@ export function AssessmentDetailDialog({
 
         {guide && <AssessmentGuidePanel guide={guide} />}
 
-        {hasOseBlock && (
-          <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3 font-body text-sm leading-relaxed">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-eddo-green font-ui">
-              From Teacher Edition
-            </p>
-            {assessment.buildingTowards && (
-              <div>
-                <p className="text-[10px] font-ui font-medium text-eddo-navy mb-1">Building towards</p>
-                <p className="text-foreground/90 whitespace-pre-wrap">{assessment.buildingTowards}</p>
-              </div>
-            )}
-            {assessment.lookListenFor && (
-              <div>
-                <p className="text-[10px] font-ui font-medium text-eddo-navy mb-1">
-                  What to look / listen for
-                </p>
-                <p className="text-foreground/90 whitespace-pre-wrap">{assessment.lookListenFor}</p>
-              </div>
-            )}
-            {assessment.whatToDo && (
-              <div>
-                <p className="text-[10px] font-ui font-medium text-eddo-navy mb-1">What to do</p>
-                <p className="text-foreground/90 whitespace-pre-wrap">{assessment.whatToDo}</p>
-              </div>
-            )}
-          </div>
-        )}
+        {hasOseBlock && <TeacherEditionGuidancePanel assessment={assessment} />}
 
         {!hasOseBlock && assessment.description && (
           <p className="text-sm text-muted-foreground font-body leading-relaxed">
@@ -120,47 +97,59 @@ export function AssessmentDetailDialog({
           </div>
         )}
 
-        {deliverable && (
+        {displayMaterials.length > 0 && (
           <div className="space-y-2">
             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
               Materials
             </p>
             <div className="space-y-2">
-              {assessment.package.map((item) => (
+              {displayMaterials.map((item) => (
                 <PackageItemRow key={item.kind} item={item} />
               ))}
             </div>
-            {availableMaterials.length > 0 && (
+            {exportReady && (
               <p className="text-xs text-muted-foreground leading-relaxed pt-1">
-                Export creates copies you can edit in Google Drive.
+                Choose what to export in the next step — handout, guide, key, form, or rubric.
               </p>
             )}
           </div>
         )}
 
-        {guidanceOnly && (
-          <p className="text-sm text-muted-foreground font-body leading-relaxed border border-dashed border-border rounded-lg p-3">
+        {hasOseBlock && displayMaterials.length === 0 && (
+          <p className="text-sm text-muted-foreground font-ui leading-relaxed border border-dashed border-border rounded-lg p-3">
             This is Teacher Edition facilitation guidance — read the call-out above while teaching.
             Open the full lesson in your Teacher Edition for surrounding context.
           </p>
         )}
 
+        {workspaceBlockHint && (
+          <p className="text-xs text-amber-700/90 dark:text-amber-500/90 leading-relaxed">
+            {workspaceBlockHint}
+          </p>
+        )}
+
         <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-2">
-          {deliverable && rowShowsExport(assessment) && (
+          {exportReady && (
             <Button type="button" className="w-full sm:w-auto" onClick={onExport}>
               <Download className="size-4" aria-hidden />
-              Export
+              Export materials
             </Button>
           )}
-          {deliverable && (
+          {showWorkspaceAdd && (
             <Button
               type="button"
               variant="outline"
               className="w-full sm:w-auto"
+              disabled={!workspaceAddReady}
+              title={
+                workspaceAddReady
+                  ? undefined
+                  : (workspaceBlockHint ?? "Not digitized for workspace yet")
+              }
               onClick={onAddToWorkspace}
             >
               <Plus className="size-4" aria-hidden />
-              Add to Workspace
+              Add to workspace
             </Button>
           )}
         </DialogFooter>

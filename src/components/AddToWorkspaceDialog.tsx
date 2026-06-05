@@ -57,8 +57,10 @@ export function AddToWorkspaceDialog({ assessment, open, onOpenChange }: Props) 
         {step === "configure" ? (
           <>
             <DialogHeader>
-              <DialogTitle>Add to Workspace</DialogTitle>
-              <DialogDescription>{assessment.title}</DialogDescription>
+              <DialogTitle>Add to my workspace</DialogTitle>
+              <DialogDescription>
+                Send this assessment to Eddo Workspace for AI-assisted scoring — {assessment.title}
+              </DialogDescription>
             </DialogHeader>
 
             {!workspaceReady && (
@@ -125,7 +127,7 @@ export function AddToWorkspaceDialog({ assessment, open, onOpenChange }: Props) 
                 onClick={() => setStep("confirm")}
               >
                 <Plus className="size-4" aria-hidden />
-                Add to Workspace
+                Add to my workspace
               </Button>
             </DialogFooter>
           </>

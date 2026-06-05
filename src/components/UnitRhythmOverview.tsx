@@ -25,20 +25,17 @@ export function UnitRhythmOverview({ unit }: Props) {
 
   return (
     <section
-      className="rounded-2xl border border-eddo-green/20 bg-card px-4 py-3.5 shadow-sm"
+      className="rounded-lg border border-border bg-card px-4 py-3.5"
       aria-label="Unit assessment rhythm"
     >
       <p className="text-[11px] text-muted-foreground font-ui leading-snug mb-2.5">
         {rhythm.summaryLine}
-        {hasPacing && (
-          <span className="text-muted-foreground/75"> · column width = suggested days</span>
-        )}
       </p>
 
-      <div className="rounded-xl border border-border/80 bg-muted/25 px-3 py-3">
+      <div className="border-t border-border pt-3">
         <div className="relative px-1">
           <div
-            className="pointer-events-none absolute inset-x-2 top-4 h-px -translate-y-1/2 rounded-full bg-eddo-green/20"
+            className="pointer-events-none absolute inset-x-2 top-4 h-px -translate-y-1/2 bg-border"
             aria-hidden
           />
           <ol className="relative flex list-none m-0 p-0 w-full" aria-label="Lesson sequence">
@@ -83,7 +80,7 @@ function RhythmMarker({
   return (
     <span
       className={cn(
-        "relative z-10 shrink-0 ring-2 ring-muted/25",
+        "relative z-10 shrink-0 ring-2 ring-card",
         rhythmMarkerClassName(kind, "timeline"),
         className,
       )}
@@ -139,7 +136,7 @@ function LessonRhythmColumn({
             type="button"
             onClick={() => scrollToLessonRow(point.lessonNum)}
             className={cn(
-              "font-mono text-[10px] leading-none tabular-nums",
+              "font-mono text-[10px] leading-none tabular-nums text-muted-foreground",
               "focus-visible:outline-none focus-visible:underline",
               numberClass(point.kind),
             )}
@@ -152,6 +149,7 @@ function LessonRhythmColumn({
   );
 }
 
+/** Color on lesson numbers only when a marker kind carries assessment meaning. */
 function numberClass(kind: LessonRhythmKind): string {
   switch (kind) {
     case "formative":

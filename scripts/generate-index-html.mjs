@@ -2,7 +2,7 @@
 // Generates dist/client/index.html for static hosting (Bolt/Netlify).
 // TanStack Start SSR mode doesn't emit index.html — this fills that gap
 // by reading the TanStack Start manifest produced by the build.
-import { readFileSync, writeFileSync, readdirSync } from "fs";
+import { readFileSync, writeFileSync, readdirSync, copyFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -52,3 +52,10 @@ writeFileSync(join(distClient, "index.html"), html);
 console.log(`Generated dist/client/index.html`);
 console.log(`  entry: ${scriptSrc}`);
 console.log(`  css:   ${cssHref}`);
+
+const redirectsSrc = join(__dir, "../public/_redirects");
+const redirectsDst = join(distClient, "_redirects");
+if (existsSync(redirectsSrc)) {
+  copyFileSync(redirectsSrc, redirectsDst);
+  console.log(`Copied _redirects to dist/client/_redirects`);
+}

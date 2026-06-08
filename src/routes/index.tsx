@@ -294,7 +294,6 @@ function AssessmentLibrary() {
           unit={unit}
           query={query}
           onOpenDetail={openDetail}
-          onAddToWorkspace={openAdd}
         />
       </main>
 

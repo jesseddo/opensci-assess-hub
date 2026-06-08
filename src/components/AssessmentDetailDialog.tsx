@@ -149,7 +149,7 @@ export function AssessmentDetailDialog({
               onClick={onAddToWorkspace}
             >
               <Plus className="size-4" aria-hidden />
-              Add to workspace
+              Add to Eddo workspace
             </Button>
           )}
         </DialogFooter>

@@ -1,13 +1,11 @@
 import { useState, type ReactNode } from "react";
-import { ChevronRight, Plus } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
-import { PrimaryTableAction } from "@/components/TableRowAction";
 import { AssessmentDocumentLabel } from "@/components/AssessmentDocumentLabel";
 import { TableFocusToggle } from "@/components/TableFocusToggle";
 import { TableTerminologyHelp } from "@/components/TableTerminologyHelp";
 import {
   isNamedAssessmentRow,
-  rowShowsTableWorkspaceAdd,
   type TableFocusMode,
 } from "@/lib/assessment-row-tier";
 import {
@@ -19,11 +17,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Assessment, Unit } from "@/lib/assessment-data";
-import {
-  getWorkspaceBlockHint,
-  isWorkspaceReady,
-  rowShowsWorkspaceAdd,
-} from "@/lib/assessment-helpers";
 import { formalAssessmentsInUnit, isTeOpportunity } from "@/lib/assessment-source";
 import { rhythmMarkerClassName } from "@/lib/rhythm-markers";
 import { lessonRowId } from "@/lib/unit-rhythm";
@@ -37,14 +30,12 @@ interface Props {
   unit: Unit;
   query: string;
   onOpenDetail: (assessment: Assessment) => void;
-  onAddToWorkspace: (assessment: Assessment) => void;
 }
 
 export function UnitAssessmentTable({
   unit,
   query,
   onOpenDetail,
-  onAddToWorkspace,
 }: Props) {
   const [focus, setFocus] = useState<TableFocusMode>("prepare");
   const [expandedDrivingQuestion, setExpandedDrivingQuestion] = useState<Set<number>>(
@@ -115,13 +106,15 @@ export function UnitAssessmentTable({
           </colgroup>
           <TableHeader>
             <TableRow className="bg-card hover:bg-card border-b border-border">
-              <TableHead className="font-ui text-eddo-green font-medium py-2.5">Lsn</TableHead>
+              <TableHead
+                className="font-ui text-eddo-green font-medium py-2.5 w-12"
+                title="Lesson number"
+              >
+                #
+              </TableHead>
               <TableHead className="font-ui text-eddo-green font-medium py-2.5">Lesson</TableHead>
               <TableHead className="font-ui text-eddo-green font-medium py-2.5">
-                <span className="block">In this lesson</span>
-                <span className="block text-[9px] font-normal text-muted-foreground/80 normal-case tracking-normal font-body">
-                  Click for details · chevron expands TE · Add on named assessments
-                </span>
+                In this lesson
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -137,7 +130,6 @@ export function UnitAssessmentTable({
                 onToggleDrivingQuestion={() => toggleDrivingQuestion(slot.lessonNum)}
                 onToggleTe={() => toggleTeLesson(slot.lessonNum)}
                 onOpenDetail={onOpenDetail}
-                onAddToWorkspace={onAddToWorkspace}
               />
             ))}
           </TableBody>
@@ -179,7 +171,6 @@ function LessonSlotRows({
   onToggleDrivingQuestion,
   onToggleTe,
   onOpenDetail,
-  onAddToWorkspace,
 }: {
   slot: UnitLessonSlot;
   focus: TableFocusMode;
@@ -189,7 +180,6 @@ function LessonSlotRows({
   onToggleDrivingQuestion: () => void;
   onToggleTe: () => void;
   onOpenDetail: (assessment: Assessment) => void;
-  onAddToWorkspace: (assessment: Assessment) => void;
 }) {
   const padded = String(slot.lessonNum).padStart(2, "0");
   const hasDrivingQuestion =
@@ -235,7 +225,6 @@ function LessonSlotRows({
           )}
           lessonCells={index === 0 ? lessonCells : undefined}
           onOpenDetail={onOpenDetail}
-          onAddToWorkspace={onAddToWorkspace}
         />
       ))}
 
@@ -257,20 +246,11 @@ function LessonSlotRows({
           assessment={assessment}
           className="border-t border-border/40"
           onOpenDetail={onOpenDetail}
-          onAddToWorkspace={onAddToWorkspace}
           nested
         />
       ))}
     </>
   );
-}
-
-function workspaceAddTitle(assessment: Assessment): string | undefined {
-  if (isWorkspaceReady(assessment)) return undefined;
-  if (rowShowsWorkspaceAdd(assessment)) {
-    return getWorkspaceBlockHint(assessment) ?? "Not digitized for workspace yet";
-  }
-  return "Workspace add is for formative and summative assessments with digitized forms";
 }
 
 function AssessmentRow({
@@ -279,7 +259,6 @@ function AssessmentRow({
   className,
   lessonCells,
   onOpenDetail,
-  onAddToWorkspace,
   nested = false,
 }: {
   assessment: Assessment;
@@ -287,13 +266,10 @@ function AssessmentRow({
   className?: string;
   lessonCells?: ReactNode;
   onOpenDetail: (assessment: Assessment) => void;
-  onAddToWorkspace: (assessment: Assessment) => void;
   nested?: boolean;
 }) {
   const teOpportunity = isTeOpportunity(assessment);
   const named = isNamedAssessmentRow(assessment);
-  const showTableAdd = rowShowsTableWorkspaceAdd(assessment);
-  const addReady = isWorkspaceReady(assessment);
   const titleEmphasis = named || teOpportunity;
 
   return (
@@ -309,45 +285,32 @@ function AssessmentRow({
           nested && "pl-6",
         )}
       >
-        <div className="flex items-start gap-2 min-w-0 flex-wrap">
-          <button
-            type="button"
-            onClick={() => onOpenDetail(assessment)}
-            aria-label={`Open ${assessment.title}`}
-            className={cn(
-              "min-w-0 max-w-full text-left rounded-sm",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
-            )}
-          >
-            <p
-              className={cn(
-                "font-ui",
-                titleEmphasis
-                  ? "text-sm font-semibold text-eddo-green"
-                  : "text-xs font-normal text-muted-foreground/85",
-                showTableAdd ? "whitespace-nowrap" : "truncate",
-              )}
-              title={assessment.title}
-            >
-              {assessment.title}
-            </p>
-            {titleEmphasis && (
-              <div className="mt-0.5">
-                <AssessmentDocumentLabel assessment={assessment} variant="table" />
-              </div>
-            )}
-          </button>
-          {showTableAdd && (
-            <PrimaryTableAction
-              label="Add"
-              icon={Plus}
-              disabled={!addReady}
-              title={workspaceAddTitle(assessment)}
-              aria-label={`Add ${assessment.title} to workspace`}
-              onClick={() => onAddToWorkspace(assessment)}
-            />
+        <button
+          type="button"
+          onClick={() => onOpenDetail(assessment)}
+          aria-label={`Open ${assessment.title}`}
+          className={cn(
+            "block w-full min-w-0 max-w-full text-left rounded-sm",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
           )}
-        </div>
+        >
+          <p
+            className={cn(
+              "font-ui truncate",
+              titleEmphasis
+                ? "text-sm font-semibold text-eddo-green"
+                : "text-xs font-normal text-muted-foreground/85",
+            )}
+            title={assessment.title}
+          >
+            {assessment.title}
+          </p>
+          {titleEmphasis && (
+            <div className="mt-0.5">
+              <AssessmentDocumentLabel assessment={assessment} variant="table" />
+            </div>
+          )}
+        </button>
       </TableCell>
     </TableRow>
   );

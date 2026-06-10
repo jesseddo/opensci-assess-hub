@@ -36,7 +36,7 @@ export function TableFocusToggle({ value, onChange, unitAssessmentCount }: Props
             : "text-muted-foreground hover:text-foreground",
         )}
       >
-        Unit assessments only ({unitAssessmentCount})
+        Assessments only ({unitAssessmentCount})
       </button>
     </div>
   );

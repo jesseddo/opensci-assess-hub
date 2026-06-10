@@ -10,33 +10,44 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UnitsUnitIdAssessmentsAssessmentIdRouteImport } from './routes/units/$unitId/assessments/$assessmentId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UnitsUnitIdAssessmentsAssessmentIdRoute =
+  UnitsUnitIdAssessmentsAssessmentIdRouteImport.update({
+    id: '/units/$unitId/assessments/$assessmentId',
+    path: '/units/$unitId/assessments/$assessmentId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/units/$unitId/assessments/$assessmentId': typeof UnitsUnitIdAssessmentsAssessmentIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/units/$unitId/assessments/$assessmentId': typeof UnitsUnitIdAssessmentsAssessmentIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/units/$unitId/assessments/$assessmentId': typeof UnitsUnitIdAssessmentsAssessmentIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/units/$unitId/assessments/$assessmentId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/units/$unitId/assessments/$assessmentId'
+  id: '__root__' | '/' | '/units/$unitId/assessments/$assessmentId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  UnitsUnitIdAssessmentsAssessmentIdRoute: typeof UnitsUnitIdAssessmentsAssessmentIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +59,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/units/$unitId/assessments/$assessmentId': {
+      id: '/units/$unitId/assessments/$assessmentId'
+      path: '/units/$unitId/assessments/$assessmentId'
+      fullPath: '/units/$unitId/assessments/$assessmentId'
+      preLoaderRoute: typeof UnitsUnitIdAssessmentsAssessmentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  UnitsUnitIdAssessmentsAssessmentIdRoute:
+    UnitsUnitIdAssessmentsAssessmentIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

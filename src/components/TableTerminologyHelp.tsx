@@ -35,7 +35,7 @@ export function TableTerminologyHelp({ unit, className }: Props) {
           This table lists everything assessable in Unit {unit.id}:{" "}
           {org.assessmentOpportunityCount} assessment{" "}
           {org.assessmentOpportunityCount === 1 ? "opportunity" : "opportunities"} from the
-          Teacher Edition, plus {org.assessmentDocumentCount} named assessment
+          Teacher Edition, plus {org.assessmentDocumentCount} assessment
           {org.assessmentDocumentCount === 1 ? "" : "s"} from the unit download
           {org.documentCategoryLine ? ` (${org.documentCategoryLine})` : ""}.
         </p>
@@ -59,9 +59,17 @@ export function TableTerminologyHelp({ unit, className }: Props) {
           <div>
             <dt className="font-semibold text-eddo-navy mb-0.5">Assessment guide</dt>
             <dd className="leading-relaxed">
-              Eddo&apos;s interpretive companion for a named assessment — alignment, strong
+              Eddo&apos;s interpretive companion for an assessment — alignment, strong
               understanding, common gaps, and sample responses. Separate from Teacher Edition
               facilitation text.
+            </dd>
+          </div>
+          <div>
+            <dt className="font-semibold text-eddo-navy mb-0.5">Assessment category</dt>
+            <dd className="leading-relaxed">
+              OpenSciEd labels each moment by purpose — Pre-assessment, Formative assessment,
+              Summative assessment, or Peer assessment. Every row shows its category after the kind
+              (for example, Assessment · Formative assessment).
             </dd>
           </div>
         </dl>

@@ -38,7 +38,6 @@
   --color-form: var(--form);
   --color-key: var(--key);
   --font-sans: "Inter", system-ui, sans-serif;
-  --font-serif: Georgia, "Times New Roman", serif;
   --font-display: "Fredoka One", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --ease-out-soft: cubic-bezier(0.32, 0.72, 0, 1);
@@ -133,8 +132,8 @@
   font-family: var(--font-sans);
 }
 
-.font-body {
-  font-family: var(--font-serif);
+.font-mono {
+  font-family: var(--font-mono);
 }
 
 .eddo-nav-shadow {
@@ -149,7 +148,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
   }
 
   h1,
@@ -158,6 +157,8 @@
   h4,
   h5,
   h6,
+  p,
+  li,
   nav,
   button,
   input,

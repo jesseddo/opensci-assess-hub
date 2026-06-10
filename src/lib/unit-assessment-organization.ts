@@ -24,7 +24,7 @@ export function assessmentSystemCategoryLabel(assessment: Assessment): string {
   return assessmentTypeLabel(assessmentSystemCategorySlug(assessment));
 }
 
-/** TE text named a non-default system category (Pre / Peer / Summative). */
+/** TE text named a non-default system category (Pre / Peer / Summative). @deprecated Prefer assessmentSystemCategoryLabel */
 export function explicitOpportunityCategory(assessment: Assessment): AssessmentTypeSlug | null {
   if (!isTeOpportunity(assessment)) return null;
   const slug = assessment.assessmentType;
@@ -96,16 +96,15 @@ export function buildUnitOrganizationSummary(unit: Unit): UnitOrganizationSummar
   };
 }
 
-/** Table / detail labels: row kind + system category when it adds information. */
+/** Table / detail labels: row kind + OpenSciEd assessment category. */
 export function assessmentRowTypeDisplay(assessment: Assessment): {
   primary: string;
-  secondary: string | null;
+  secondary: string;
 } {
   if (isTeOpportunity(assessment)) {
-    const explicit = explicitOpportunityCategory(assessment);
     return {
       primary: ASSESSMENT_OPPORTUNITY_LABEL,
-      secondary: explicit ? assessmentTypeLabel(explicit) : null,
+      secondary: assessmentSystemCategoryLabel(assessment),
     };
   }
   return {

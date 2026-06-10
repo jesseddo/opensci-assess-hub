@@ -41,6 +41,8 @@ export interface IngestedAssessment {
   description: string;
   previewExcerpt?: string;
   files: IngestedFileRefs;
+  /** Related TE opportunity row for formal assessments (ingest-generated). */
+  linkedTeOpportunityId?: string | null;
 }
 
 export interface IngestedUnitManifest {
@@ -180,6 +182,7 @@ export function assessmentsFromManifest(manifest: IngestedUnitManifest): Assessm
       previewExcerpt: row.previewExcerpt,
       opportunityType: row.opportunityType,
       libraryOutput: row.libraryOutput ?? oppMeta?.libraryOutput,
+      linkedTeOpportunityId: row.linkedTeOpportunityId ?? undefined,
       package: buildPackageFromFiles(row.files, row.libraryOutput ?? oppMeta?.libraryOutput),
     };
   });

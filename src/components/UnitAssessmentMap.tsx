@@ -144,7 +144,7 @@ export function UnitAssessmentMap({
 
       <p className="text-xs text-muted-foreground px-1">
         Unit {unit.id} — OpenSciEd assessments and assessment opportunities from the Teacher
-        Edition. Named assessment documents include handouts and keys where available.
+        Edition. Assessment documents include handouts and keys where available.
       </p>
     </div>
   );

@@ -31,7 +31,11 @@ export function AssessmentDocumentLabel({
           className={cn("relative shrink-0", rhythmMarkerClassName(kind, "inline"))}
           aria-hidden
         />
-        <span>{primary}</span>
+        <span>
+          {primary}
+          <span className="text-muted-foreground/60"> · </span>
+          {secondary}
+        </span>
       </p>
     );
   }

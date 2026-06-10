@@ -38,7 +38,7 @@ const GUIDE_INDEX: Record<string, AssessmentGuide> = guidesByUnit as Record<
   AssessmentGuide
 >;
 
-/** Eddo-authored interpretive guide — separate from TE facilitation snippets. */
+/** Generated during ingest from answer keys + linked TE facilitation. */
 export function assessmentGuideFor(assessmentId: string): AssessmentGuide | null {
   return GUIDE_INDEX[assessmentId] ?? null;
 }

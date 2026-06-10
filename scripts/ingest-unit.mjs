@@ -12,6 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const extractTitleScript = path.join(__dirname, "extract-lesson-title.py");
 const extractPacingScript = path.join(__dirname, "extract-lesson-pacing.py");
 const extractOpportunitiesScript = path.join(__dirname, "extract-te-assessment-opportunities.py");
+const extractGuidesScript = path.join(__dirname, "extract-assessment-guides.py");
 const repoRoot = path.join(__dirname, "..");
 const titleOverridesPath = path.join(repoRoot, "src/data/ingested/unit-8.1-title-overrides.json");
 
@@ -383,6 +384,22 @@ const manifest = {
 
 fs.mkdirSync(path.dirname(outPath), { recursive: true });
 fs.writeFileSync(outPath, JSON.stringify(manifest, null, 2));
+
+const guidesOutPath = path.join(repoRoot, "src/data/assessment-guides", `unit-${UNIT_ID}.json`);
+try {
+  const guidesRaw = execFileSync(
+    "python3",
+    [extractGuidesScript, unitDir, outPath, guidesOutPath],
+    { encoding: "utf8" },
+  ).trim();
+  const guidesResult = JSON.parse(guidesRaw);
+  console.log(
+    `Wrote ${guidesResult.guideCount} assessment guides (${guidesResult.linkCount} TE links) → ${guidesOutPath}`,
+  );
+} catch (err) {
+  console.warn("Could not extract assessment guides:", err.message);
+}
+
 const pacingCount = Object.keys(pacing.lessons).length;
 const embeddedCount = assessments.filter((a) => a.opportunityType && a.opportunityType !== "named-package").length;
 console.log(

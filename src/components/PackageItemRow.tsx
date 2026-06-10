@@ -21,7 +21,7 @@ export function PackageItemRow({ item, compact = false }: Props) {
 
   return (
     <div
-      className={`flex items-center justify-between gap-3 rounded-md border px-3 py-2 ${packageItemRowClass(item)}`}
+      className={`flex items-center justify-between gap-3 rounded-md border px-3 py-2 font-ui ${packageItemRowClass(item)}`}
     >
       <div className="min-w-0 flex-1">
         <p className={`font-medium ${compact ? "text-sm" : "text-sm"}`}>{item.label}</p>

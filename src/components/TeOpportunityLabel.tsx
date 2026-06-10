@@ -3,15 +3,38 @@ import { assessmentRowTypeDisplay } from "@/lib/unit-assessment-organization";
 import { rhythmMarkerClassName } from "@/lib/rhythm-markers";
 import { cn } from "@/lib/utils";
 
-/** Teacher Edition assessment opportunity + OpenSciEd assessment type tag. */
+/** Teacher Edition assessment opportunity + OpenSciEd assessment category. */
 export function TeOpportunityLabel({
   assessment,
   className,
+  variant = "default",
 }: {
   assessment: Assessment;
   className?: string;
+  variant?: "default" | "table";
 }) {
   const { primary, secondary } = assessmentRowTypeDisplay(assessment);
+
+  if (variant === "table") {
+    return (
+      <p
+        className={cn(
+          "inline-flex items-center gap-1.5 text-[10px] text-muted-foreground/75 font-ui leading-none",
+          className,
+        )}
+      >
+        <span
+          className={cn("relative shrink-0", rhythmMarkerClassName("none", "inline"))}
+          aria-hidden
+        />
+        <span>
+          {primary}
+          <span className="text-muted-foreground/60"> · </span>
+          {secondary}
+        </span>
+      </p>
+    );
+  }
 
   return (
     <div className={cn("space-y-0.5", className)}>
@@ -22,11 +45,9 @@ export function TeOpportunityLabel({
         />
         <span>{primary}</span>
       </p>
-      {secondary && (
-        <p className="text-[10px] text-muted-foreground/75 font-ui leading-none pl-[14px]">
-          {secondary}
-        </p>
-      )}
+      <p className="text-[10px] text-muted-foreground/75 font-ui leading-none pl-[14px]">
+        {secondary}
+      </p>
     </div>
   );
 }

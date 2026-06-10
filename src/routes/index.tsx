@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { BookOpen, Search } from "lucide-react";
 import {
@@ -7,7 +7,6 @@ import {
   type GradeLevel,
   type Unit,
 } from "@/lib/assessment-data";
-import { AssessmentDetailDialog } from "@/components/AssessmentDetailDialog";
 import { ExportAssessmentDialog } from "@/components/ExportAssessmentDialog";
 import { ExportUnitDialog } from "@/components/ExportUnitDialog";
 import { AddToWorkspaceDialog } from "@/components/AddToWorkspaceDialog";
@@ -32,9 +31,12 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
-type DialogKind = "detail" | "export" | "add" | "export-unit" | null;
+type DialogKind = "export" | "add" | "export-unit" | null;
 
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    unit: typeof search.unit === "string" ? search.unit : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Assessment Library — OpenSciEd" },
@@ -63,9 +65,11 @@ export const Route = createFileRoute("/")({
 });
 
 function AssessmentLibrary() {
+  const navigate = useNavigate();
+  const { unit: unitFromSearch } = Route.useSearch();
   const [schoolLevel, setSchoolLevel] = useState<SchoolLevel>("middle");
   const [gradeId, setGradeId] = useState<string>("grade-8");
-  const [unitId, setUnitId] = useState<string>("8.1");
+  const [unitId, setUnitId] = useState<string>(unitFromSearch ?? "8.1");
   const [query, setQuery] = useState("");
   const [dialog, setDialog] = useState<DialogKind>(null);
   const [selectedAssessment, setSelectedAssessment] = useState<Assessment | null>(null);
@@ -94,11 +98,24 @@ function AssessmentLibrary() {
     }
   }, [grade, unitId]);
 
+  useEffect(() => {
+    if (!unitFromSearch) return;
+    const match = gradeLevels
+      .flatMap((g) => g.units.map((u) => ({ gradeId: g.id, unit: u })))
+      .find(({ unit: u }) => u.id === unitFromSearch);
+    if (!match) return;
+    setGradeId(match.gradeId);
+    setSchoolLevel(schoolLevelForGrade(match.gradeId));
+    setUnitId(match.unit.id);
+  }, [unitFromSearch]);
+
   const isSearching = query.trim().length > 0;
 
   const openDetail = (assessment: Assessment) => {
-    setSelectedAssessment(assessment);
-    setDialog("detail");
+    void navigate({
+      to: "/units/$unitId/assessments/$assessmentId",
+      params: { unitId: unit.id, assessmentId: assessment.id },
+    });
   };
 
   const openExport = (assessment: Assessment) => {
@@ -278,7 +295,7 @@ function AssessmentLibrary() {
             <h1 className="text-2xl font-medium tracking-tight text-eddo-green font-ui">
               Unit {unit.id}: {unit.title}
             </h1>
-            <p className="text-muted-foreground text-sm text-pretty font-body">{unit.description}</p>
+            <p className="text-muted-foreground text-sm text-pretty">{unit.description}</p>
             {isSearching && (
               <p className="text-xs text-muted-foreground font-ui">Showing search results</p>
             )}
@@ -296,21 +313,6 @@ function AssessmentLibrary() {
           onOpenDetail={openDetail}
         />
       </main>
-
-      <AssessmentDetailDialog
-        assessment={selectedAssessment}
-        unit={unit}
-        open={dialog === "detail"}
-        onOpenChange={(open) => !open && closeDialog()}
-        onExport={() => {
-          closeDialog();
-          if (selectedAssessment) openExport(selectedAssessment);
-        }}
-        onAddToWorkspace={() => {
-          closeDialog();
-          if (selectedAssessment) openAdd(selectedAssessment);
-        }}
-      />
 
       <ExportAssessmentDialog
         assessment={selectedAssessment}

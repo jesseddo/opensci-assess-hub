@@ -32,14 +32,14 @@ export function TeacherEditionDialog({ unit, lessonNum, open, onOpenChange }: Pr
           <DialogTitle className="font-ui text-eddo-green">
             Lesson {padded}: {shortTitle}
           </DialogTitle>
-          <DialogDescription className="font-body text-left text-foreground/90 leading-relaxed pt-2">
+          <DialogDescription className="text-left text-foreground/90 leading-relaxed pt-2">
             {drivingQuestion}
           </DialogDescription>
         </DialogHeader>
 
         <div className="rounded-2xl border border-border bg-muted/30 px-4 py-3 space-y-2">
           <p className="text-sm font-ui font-medium text-eddo-navy">Assessment guidance in Teacher Edition</p>
-          <p className="text-sm font-body text-muted-foreground leading-relaxed">
+          <p className="text-sm text-muted-foreground leading-relaxed">
             This lesson has no standalone assessment document in the library yet. OpenSciEd embeds assessment
             opportunities in the lesson plan — use the Teacher Edition for timing, facilitation, and
             scoring guidance.

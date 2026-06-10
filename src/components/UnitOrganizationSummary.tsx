@@ -18,7 +18,7 @@ export function UnitOrganizationSummary({ unit }: Props) {
       </span>
       {" · "}
       <span className="text-foreground/90">
-        {docs} named assessment{docs === 1 ? "" : "s"}
+        {docs} assessment{docs === 1 ? "" : "s"}
       </span>
       {org.documentCategoryLine ? (
         <span className="text-muted-foreground"> ({org.documentCategoryLine})</span>

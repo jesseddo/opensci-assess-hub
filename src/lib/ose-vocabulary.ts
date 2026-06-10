@@ -1,7 +1,9 @@
 /**
  * Labels aligned with OpenSciEd’s assessment system
- * (see openscied.org/knowledge — Pre, Formative, Summative, Self, Peer assessments;
- *  Teacher Edition “Assessment opportunity” call-outs).
+ * @see https://openscied.org/knowledge/what-type-of-assessments-are-available-in-an-openscied-unit/
+ *
+ * Row kinds: Assessment (standalone document) vs Assessment opportunity (TE call-out).
+ * Categories: Pre-assessment, Formative, Summative, Peer, Self.
  */
 
 /** TE heading: ASSESSMENT OPPORTUNITY */

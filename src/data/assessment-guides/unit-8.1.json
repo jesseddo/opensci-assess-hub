@@ -3,43 +3,251 @@
     "assessmentId": "81-6-soccer-assessment",
     "status": "draft",
     "progression": {
-      "early": "Students treat force as one-sided (only the head or only the ball “has” the force) or confuse speed with force strength without linking kinetic energy in the collision system.",
-      "target": "Students explain how peak force and energy transfer in soccer collisions can destabilize brain tissue, using equal-and-opposite contact forces and comparing collisions with different mass and speed."
+      "early": "Peak forces on the head and the ball are shown as the same during a header, both drawn in the diagram in question 1 and the selected answer in question 2a.",
+      "target": "Apply science ideas and use evidence to construct an explanation for how the amount of peak force and energy transfer (cause) in soccer collisions result in instability in the brain (concussions, effect) due to sudden c…"
     },
     "alignment": {
-      "performanceExpectations": ["MS-PS2-1", "MS-PS2-2"],
+      "performanceExpectations": [
+        "MS-PS2-1",
+        "MS-PS2-2"
+      ],
       "lessonPe": "6.A",
-      "note": "OpenSciEd Lesson 6 performance expectation — apply science ideas about forces and energy transfer to explain instability in the brain during collisions."
+      "note": "Apply science ideas and use evidence to construct an explanation for how the amount of peak force and energy transfer (cause) in soccer collisions result in instability in the brain (concussions, effect) due to sudden changes at the cellular level."
     },
     "understanding": {
       "strong": [
-        "Peak forces on the head and ball are equal during a header and shown on both objects in the model.",
-        "Less total kinetic energy in the collision system corresponds to lower peak forces on each object.",
-        "Contact forces are equal in strength on both objects regardless of which object was moving faster before contact."
+        "Peak forces on the head and the ball are shown as the same during a header, both drawn in the diagram in question 1 and the selected answer in question 2a.",
+        "Contact forces are applied to both objects and are always equal regardless of speed or mass in question 2b.",
+        "A player hitting a nonmoving object should experience the least amount of peak force in questions 3a and 3b due to the moving player #84 having the same amount of kinetic energy in each collision. The masses and speeds of the other objects determine their kinetic energy before the collision, and the less total kinetic energy in the collision, the less the peak forces on each object during the collision.",
+        "Collisions with objects that are moving with a greater mass or speed in comparison with collisions that have lesser mass and speed will experience more peak force, as seen in the two potential answers for question 5.",
+        "A concussion can result from a force of 400–1000 N on the head. There has been debate in different sports about how to best prevent concussions. In soccer, one idea is to ban headers (when a ball makes contact with a head) in youth and professional soccer.",
+        "1. How would the forces from a header from such a light soccer ball cause a concussion? Draw two free-body diagrams showing how the amount of peak force on the head would compare to the amount of peak force on a soccer ball in a header that causes a collision."
       ],
-      "emerging": [
-        "Correct direction of forces but incomplete link between kinetic energy and peak force magnitude.",
-        "Compares collisions qualitatively (harder/softer) without referencing mass, speed, or energy in the system."
-      ],
+      "emerging": [],
       "gaps": [
-        "Forces drawn on only one object, or unequal force arrows between interacting objects.",
-        "Claims heavier or faster objects “have more force” without explaining the interaction pair."
+        "You can’t have force on only one object when it makes contact with another object (forces come in pairs).",
+        "Students may or may not add ideas about KE or energy transfer."
       ]
     },
-    "misconceptions": [
-      "The moving object is the only thing that applies force in a collision.",
-      "A softer collision means forces disappear rather than decrease.",
-      "Peak force and energy transfer are unrelated to concussion risk."
-    ],
-    "studentSamples": [
-      {
-        "label": "Approaching target",
-        "excerpt": "“In a header the ball and head push on each other the same amount. If the ball is coming fast, there’s more energy in the system so the peak force is higher on both.”"
-      },
-      {
-        "label": "Common gap",
-        "excerpt": "“The player’s head hits the ball so the head has the force. The ball doesn’t push back as much because it’s lighter.”"
-      }
-    ]
+    "misconceptions": [],
+    "studentSamples": []
+  },
+  "81-7-looking-back-explaining-collisions": {
+    "assessmentId": "81-7-looking-back-explaining-collisions",
+    "status": "draft",
+    "progression": {
+      "early": ": On Looking back: Explaining and predicting kinetic energy changes in the system, any answers for questions 1 and 2 are acceptable.",
+      "target": "Construct an explanation based on quantitative relationships (scale) for whether decreasing the mass of a moving object or decreasing its speed would have a bigger effect on the peak forces produced in a collision betwe…"
+    },
+    "alignment": {
+      "performanceExpectations": [
+        "MS-PS2-3"
+      ],
+      "lessonPe": "7.B",
+      "note": "Construct an explanation based on quantitative relationships (scale) for whether decreasing the mass of a moving object or decreasing its speed would have a bigger effect on the peak forces produced in a collision between it and a stationary object and use th…"
+    },
+    "understanding": {
+      "strong": [
+        ": On Looking back: Explaining and predicting kinetic energy changes in the system, any answers for questions 1 and 2 are acceptable. Many students will say that all three investigations were useful for question 1 (understanding the relationship between kinetic energy and damage). Most students will say investigation 3 in particular was most useful for question 2 (understanding the relationship between changes in mass and speed of a moving object and the amount of kinetic energy it has). Look for the following answers for questions 3 through 5:",
+        "Q3): Reducing the mass of an object in half should reduce the kinetic energy to be half of what it was.",
+        "Q4): Reducing the speed of an object in half should reduce the kinetic energy to be one quarter of what it was.",
+        "Q5): We can predict how much more or less kinetic energy an object has when its speed or mass increases or decreases. These changes in kinetic energy would affect the peak forces produced in a collision. And if those peak forces don’t exceed the elastic limit of the materials or objects that collide, then no damage will occur, but if they do exceed it then damage will occur."
+      ],
+      "emerging": [],
+      "gaps": []
+    },
+    "misconceptions": [],
+    "studentSamples": []
+  },
+  "81-8-modeling-other-force-interactions": {
+    "assessmentId": "81-8-modeling-other-force-interactions",
+    "status": "draft",
+    "progression": {
+      "early": "",
+      "target": ""
+    },
+    "alignment": {
+      "performanceExpectations": [
+        "MS-PS2-3"
+      ]
+    },
+    "understanding": {
+      "strong": [
+        "Q1) Draw and label two free body diagrams showing the contact forces between the box and the cart as they are moving together at time 4.",
+        "Q2) Besides the cart, what other objects or subsystems is the box either making contact with or colliding with at time 4?",
+        "Q4) Do you think these kinds of forces are also acting on the cart as it coasts down the track at time 2? Why?",
+        "+ Friction would be acting on the cart wheels, but they aren’t sliding over the track like the box and there is less surface area in contact with the track, so there would be less friction on the cart from contact with the track than on the box from contact with the track.",
+        "Q5) Where does this tell you some of the energy in the system might be going as the box and cart move down the track??",
+        "+ Some of the energy might be transferred to the air."
+      ],
+      "emerging": [
+        "Q5) Where does this tell you some of the energy in the system might be going as the box and cart move down the track??",
+        "+ Some of the energy might be transferred to the air."
+      ],
+      "gaps": []
+    },
+    "misconceptions": [],
+    "studentSamples": []
+  },
+  "81-10-baseball-assessment-1": {
+    "assessmentId": "81-10-baseball-assessment-1",
+    "status": "draft",
+    "progression": {
+      "early": "Questions 1-2: Students should show a decrease in ball speed attributed to the loss of energy due to air resistance.",
+      "target": "Students apply the science ideas to explain multiple baseball phenomena, including the effects of air density and wind on ball speed (changes to the stability of the system and its effect on kinetic energy changes due t…"
+    },
+    "alignment": {
+      "performanceExpectations": [
+        "MS-PS2-1",
+        "MS-PS2-2"
+      ],
+      "lessonPe": "10.B",
+      "note": "Students apply the science ideas to explain multiple baseball phenomena, including the effects of air density and wind on ball speed (changes to the stability of the system and its effect on kinetic energy changes due to air resistance), bat mass vs."
+    },
+    "understanding": {
+      "strong": [
+        "Questions 1-2: Students should show a decrease in ball speed attributed to the loss of energy due to air resistance. Students should justify this idea using free-body diagrams showing the relative strengths of air resistance due to wind speed.",
+        "Question 3: Students should use ideas for investigations that utilize previous labs and analogies made in class.",
+        "Questions 4-6: Students will plot points based upon data, then predict a data point based on the line of best fit.",
+        "Question 7: Students should explain that an increase in bat mass would decrease swing speed due to the amount of energy needed to move a more-massive object.",
+        "Questions 8-9: Students should reflect an understanding that speed increases at a greater rate when kinetic energy is doubled. A decrease in air resistance would increase the visible effects of this relationship.",
+        "Question 10: Students should argue the warning on the bat supports the coach’s claim that it produces higher peak forces in a collision than other bats, but nothing on the warning provides information to support the claim that it deforms less in a collision."
+      ],
+      "emerging": [],
+      "gaps": [
+        "Students may interpret this question from different viewpoints in which the ball could be in contact with air, which would have an affect on the speed of the ball. Any of the following viewpoints are acceptable if justified with explanations of peak force and/or energy increases to the system.",
+        "It does not support the argument that it is due to less deformation. We do not have enough data to make this claim. (If students try to make this claim by referencing ideas from Lesson 3, that is appropriate at this time. This idea will be explored further in Lessons 11-12.)",
+        "Accept any response related to an amount of deformation and time to spring back. Some students may also connect this to peak forces and energy transfer. Any of these connections are appropriate at this time in the lesson set as they foreground relationships that they will explore in the last lessons of the unit."
+      ]
+    },
+    "misconceptions": [],
+    "studentSamples": []
+  },
+  "81-10-baseball-assessment-2": {
+    "assessmentId": "81-10-baseball-assessment-2",
+    "status": "draft",
+    "progression": {
+      "early": "Questions 1-2: Students should show a decrease in ball speed attributed to the loss of energy due to air resistance.",
+      "target": "Students apply the science ideas to explain multiple baseball phenomena, including the effects of air density and wind on ball speed (changes to the stability of the system and its effect on kinetic energy changes due t…"
+    },
+    "alignment": {
+      "performanceExpectations": [
+        "MS-PS2-1",
+        "MS-PS2-2"
+      ],
+      "lessonPe": "10.B",
+      "note": "Students apply the science ideas to explain multiple baseball phenomena, including the effects of air density and wind on ball speed (changes to the stability of the system and its effect on kinetic energy changes due to air resistance), bat mass vs."
+    },
+    "understanding": {
+      "strong": [
+        "Questions 1-2: Students should show a decrease in ball speed attributed to the loss of energy due to air resistance. Students should justify this idea using free-body diagrams showing the relative strengths of air resistance due to wind speed.",
+        "Question 3: Students should use ideas for investigations that utilize previous labs and analogies made in class.",
+        "Questions 4-6: Students will plot points based upon data, then predict a data point based on the line of best fit.",
+        "Question 7: Students should explain that an increase in bat mass would decrease swing speed due to the amount of energy needed to move a more-massive object.",
+        "Questions 8-9: Students should reflect an understanding that speed increases at a greater rate when kinetic energy is doubled. A decrease in air resistance would increase the visible effects of this relationship.",
+        "Question 10: Students should argue the warning on the bat supports the coach’s claim that it produces higher peak forces in a collision than other bats, but nothing on the warning provides information to support the claim that it deforms less in a collision."
+      ],
+      "emerging": [],
+      "gaps": [
+        "Students may interpret this question from different viewpoints in which the ball could be in contact with air, which would have an affect on the speed of the ball. Any of the following viewpoints are acceptable if justified with explanations of peak force and/or energy increases to the system.",
+        "It does not support the argument that it is due to less deformation. We do not have enough data to make this claim. (If students try to make this claim by referencing ideas from Lesson 3, that is appropriate at this time. This idea will be explored further in Lessons 11-12.)",
+        "Accept any response related to an amount of deformation and time to spring back. Some students may also connect this to peak forces and energy transfer. Any of these connections are appropriate at this time in the lesson set as they foreground relationships that they will explore in the last lessons of the unit."
+      ]
+    },
+    "misconceptions": [],
+    "studentSamples": []
+  },
+  "81-14-stakeholder-feedback-form": {
+    "assessmentId": "81-14-stakeholder-feedback-form",
+    "status": "draft",
+    "progression": {
+      "early": "Students should list the design decisions they have made according to their redesign table and decision matrix and explain the potential effects (which can be positive and negative) that each design decision will specif…",
+      "target": "14."
+    },
+    "alignment": {
+      "performanceExpectations": [
+        "MS-PS2-1",
+        "MS-PS2-2"
+      ],
+      "note": "14."
+    },
+    "understanding": {
+      "strong": [
+        "Students should list the design decisions they have made according to their redesign table and decision matrix and explain the potential effects (which can be positive and negative) that each design decision will specifically have on stakeholder concerns or considerations. Students also consider what effect the decision will have on the overall design of the device and explain how those decisions impact the performance of the design (which can be positive and negative).",
+        "Column 1: If students need help listing their design decisions, direct them back to Redesigning Your Protective Device. Ask students what changes were made to the design and have them list those changes in column 1. Also have students look back at their decision matrix. Ask students what decisions they made to assign primary, secondary, and tertiary criteria. If they prioritized one criterion over another, have them add that design decision to column 1.",
+        "Column 2: Direct students to look at their list of design decisions in column 1. Ask students, How would this decision affect the people who use or rely on this device? Would those people have any additional concerns because of this choice? Ask students these two questions about each design decision listed.",
+        "Column 3: Direct students to look at column 1 one last time and think about how these decisions impacted the actual physical structure of the device. Ask students what would happen to the device if they made a different decision, used a different material, or prioritized something else instead of what they had chosen. Tell students to write those potential outcomes of different decisions on their device structures in this third column."
+      ],
+      "emerging": [],
+      "gaps": []
+    },
+    "misconceptions": [],
+    "studentSamples": []
+  },
+  "81-15-cheerleading-performance-task-part-1": {
+    "assessmentId": "81-15-cheerleading-performance-task-part-1",
+    "status": "draft",
+    "progression": {
+      "early": "See Item alignment guide to determine which questions on Part 2: Cheerleading Headgear Assessment are aligned to which crosscutting concepts and related pieces of disciplinary core ideas.",
+      "target": "Design a solution to a problem to reduce the damage to an object in a collision (by reducing peak forces) by considering the properties of different materials and shapes being used to serve particular functions."
+    },
+    "alignment": {
+      "performanceExpectations": [
+        "MS-PS2-1",
+        "MS-PS2-2"
+      ],
+      "lessonPe": "15.C",
+      "note": "Design a solution to a problem to reduce the damage to an object in a collision (by reducing peak forces) by considering the properties of different materials and shapes being used to serve particular functions."
+    },
+    "understanding": {
+      "strong": [
+        "See Item alignment guide to determine which questions on Part 2: Cheerleading Headgear Assessment are aligned to which crosscutting concepts and related pieces of disciplinary core ideas.",
+        "See Part 2 Key: Cheerleading Headgear Assessment for scoring guidance and anticipated responses to the related questions on Part 2: Cheerleading Headgear Assessment.",
+        "Watch the video with your class to see the kinds of movements that the cheerleading athletes experience.",
+        "Part 1 Here are three different headgear devices that are currently being marketed as protection from potential concussions in cheerleading.",
+        "The headgear devices shown above were initially designed for other sports, and then people started using them for cheerleading.",
+        "1a. If you were a protective headgear device designer evaluating the materials being used in another company’s design, what properties or materials would you expect to see in a good protective device if it were cut open?"
+      ],
+      "emerging": [],
+      "gaps": [
+        "If students agree (support the base person’s claim): Students must argue that there is a contact force on the head from the headband as it is compressed and makes contact with the base person.",
+        "Optional (if students are referring to design #1): In the case where there was a cushioning material shape with surface area that was different between one surface it was in contact with versus another, it may have further reduced the amount of force on one object by spreading that force over a larger area.",
+        "If students disagree (refute the base person’s claim): Students must claim that the headband does not protect the entire head, so it is possible that the two heads would collide without the headband experiencing the contact force between both heads during the collision."
+      ]
+    },
+    "misconceptions": [],
+    "studentSamples": []
+  },
+  "81-15-cheerleading-performance-task-part-2": {
+    "assessmentId": "81-15-cheerleading-performance-task-part-2",
+    "status": "draft",
+    "progression": {
+      "early": "See Item alignment guide to determine which questions on Part 2: Cheerleading Headgear Assessment are aligned to which crosscutting concepts and related pieces of disciplinary core ideas.",
+      "target": "Design a solution to a problem to reduce the damage to an object in a collision (by reducing peak forces) by considering the properties of different materials and shapes being used to serve particular functions."
+    },
+    "alignment": {
+      "performanceExpectations": [
+        "MS-PS2-1",
+        "MS-PS2-2"
+      ],
+      "lessonPe": "15.C",
+      "note": "Design a solution to a problem to reduce the damage to an object in a collision (by reducing peak forces) by considering the properties of different materials and shapes being used to serve particular functions."
+    },
+    "understanding": {
+      "strong": [
+        "See Item alignment guide to determine which questions on Part 2: Cheerleading Headgear Assessment are aligned to which crosscutting concepts and related pieces of disciplinary core ideas.",
+        "See Part 2 Key: Cheerleading Headgear Assessment for scoring guidance and anticipated responses to the related questions on Part 2: Cheerleading Headgear Assessment.",
+        "Here are three different headgear devices used for cheerleading that you reviewed in part 1 of this assessment.",
+        "Your task is to create an optimal headgear design for a cheerleader to wear in a competition. Complete the prompts below to describe your design choices.",
+        "1. What is the purpose of the design? What criteria does the headgear you design need to meet?",
+        "+ Purpose of the design is to provide protection to the head."
+      ],
+      "emerging": [],
+      "gaps": [
+        "Students may list additional constraints. All applicable and reasonable constraints are acceptable."
+      ]
+    },
+    "misconceptions": [],
+    "studentSamples": []
   }
 }

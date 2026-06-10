@@ -49,6 +49,8 @@ export interface Assessment {
   buildingTowards?: string;
   lookListenFor?: string;
   whatToDo?: string;
+  /** Ingest link to TE row with facilitation for this named assessment */
+  linkedTeOpportunityId?: string;
   package: PackageItem[];
 }
 

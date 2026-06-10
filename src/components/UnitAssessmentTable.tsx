@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import { ChevronRight } from "lucide-react";
 
 import { AssessmentDocumentLabel } from "@/components/AssessmentDocumentLabel";
+import { TeOpportunityLabel } from "@/components/TeOpportunityLabel";
 import { TableFocusToggle } from "@/components/TableFocusToggle";
 import { TableTerminologyHelp } from "@/components/TableTerminologyHelp";
 import {
@@ -80,9 +81,9 @@ export function UnitAssessmentTable({
           onFocusChange={handleFocusChange}
           unitAssessmentCount={unitAssessmentTotal}
         />
-        <p className="text-sm text-muted-foreground font-body py-12 text-center border border-dashed border-border rounded-lg bg-card">
+        <p className="text-sm text-muted-foreground py-12 text-center border border-dashed border-border rounded-lg bg-card">
           {focus === "unit-assessments"
-            ? "No unit assessments match your filter."
+            ? "No assessments match your filter."
             : `No assessments match "${query.trim()}".`}
         </p>
       </div>
@@ -307,7 +308,11 @@ function AssessmentRow({
           </p>
           {titleEmphasis && (
             <div className="mt-0.5">
-              <AssessmentDocumentLabel assessment={assessment} variant="table" />
+              {teOpportunity ? (
+                <TeOpportunityLabel assessment={assessment} variant="table" />
+              ) : (
+                <AssessmentDocumentLabel assessment={assessment} variant="table" />
+              )}
             </div>
           )}
         </button>
@@ -410,7 +415,7 @@ function LessonTitleBlock({
         </p>
       )}
       {expanded && hasDrivingQuestion && (
-        <p className="text-xs text-muted-foreground font-body mt-1 leading-relaxed">
+        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
           {slot.drivingQuestion}
         </p>
       )}

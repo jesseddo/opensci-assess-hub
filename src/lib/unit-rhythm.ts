@@ -162,8 +162,8 @@ export function buildUnitRhythm(unit: Unit): UnitRhythmOverview {
 
   const summaryParts = [
     `${lessonCount} lessons`,
-    `${assessmentOpportunityCount} TE ${assessmentOpportunityCount === 1 ? "opportunity" : "opportunities"}`,
-    `${formalAssessmentCount} named assessment${formalAssessmentCount === 1 ? "" : "s"}`,
+    `${assessmentOpportunityCount} assessment ${assessmentOpportunityCount === 1 ? "opportunity" : "opportunities"}`,
+    `${formalAssessmentCount} assessment${formalAssessmentCount === 1 ? "" : "s"}`,
   ];
   if (unit.suggestedPacingDays != null) {
     summaryParts.push(`length: ${unit.suggestedPacingDays} days`);

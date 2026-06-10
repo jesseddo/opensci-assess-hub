@@ -61,7 +61,7 @@ export const OPPORTUNITY_TYPE_CATALOG: {
   },
   {
     type: "named-package",
-    label: "Named assessment package",
+    label: "Assessment package",
     description: "Standalone Assessment document in OpenSciEd materials",
     libraryOutput: "full-package",
     libraryOutputLabel: "Full package",

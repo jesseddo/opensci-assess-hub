@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development && node scripts/generate-index-html.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "ingest:unit": "node scripts/ingest-unit.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

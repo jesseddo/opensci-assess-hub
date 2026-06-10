@@ -139,7 +139,7 @@ For each lesson folder:
 
 **Row shape:** id, lesson, title, standards (by lesson band), `files.{studentHandout, teacherGuide, answerKey}`, `assessmentType`, `opportunityType: "named-package"`.
 
-### Step 3 — TE assessment opportunities
+### Step 3 — Assessment opportunities (TE scrape)
 
 **Script:** `scripts/extract-te-assessment-opportunities.py`
 
@@ -155,9 +155,11 @@ For each lesson TE docx:
 5. Write static HTML snapshots → `public/guidance/8-1/L{lesson}-AO{index}.html`.
 6. Apply **title overrides** from `src/data/ingested/unit-8.1-title-overrides.json`.
 
-**Dedup rule:** TE rows whose handout is already a named assessment row are skipped.
+**Dedup rule:** TE rows whose handout is already an Assessment row are skipped.
 
 **Typical count for 8.1:** ~36 TE opportunity rows.
+
+**Dev deep-dive:** [TECHNICAL-NOTES-ASSESSMENT-OPPORTUNITIES.md](./TECHNICAL-NOTES-ASSESSMENT-OPPORTUNITIES.md) — parser logic, field derivation, dedup, QA, troubleshooting.
 
 ### Step 4 — Assessment guides + TE linking
 

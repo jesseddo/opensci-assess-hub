@@ -27,6 +27,8 @@ This regenerates the catalog, TE guidance HTML, assessment guides, and TE links.
 
 | Doc | Purpose |
 |-----|---------|
+| **[docs/PRD-ASSESSMENT-OPPORTUNITY-INGEST.md](./docs/PRD-ASSESSMENT-OPPORTUNITY-INGEST.md)** | Plain-language PRD — how assessment opportunities get into the library |
+| **[docs/TECHNICAL-NOTES-ASSESSMENT-OPPORTUNITIES.md](./docs/TECHNICAL-NOTES-ASSESSMENT-OPPORTUNITIES.md)** | Dev notes — TE assessment opportunity scrape |
 | **[docs/OPENSCIED-ASSESSMENT-SYSTEM.md](./docs/OPENSCIED-ASSESSMENT-SYSTEM.md)** | OpenSciEd assessment system — PRD explainer + diagram |
 | **[docs/STYLE-GUIDE.md](./docs/STYLE-GUIDE.md)** | Typography & UI tokens (sans-serif only) |
 | **[docs/ONBOARDING.md](./docs/ONBOARDING.md)** | 5-minute start for new devs |

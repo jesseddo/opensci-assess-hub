@@ -1,7 +1,8 @@
 import { Download, Plus } from "lucide-react";
 
 import { AssessmentGuidePanel } from "@/components/AssessmentGuidePanel";
-import { guidanceDetailSectionLabel } from "@/components/guidance-panel-ui";
+import { guidanceDetailCaptionGap, guidanceDetailContentGap, guidanceDetailSectionLabel } from "@/components/guidance-panel-ui";
+import { MaterialsSectionSource } from "@/components/MaterialProvenanceBlock";
 import { PackageItemRow } from "@/components/PackageItemRow";
 import { TeacherEditionGuidancePanel } from "@/components/TeacherEditionGuidancePanel";
 import { Button } from "@/components/ui/button";
@@ -10,10 +11,8 @@ import { assessmentGuideFor } from "@/lib/assessment-guide";
 import { assessmentWithTeGuidance } from "@/lib/assessment-te-guidance";
 import {
   getDisplayPackageItems,
-  getWorkspaceBlockHint,
   isExportReady,
   isWorkspaceReady,
-  rowShowsWorkspaceAdd,
 } from "@/lib/assessment-helpers";
 import { rowShowsTableWorkspaceAdd } from "@/lib/assessment-row-tier";
 import { assessmentRowTypeDisplay } from "@/lib/unit-assessment-organization";
@@ -44,11 +43,6 @@ export function AssessmentDetailView({
   const exportReady = isExportReady(assessment);
   const showWorkspaceAdd = rowShowsTableWorkspaceAdd(assessment);
   const workspaceAddReady = isWorkspaceReady(assessment);
-  const workspaceBlockHint = rowShowsWorkspaceAdd(assessment)
-    ? getWorkspaceBlockHint(assessment)
-    : showWorkspaceAdd && !workspaceAddReady
-      ? "Workspace add is for formative and summative assessments with digitized forms"
-      : null;
 
   return (
     <div className="space-y-6 font-ui">
@@ -86,41 +80,45 @@ export function AssessmentDetailView({
 
       {assessment.previewExcerpt && (
         <div className="rounded-lg border border-border bg-muted/40 p-4">
-          <p className={cn("mb-2", guidanceDetailSectionLabel)}>
-            Preview
+          <p className={guidanceDetailSectionLabel}>Preview</p>
+          <p className={cn(guidanceDetailContentGap, "text-sm leading-relaxed")}>
+            {assessment.previewExcerpt}
           </p>
-          <p className="text-sm leading-relaxed">{assessment.previewExcerpt}</p>
         </div>
       )}
 
       {displayMaterials.length > 0 && (
-        <div className="space-y-2">
-          <p className={guidanceDetailSectionLabel}>
-            Materials
-          </p>
-          <div className="space-y-2">
+        <section>
+          <h2 className={guidanceDetailSectionLabel}>Materials</h2>
+          {unit.ingestedAt && (
+            <MaterialsSectionSource
+              unit={unit}
+              assessment={assessment}
+              className={guidanceDetailCaptionGap}
+            />
+          )}
+          <div
+            className={cn(
+              "space-y-2",
+              unit.ingestedAt ? guidanceDetailContentGap : "mt-2",
+            )}
+          >
             {displayMaterials.map((item) => (
-              <PackageItemRow key={item.kind} item={item} />
+              <PackageItemRow
+                key={item.kind}
+                item={item}
+                assessment={assessment}
+                unit={unit}
+              />
             ))}
           </div>
-          {exportReady && (
-            <p className="pt-1 text-xs leading-relaxed text-muted-foreground">
-              Choose what to export in the next step — handout, guide, key, form, or rubric.
-            </p>
-          )}
-        </div>
+        </section>
       )}
 
       {hasOseBlock && displayMaterials.length === 0 && (
         <p className="rounded-lg border border-dashed border-border p-3 font-ui text-sm leading-relaxed text-muted-foreground">
           This is Teacher Edition facilitation guidance — read the call-out above while teaching.
           Open the full lesson in your Teacher Edition for surrounding context.
-        </p>
-      )}
-
-      {workspaceBlockHint && (
-        <p className="text-xs leading-relaxed text-amber-700/90 dark:text-amber-500/90">
-          {workspaceBlockHint}
         </p>
       )}
 
@@ -138,11 +136,7 @@ export function AssessmentDetailView({
               variant="outline"
               className="w-full sm:w-auto"
               disabled={!workspaceAddReady}
-              title={
-                workspaceAddReady
-                  ? undefined
-                  : (workspaceBlockHint ?? "Not digitized for workspace yet")
-              }
+              title={workspaceAddReady ? undefined : "Not digitized for workspace yet"}
               onClick={onAddToWorkspace}
             >
               <Plus className="size-4" aria-hidden />

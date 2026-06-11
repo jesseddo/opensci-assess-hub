@@ -1,6 +1,7 @@
-import { Check, Download, Link2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Download, Link2 } from "lucide-react";
 
-import { PackageItemRow } from "@/components/PackageItemRow";
+import { ExportMaterialChooserRow } from "@/components/ExportMaterialChooserRow";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,9 +11,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { Assessment, Unit } from "@/lib/assessment-data";
-import { getAvailablePackageItems, getDisplayPackageItems, getUnavailablePackageItems } from "@/lib/assessment-helpers";
-import { copyPackageLinks, exportPackage } from "@/lib/library-actions";
+import type { Assessment, PackageItemKind, Unit } from "@/lib/assessment-data";
+import {
+  getAvailablePackageItems,
+  getDisplayPackageItems,
+} from "@/lib/assessment-helpers";
+import { sortPackageItemsForExportChooser } from "@/lib/export-material-order";
+import { copySelectedPackageLinks, exportSelectedMaterials } from "@/lib/library-actions";
 
 interface Props {
   assessment: Assessment | null;
@@ -21,79 +26,119 @@ interface Props {
   onOpenChange: (open: boolean) => void;
 }
 
-export function ExportAssessmentDialog({ assessment, unit, open, onOpenChange }: Props) {
-  if (!assessment) return null;
+function defaultSelection(assessment: Assessment): Set<PackageItemKind> {
+  return new Set(getAvailablePackageItems(assessment).map((item) => item.kind));
+}
 
-  const display = getDisplayPackageItems(assessment);
-  const available = getAvailablePackageItems(assessment);
-  const unavailable = getUnavailablePackageItems(assessment);
+export function ExportAssessmentDialog({ assessment, unit, open, onOpenChange }: Props) {
+  const [selected, setSelected] = useState<Set<PackageItemKind>>(() => new Set());
+
+  const materials = useMemo(
+    () =>
+      assessment
+        ? sortPackageItemsForExportChooser(getDisplayPackageItems(assessment))
+        : [],
+    [assessment],
+  );
+  const available = assessment ? getAvailablePackageItems(assessment) : [];
+  const selectedItems = materials.filter((item) => item.available && selected.has(item.kind));
+  const allAvailableSelected =
+    available.length > 0 && available.every((item) => selected.has(item.kind));
+
+  useEffect(() => {
+    if (open && assessment) {
+      setSelected(defaultSelection(assessment));
+    }
+  }, [open, assessment]);
+
+  const toggleKind = (kind: PackageItemKind, checked: boolean) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(kind);
+      else next.delete(kind);
+      return next;
+    });
+  };
+
+  const toggleAllAvailable = () => {
+    if (!assessment) return;
+    if (allAvailableSelected) {
+      setSelected(new Set());
+    } else {
+      setSelected(defaultSelection(assessment));
+    }
+  };
+
+  if (!assessment) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl max-h-[92vh] overflow-y-auto">
+      <DialogContent className="max-w-xl max-h-[92vh] overflow-y-auto font-ui">
         <DialogHeader>
           <DialogDescription className="font-mono text-[10px] uppercase tracking-widest">
             Unit {unit.id} · Export materials
           </DialogDescription>
           <DialogTitle>{assessment.title}</DialogTitle>
           <DialogDescription>
-            You&apos;ll receive copies of these files. Edit them in Google Drive as needed for your
-            classroom.
+            Choose which materials to copy to your Google Drive. Unavailable items are shown but
+            cannot be selected.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
-              Materials ({available.length} of {display.length})
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Materials to export
             </p>
-            <div className="space-y-2">
-              {display.map((item) => (
-                <PackageItemRow key={item.kind} item={item} compact />
-              ))}
-            </div>
+            {available.length > 0 && (
+              <button
+                type="button"
+                onClick={toggleAllAvailable}
+                className="text-xs font-medium text-primary underline-offset-2 hover:underline"
+              >
+                {allAvailableSelected ? "Clear selection" : "Select all available"}
+              </button>
+            )}
           </div>
 
-          {unavailable.length > 0 && (
-            <p className="text-xs text-muted-foreground rounded-md border border-dashed border-border p-3">
-              <span className="font-medium text-foreground">Partial export: </span>
-              {unavailable.map((item) => item.label).join(", ")} not included. Export will include
-              available items only.
-            </p>
-          )}
+          <div className="space-y-2" role="group" aria-label="Export material choices">
+            {materials.map((item) => (
+              <ExportMaterialChooserRow
+                key={item.kind}
+                item={item}
+                checked={selected.has(item.kind)}
+                onCheckedChange={toggleKind}
+              />
+            ))}
+          </div>
 
-          {available.length > 0 && (
-            <ul className="text-xs text-muted-foreground space-y-1">
-              {available.map((item) => (
-                <li key={item.kind} className="flex items-center gap-2">
-                  <Check className="size-3.5 text-primary shrink-0" aria-hidden />
-                  {item.label}
-                </li>
-              ))}
-            </ul>
-          )}
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {selectedItems.length === 0
+              ? "Select one or more available materials to export."
+              : `${selectedItems.length} material${selectedItems.length === 1 ? "" : "s"} selected — copies will be placed in your Drive.`}
+          </p>
         </div>
 
         <DialogFooter className="flex-col sm:flex-row gap-2">
           <Button
             type="button"
             variant="outline"
-            disabled={available.length === 0}
-            onClick={() => copyPackageLinks(assessment)}
+            disabled={selectedItems.length === 0}
+            onClick={() => copySelectedPackageLinks(selectedItems)}
           >
             <Link2 className="size-4" aria-hidden />
             Copy links
           </Button>
           <Button
             type="button"
-            disabled={available.length === 0}
+            disabled={selectedItems.length === 0}
             onClick={() => {
-              exportPackage(assessment);
+              exportSelectedMaterials(assessment, selectedItems);
               onOpenChange(false);
             }}
           >
             <Download className="size-4" aria-hidden />
-            Export materials
+            Export to Google Drive
           </Button>
         </DialogFooter>
       </DialogContent>

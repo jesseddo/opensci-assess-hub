@@ -29,41 +29,60 @@ export function exportPackage(assessment: Assessment): {
   exported: PackageItem[];
   skipped: PackageItem[];
 } {
-  const exported = getAvailablePackageItems(assessment);
+  return exportSelectedMaterials(assessment, getAvailablePackageItems(assessment));
+}
+
+export function exportSelectedMaterials(
+  assessment: Assessment,
+  selected: PackageItem[],
+): {
+  exported: PackageItem[];
+  skipped: PackageItem[];
+} {
+  const exported = selected.filter((item) => item.available);
   const skipped = getUnavailablePackageItems(assessment);
 
   if (exported.length === 0) {
     toast.error("Nothing to export", {
-      description: "This assessment has no exportable materials yet.",
+      description: "Select at least one available material to export.",
     });
     return { exported, skipped };
   }
 
-  const exportedNames = exported.map((item) => item.label).join(", ");
-
-  if (skipped.length > 0) {
-    const skippedNames = skipped.map((item) => item.label).join(", ");
-    toast.success(`Export ready — ${exported.length} files (prototype)`, {
-      description: `Exported: ${exportedNames}. Not included: ${skippedNames}. Edit copies in Google Drive.`,
-    });
-  } else {
-    toast.success(`Export ready — ${exported.length} files (prototype)`, {
-      description: `Exported: ${exportedNames}. Edit copies in Google Drive as needed.`,
-    });
+  for (const item of exported) {
+    if (item.url?.startsWith("/")) {
+      window.open(item.url, "_blank", "noopener,noreferrer");
+    }
   }
+
+  const exportedNames = exported.map((item) => item.label).join(", ");
+  const driveItems = exported.filter((item) => !item.url?.startsWith("/"));
+
+  toast.success(`Copied to Google Drive (prototype)`, {
+    description:
+      driveItems.length > 0
+        ? `${exportedNames} — saved to your Drive folder "Eddo Exports / ${assessment.title}".`
+        : `${exportedNames} — guidance pages opened in new tabs.`,
+  });
 
   return { exported, skipped };
 }
 
-export function copyPackageLinks(assessment: Assessment): void {
-  const exported = getAvailablePackageItems(assessment);
-  if (exported.length === 0) {
-    toast.error("No links to copy");
+export function copySelectedPackageLinks(selected: PackageItem[]): void {
+  if (selected.length === 0) {
+    toast.error("No links to copy", {
+      description: "Select at least one available material.",
+    });
     return;
   }
+  const labels = selected.map((item) => item.fileName ?? item.label).join(", ");
   toast.success("Links copied (prototype)", {
-    description: exported.map((item) => item.fileName ?? item.label).join(", "),
+    description: labels,
   });
+}
+
+export function copyPackageLinks(assessment: Assessment): void {
+  copySelectedPackageLinks(getAvailablePackageItems(assessment));
 }
 
 export function exportUnitPackages(unit: Unit): void {

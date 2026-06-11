@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 import type { Assessment } from "@/lib/assessment-data";
 import {
   getAssessmentMetaLine,
-  getWorkspaceBlockHint,
   isExportReady,
-  rowShowsWorkspaceAdd,
   rowShowsWorkspaceAddButton,
 } from "@/lib/assessment-helpers";
 
@@ -30,7 +28,6 @@ export function AssessmentCard({
   const highlight = assessment.isSummative;
   const exportReady = isExportReady(assessment);
   const showWorkspaceAdd = rowShowsWorkspaceAddButton(assessment);
-  const blockHint = rowShowsWorkspaceAdd(assessment) ? getWorkspaceBlockHint(assessment) : null;
 
   return (
     <div
@@ -70,12 +67,6 @@ export function AssessmentCard({
           <p className="text-xs text-muted-foreground leading-relaxed text-pretty">
             {getAssessmentMetaLine(assessment)}
           </p>
-
-          {blockHint && (
-            <p className="text-xs text-amber-700/90 dark:text-amber-500/90 leading-relaxed">
-              {blockHint}
-            </p>
-          )}
         </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-2 shrink-0">

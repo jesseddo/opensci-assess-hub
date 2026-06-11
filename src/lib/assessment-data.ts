@@ -19,6 +19,8 @@ export interface PackageItem {
   kind: PackageItemKind;
   label: string;
   fileName?: string;
+  /** Relative path inside the OpenSciEd unit download folder */
+  sourcePath?: string;
   url?: string;
   available: boolean;
   unavailableReason?: string;
@@ -74,6 +76,8 @@ export interface Unit {
   suggestedPacingDays?: number;
   lessons?: UnitLesson[];
   assessments: Assessment[];
+  /** ISO timestamp when this unit was last ingested from the OpenSciEd download */
+  ingestedAt?: string;
 }
 
 export interface GradeLevel {

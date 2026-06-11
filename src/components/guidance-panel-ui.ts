@@ -21,6 +21,12 @@ export const guidanceBody = "text-sm text-muted-foreground leading-[1.65] font-u
 export const guidanceDetailSectionLabel =
   "text-base font-bold uppercase tracking-widest text-muted-foreground font-ui";
 
+/** Label → supporting caption (e.g. Materials source line). */
+export const guidanceDetailCaptionGap = "mt-1";
+
+/** Caption or label → primary section content (lists, cards). */
+export const guidanceDetailContentGap = "mt-3";
+
 export const guidanceSectionDivider =
   "border-t border-border/40 pt-5 first:border-t-0 first:pt-0";
 

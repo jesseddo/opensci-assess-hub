@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { BookOpen, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import {
   gradeLevels,
   type Assessment,
@@ -10,6 +10,7 @@ import {
 import { ExportAssessmentDialog } from "@/components/ExportAssessmentDialog";
 import { ExportUnitDialog } from "@/components/ExportUnitDialog";
 import { AddToWorkspaceDialog } from "@/components/AddToWorkspaceDialog";
+import { LibraryBrandMark } from "@/components/LibraryBrandMark";
 import { UnitAssessmentTable } from "@/components/UnitAssessmentTable";
 import { UnitRhythmOverview } from "@/components/UnitRhythmOverview";
 import {
@@ -160,25 +161,7 @@ function AssessmentLibrary() {
     <div className="relative min-h-screen bg-background text-foreground selection:bg-primary/15 overflow-x-hidden">
       <header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur-md font-ui">
         <div className="max-w-7xl mx-auto px-6 py-2.5 space-y-2">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="size-8 bg-eddo-green rounded-xl flex items-center justify-center shrink-0">
-              <BookOpen className="size-3.5 text-eddo-cream" strokeWidth={2.5} />
-            </div>
-            <div className="flex items-baseline gap-2 min-w-0 flex-wrap">
-              <span className="font-display text-lg leading-none text-eddo-green tracking-wide shrink-0">
-                eddo
-              </span>
-              <span className="text-eddo-green/35 text-sm leading-none select-none" aria-hidden>
-                ·
-              </span>
-              <span className="text-sm font-semibold text-eddo-navy leading-none">
-                Assessment Library
-              </span>
-              <span className="inline-flex items-center rounded-full border border-border bg-card/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-eddo-green">
-                OpenSciEd
-              </span>
-            </div>
-          </div>
+          <LibraryBrandMark />
 
           <div className="flex flex-wrap items-end gap-x-2.5 gap-y-2">
             <div className="space-y-0.5 shrink-0">

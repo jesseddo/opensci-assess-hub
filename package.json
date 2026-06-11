@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "ingest:unit": "node scripts/ingest-unit.mjs"
+    "ingest:unit": "node scripts/ingest-unit.mjs",
+    "ingest:previews": "python3 scripts/extract-material-previews.py"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

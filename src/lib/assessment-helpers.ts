@@ -117,19 +117,6 @@ export function getAssessmentMetaLine(assessment: Assessment): string {
   return `${standards} · ${typePart} · Materials: ${pkg}${gapSuffix}`;
 }
 
-/** Shown on card only when Add to Workspace is blocked */
-export function getWorkspaceBlockHint(assessment: Assessment): string | null {
-  if (!isWorkspaceEligible(assessment)) return null;
-  if (isWorkspaceReady(assessment)) return null;
-  if (!packageItemKindApplies(assessment, "google-form")) {
-    return null;
-  }
-  if (!getPackageItem(assessment, "google-form")?.available) {
-    return "Not digitized for Workspace — export the handout materials instead.";
-  }
-  return "Missing scoring materials for Workspace.";
-}
-
 export function isExportReady(assessment: Assessment): boolean {
   return getAvailablePackageItems(assessment).length > 0;
 }

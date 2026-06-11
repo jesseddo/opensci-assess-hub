@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthSignInRouteImport } from './routes/auth/sign-in'
 import { Route as UnitsUnitIdAssessmentsAssessmentIdRouteImport } from './routes/units/$unitId/assessments/$assessmentId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSignInRoute = AuthSignInRouteImport.update({
+  id: '/auth/sign-in',
+  path: '/auth/sign-in',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UnitsUnitIdAssessmentsAssessmentIdRoute =
@@ -26,27 +32,35 @@ const UnitsUnitIdAssessmentsAssessmentIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth/sign-in': typeof AuthSignInRoute
   '/units/$unitId/assessments/$assessmentId': typeof UnitsUnitIdAssessmentsAssessmentIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth/sign-in': typeof AuthSignInRoute
   '/units/$unitId/assessments/$assessmentId': typeof UnitsUnitIdAssessmentsAssessmentIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth/sign-in': typeof AuthSignInRoute
   '/units/$unitId/assessments/$assessmentId': typeof UnitsUnitIdAssessmentsAssessmentIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/units/$unitId/assessments/$assessmentId'
+  fullPaths: '/' | '/auth/sign-in' | '/units/$unitId/assessments/$assessmentId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/units/$unitId/assessments/$assessmentId'
-  id: '__root__' | '/' | '/units/$unitId/assessments/$assessmentId'
+  to: '/' | '/auth/sign-in' | '/units/$unitId/assessments/$assessmentId'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth/sign-in'
+    | '/units/$unitId/assessments/$assessmentId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthSignInRoute: typeof AuthSignInRoute
   UnitsUnitIdAssessmentsAssessmentIdRoute: typeof UnitsUnitIdAssessmentsAssessmentIdRoute
 }
 
@@ -57,6 +71,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/sign-in': {
+      id: '/auth/sign-in'
+      path: '/auth/sign-in'
+      fullPath: '/auth/sign-in'
+      preLoaderRoute: typeof AuthSignInRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/units/$unitId/assessments/$assessmentId': {
@@ -71,6 +92,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthSignInRoute: AuthSignInRoute,
   UnitsUnitIdAssessmentsAssessmentIdRoute:
     UnitsUnitIdAssessmentsAssessmentIdRoute,
 }

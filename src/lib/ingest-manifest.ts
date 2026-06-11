@@ -75,6 +75,12 @@ function localUrl(p: string | null): string | undefined {
   return `ingest:${p}`;
 }
 
+function externalUrl(p: string | null): string | undefined {
+  if (!p) return undefined;
+  if (p.startsWith("http://") || p.startsWith("https://")) return p;
+  return localUrl(p);
+}
+
 function resolveAssessmentType(
   row: IngestedAssessment,
   source: AssessmentSource,
@@ -120,9 +126,11 @@ function buildPackageFromFiles(
     {
       kind: "google-form",
       label: "Google Form",
-      fileName: fileNameFromPath(files.googleForm),
-      sourcePath: files.googleForm ?? undefined,
-      url: localUrl(files.googleForm),
+      fileName: files.googleForm?.startsWith("http")
+        ? "Google Form"
+        : fileNameFromPath(files.googleForm),
+      sourcePath: files.googleForm?.startsWith("http") ? undefined : (files.googleForm ?? undefined),
+      url: externalUrl(files.googleForm),
       available: Boolean(files.googleForm),
       unavailableReason:
         libraryOutput === "handout-form-planned" ? "Planned — not yet digitized" : "Not yet digitized",

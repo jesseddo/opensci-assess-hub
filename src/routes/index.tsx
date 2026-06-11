@@ -13,6 +13,7 @@ import { AddToWorkspaceDialog } from "@/components/AddToWorkspaceDialog";
 import { LibraryBrandMark } from "@/components/LibraryBrandMark";
 import { UnitAssessmentTable } from "@/components/UnitAssessmentTable";
 import { UnitRhythmOverview } from "@/components/UnitRhythmOverview";
+import { useAddToWorkspaceGate } from "@/hooks/use-add-to-workspace-gate";
 import {
   defaultGradeForLevel,
   gradePickerLabel,
@@ -68,6 +69,7 @@ export const Route = createFileRoute("/")({
 function AssessmentLibrary() {
   const navigate = useNavigate();
   const { unit: unitFromSearch } = Route.useSearch();
+  const { openAddToWorkspace } = useAddToWorkspaceGate();
   const [schoolLevel, setSchoolLevel] = useState<SchoolLevel>("middle");
   const [gradeId, setGradeId] = useState<string>("grade-8");
   const [unitId, setUnitId] = useState<string>(unitFromSearch ?? "8.1");
@@ -126,7 +128,7 @@ function AssessmentLibrary() {
 
   const openAdd = (assessment: Assessment) => {
     setSelectedAssessment(assessment);
-    setDialog("add");
+    openAddToWorkspace(assessment, unit.id, "index", () => setDialog("add"));
   };
 
   const openExportUnit = () => {

@@ -400,6 +400,16 @@ try {
   console.warn("Could not extract assessment guides:", err.message);
 }
 
+const previewsOutPath = path.join(repoRoot, "src/data/material-previews", `unit-${UNIT_ID}.json`);
+const extractPreviewsScript = path.join(__dirname, "extract-material-previews.py");
+try {
+  execFileSync("python3", [extractPreviewsScript, unitDir, outPath, previewsOutPath], {
+    stdio: "inherit",
+  });
+} catch (err) {
+  console.warn("Could not extract material previews:", err.message);
+}
+
 const pacingCount = Object.keys(pacing.lessons).length;
 const embeddedCount = assessments.filter((a) => a.opportunityType && a.opportunityType !== "named-package").length;
 console.log(

@@ -37,7 +37,7 @@ TE_NOISE = frozenset(
     }
 )
 
-SEE_KEY_RE = re.compile(r"^See .+ Key for", re.IGNORECASE)
+SEE_KEY_RE = re.compile(r"^See .+(?:Key|Assessment Key|Item alignment)", re.IGNORECASE)
 FIELD_RE = re.compile(r"^(Name|Date):\s", re.IGNORECASE)
 QUESTION_RE = re.compile(r"^(\d+)\.\s+")
 SUB_QUESTION_RE = re.compile(r"^(\d+[a-z])\.\s+", re.IGNORECASE)
@@ -55,9 +55,37 @@ RESPONSE_LABEL_RE = re.compile(
 LESSON_STEP_RE = re.compile(r"^\d+\s*·\s")
 TIMING_RE = re.compile(r"^\d+\s*min$", re.IGNORECASE)
 TE_SECTION_START_RE = re.compile(
-    r"^(building towards:|what to look/listen for:|what to do:)",
+    r"^(building towards:|what to look(?:/listen)?(?: for)?:|what to do:)",
     re.IGNORECASE,
 )
+LOOK_HEADER_RE = re.compile(r"^what to look(?:/listen)?(?: for)?:?\s*(.*)$", re.IGNORECASE)
+LESSON_FLOW_RE = re.compile(
+    r"^(Check criteria|Compare overall|Suggested prompt|Sample student response|Project slide|Display slide|Reflect on weighted|Say,|Ask students to complete|Circulate as|Allow students to work|\d+ · )",
+    re.IGNORECASE,
+)
+TITLE_STOP_WORDS = frozenset(
+    {
+        "assessment",
+        "performance",
+        "task",
+        "form",
+        "other",
+        "modeling",
+    }
+)
+
+
+def part_proximity_bonus(paragraphs: List[str], start: int, assessment_title: str) -> int:
+    part_match = re.search(r"part (\d+)", assessment_title.lower())
+    if not part_match:
+        return 0
+    part_num = part_match.group(1)
+    for offset, paragraph in enumerate(paragraphs[start : min(start + 10, len(paragraphs))]):
+        if re.search(rf"part {part_num}\b", paragraph, re.IGNORECASE):
+            return 24 - offset
+        if re.search(rf"part {'2' if part_num == '1' else '1'}\b", paragraph, re.IGNORECASE):
+            return -20
+    return -8
 
 
 def docx_paragraphs(docx_path: Path) -> List[str]:
@@ -83,6 +111,8 @@ def is_te_noise(paragraph: str) -> bool:
     stripped = paragraph.strip()
     if stripped.upper() in TE_NOISE:
         return True
+    if stripped.lower().startswith("continued from previous"):
+        return True
     if LESSON_STEP_RE.match(stripped):
         return True
     if TIMING_RE.match(stripped):
@@ -92,6 +122,131 @@ def is_te_noise(paragraph: str) -> bool:
     if stripped.startswith("✱"):
         return True
     return False
+
+
+def is_lesson_flow(paragraph: str) -> bool:
+    return bool(LESSON_FLOW_RE.match(paragraph.strip()))
+
+
+def title_tokens(title: str) -> List[str]:
+    return [w for w in re.findall(r"[a-z0-9]+", title.lower()) if len(w) > 2]
+
+
+def excerpt_window_score(paragraphs: List[str], start: int, assessment_title: str) -> int:
+    window = " ".join(paragraphs[start : min(start + 18, len(paragraphs))]).lower()
+    title_lower = assessment_title.lower()
+    score = 0
+
+    if title_lower in window:
+        score += 80
+
+    for phrase in re.findall(r"[a-z0-9][a-z0-9\\-— ]{8,}", title_lower):
+        phrase = phrase.strip()
+        if phrase and phrase in window:
+            score += 30
+
+    part_match = re.search(r"part (\d+)", title_lower)
+    if part_match:
+        part_num = part_match.group(1)
+        if re.search(rf"part {part_num}\b", window, re.IGNORECASE):
+            score += 60
+        wrong_part = "2" if part_num == "1" else "1"
+        if re.search(rf"part {wrong_part}\b", window, re.IGNORECASE) and not re.search(
+            rf"part {part_num}\b", window, re.IGNORECASE
+        ):
+            score -= 50
+
+    assessment_num = re.search(r"assessment (\d+)", title_lower)
+    if assessment_num:
+        num = assessment_num.group(1)
+        if re.search(rf"assessment {num}\b", window) or re.search(rf"key {num}\b", window):
+            score += 50
+        other = "2" if num == "1" else "1"
+        if re.search(rf"key {other}\b", window) and not re.search(rf"key {num}\b", window):
+            score -= 35
+        if re.search(r"assessment 1 or", window) or re.search(r"assessment 2 or", window):
+            score -= 45
+
+    for token in title_tokens(assessment_title):
+        if token not in TITLE_STOP_WORDS and token in window:
+            score += 12
+
+    if "baseball" in title_lower and "baseball" in window:
+        score += 35
+    if "baseball" in title_lower and "10.b" in window:
+        score += 25
+    if "soccer" in title_lower and "soccer" in window:
+        score += 35
+    if "cheerleading" in title_lower and "cheerleading" in window:
+        score += 35
+    if "stakeholder" in title_lower and "stakeholder feedback form" in window:
+        score += 45
+    if "looking back" in title_lower and "looking back" in window:
+        score += 40
+
+    if re.search(r"what to look", window, re.IGNORECASE):
+        score += 10
+    if "see key" in window or SEE_KEY_RE.search(window):
+        score += 15
+
+    score += part_proximity_bonus(paragraphs, start, assessment_title)
+    return score
+
+
+def find_distribute_anchor(paragraphs: List[str], assessment_title: str) -> Optional[int]:
+    title_lower = assessment_title.lower()
+    for i, paragraph in enumerate(paragraphs):
+        lower = paragraph.lower()
+        if f"distribute {title_lower}" in lower:
+            return i
+        if title_lower in lower and lower.startswith("materials:"):
+            return i
+    return None
+
+
+def find_building_towards_start(paragraphs: List[str], assessment_title: str) -> Optional[int]:
+    candidates = [
+        i
+        for i, paragraph in enumerate(paragraphs)
+        if re.search(r"building towards:", paragraph, re.IGNORECASE)
+    ]
+    if not candidates:
+        return None
+
+    best = max(candidates, key=lambda idx: excerpt_window_score(paragraphs, idx, assessment_title))
+    if excerpt_window_score(paragraphs, best, assessment_title) >= 12:
+        return best
+    return None
+
+
+def excerpt_end_index(paragraphs: List[str], start: int) -> int:
+    end = start + 1
+    in_what_to_do = False
+
+    while end < len(paragraphs):
+        paragraph = paragraphs[end]
+        if is_te_noise(paragraph):
+            break
+
+        if re.match(r"^what to do:?\s*$", paragraph, re.IGNORECASE):
+            in_what_to_do = True
+            end += 1
+            continue
+
+        if in_what_to_do and is_lesson_flow(paragraph):
+            break
+
+        if (
+            not in_what_to_do
+            and end > start + 2
+            and is_lesson_flow(paragraph)
+            and not re.match(r"^questions? \d", paragraph, re.IGNORECASE)
+        ):
+            break
+
+        end += 1
+
+    return end
 
 
 def strip_te_label(text: str, label: str) -> str:
@@ -206,6 +361,9 @@ def preview_styles() -> str:
 def format_teacher_guide(paragraphs: List[str]) -> str:
     parts: List[str] = []
     i = 0
+    while i < len(paragraphs) and is_te_noise(paragraphs[i]):
+        i += 1
+
     while i < len(paragraphs):
         p = paragraphs[i]
         if is_te_noise(p):
@@ -218,13 +376,30 @@ def format_teacher_guide(paragraphs: List[str]) -> str:
             i += 1
             continue
 
-        if re.match(r"^what to look/listen for:?\s*$", p, re.IGNORECASE):
+        look_match = LOOK_HEADER_RE.match(p)
+        if look_match:
             parts.append('<h2 class="section">What to look / listen for</h2>')
+            inline = look_match.group(1).strip()
+            if inline:
+                if SEE_KEY_RE.search(inline) or inline.lower().startswith("see "):
+                    parts.append(f'<aside class="callout">{escape(inline)}</aside>')
+                else:
+                    parts.append(f"<p>{escape(inline)}</p>")
             i += 1
             look_items: List[str] = []
             while i < len(paragraphs):
                 nxt = paragraphs[i]
-                if is_te_noise(nxt) or TE_SECTION_START_RE.match(nxt) or SEE_KEY_RE.match(nxt):
+                if (
+                    is_te_noise(nxt)
+                    or TE_SECTION_START_RE.match(nxt)
+                    or re.match(r"^what to do:?\s*$", nxt, re.IGNORECASE)
+                ):
+                    break
+                if SEE_KEY_RE.match(nxt) or (
+                    nxt.lower().startswith("see key") and look_items
+                ):
+                    break
+                if is_lesson_flow(nxt):
                     break
                 look_items.append(nxt)
                 i += 1
@@ -236,15 +411,40 @@ def format_teacher_guide(paragraphs: List[str]) -> str:
                 )
             continue
 
-        if SEE_KEY_RE.match(p):
+        if SEE_KEY_RE.match(p) or p.lower().startswith("see key"):
             parts.append(f'<aside class="callout">{escape(p)}</aside>')
             i += 1
+            continue
+
+        if re.match(r"^what to do:?\s*$", p, re.IGNORECASE):
+            parts.append('<h2 class="section">What to do</h2>')
+            i += 1
+            action_items: List[str] = []
+            while i < len(paragraphs):
+                nxt = paragraphs[i]
+                if is_te_noise(nxt) or TE_SECTION_START_RE.match(nxt):
+                    break
+                if is_lesson_flow(nxt):
+                    break
+                action_items.append(nxt)
+                i += 1
+            if action_items:
+                parts.append(
+                    "<ul class=\"look-list\">"
+                    + "".join(f"<li>{escape(item)}</li>" for item in action_items)
+                    + "</ul>"
+                )
             continue
 
         what_to_do = re.match(r"^what to do:\s*(.+)$", p, re.IGNORECASE)
         if what_to_do:
             parts.append('<h2 class="section">What to do</h2>')
             parts.append(f"<p>{escape(what_to_do.group(1))}</p>")
+            i += 1
+            continue
+
+        if p.lower().startswith("distribute ") or p.lower().startswith("materials:"):
+            parts.append(f"<p><strong>{escape(p)}</strong></p>")
             i += 1
             continue
 
@@ -466,6 +666,374 @@ def format_answer_key(paragraphs: List[str]) -> str:
     return "".join(parts)
 
 
+FILE_UPLOAD_QUESTION_RE = re.compile(
+    r"\b(draw|diagram|pictures?|sketches?|images?|upload|photos?)\b",
+    re.IGNORECASE,
+)
+
+
+def is_remote_url(value: Optional[str]) -> bool:
+    if not value:
+        return False
+    return value.startswith("http://") or value.startswith("https://")
+
+
+def google_form_snapshot_styles() -> str:
+    return """
+    @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap');
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: Roboto, "Google Sans", system-ui, sans-serif;
+      max-width: 46rem;
+      margin: 0 auto;
+      padding: 0.75rem 0.75rem 2rem;
+      color: #202124;
+      background: #f0ebf8;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    .form-header-card,
+    .form-question,
+    .form-image-card {
+      background: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      margin: 0.75rem 0;
+      overflow: hidden;
+    }
+    .form-header-card {
+      border-top: 8px solid #673ab7;
+      padding: 1.35rem 1.4rem 1.2rem;
+    }
+    .form-header-card h1 {
+      font-family: "Google Sans", Roboto, sans-serif;
+      font-size: 2rem;
+      font-weight: 400;
+      margin: 0 0 0.65rem;
+      line-height: 1.25;
+      color: #202124;
+    }
+    .form-header-card .form-description {
+      font-size: 0.875rem;
+      color: #5f6368;
+      margin: 0;
+    }
+    .form-header-card .form-meta {
+      font-size: 0.75rem;
+      color: #80868b;
+      margin: 0.85rem 0 0;
+    }
+    .form-question {
+      padding: 1.15rem 1.4rem 1.25rem;
+      display: flow-root;
+    }
+    .form-question-text {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #202124;
+      margin: 0 0 0.85rem;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+      word-wrap: break-word;
+    }
+    .choice-list { list-style: none; padding: 0; margin: 0; }
+    .choice-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      margin-bottom: 0.6rem;
+      font-size: 0.875rem;
+      color: #3c4043;
+      line-height: 1.45;
+    }
+    .choice-list li::before {
+      content: "";
+      width: 1.125rem;
+      height: 1.125rem;
+      border: 2px solid #5f6368;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .response-surface {
+      border-bottom: 1px solid #dadce0;
+      min-height: 2.75rem;
+      padding: 0.35rem 0;
+      font-size: 0.875rem;
+      color: #80868b;
+    }
+    .form-image-card {
+      padding: 1rem 1.4rem 1.2rem;
+    }
+    .form-image-card figcaption {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #202124;
+      margin-bottom: 0.75rem;
+    }
+    .form-image-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+      border: 1px solid #e8eaed;
+    }
+    .snapshot-note {
+      margin: 1rem 0 0;
+      font-size: 0.75rem;
+      color: #5f6368;
+      line-height: 1.5;
+      padding: 0 0.25rem;
+    }
+    """
+
+
+def google_form_snapshot_config_path(out_dir: Path) -> Path:
+    return out_dir / "google-form.snapshot.json"
+
+
+def load_google_form_snapshot_config(out_dir: Path) -> Optional[Dict[str, Any]]:
+    path = google_form_snapshot_config_path(out_dir)
+    if not path.is_file():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def render_snapshot_response(response: str, hint: Optional[str] = None) -> str:
+    if response == "file-upload":
+        return ""
+    if response == "multiple-choice":
+        return ""
+    return (
+        '<div class="response-surface" aria-disabled="true">'
+        "Your answer"
+        "</div>"
+    )
+
+
+def render_snapshot_block(block: Dict[str, Any]) -> str:
+    block_type = block.get("type")
+    if block_type == "image":
+        caption = block.get("caption") or ""
+        src = block.get("src") or ""
+        alt = block.get("alt") or caption
+        return (
+            '<figure class="form-image-card">'
+            f"<figcaption>{escape(caption)}</figcaption>"
+            f'<img src="{escape(src)}" alt="{escape(alt)}" loading="lazy" />'
+            "</figure>"
+        )
+
+    if block_type != "question":
+        return ""
+
+    question = block.get("text") or ""
+    response = block.get("response") or "paragraph"
+    parts = [
+        '<div class="form-question">',
+        f'<p class="form-question-text">{escape(question)}</p>',
+    ]
+    choices = block.get("choices") or []
+    if response == "multiple-choice" and choices:
+        parts.append(
+            '<ul class="choice-list">'
+            + "".join(f"<li>{escape(choice)}</li>" for choice in choices)
+            + "</ul>"
+        )
+    else:
+        parts.append(render_snapshot_response(response, block.get("hint")))
+    parts.append("</div>")
+    return "".join(parts)
+
+
+def format_google_form_snapshot_from_config(config: Dict[str, Any]) -> str:
+    blocks = config.get("blocks") or []
+    return "".join(render_snapshot_block(block) for block in blocks)
+
+
+def google_form_snapshot_html_from_config(
+    *,
+    unit_id: str,
+    lesson: str,
+    config: Dict[str, Any],
+    source_note: str,
+) -> str:
+    title = config.get("title") or "Google Form"
+    description = config.get("description") or ""
+    body_html = format_google_form_snapshot_from_config(config)
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{escape(title)} — Google Form snapshot</title>
+  <style>{google_form_snapshot_styles()}</style>
+</head>
+<body>
+  <header class="form-header-card">
+    <h1>{escape(title)}</h1>
+    <p class="form-description">{escape(description)}</p>
+    <p class="form-meta">Eddo digitized Google Form · OpenSciEd Unit {escape(unit_id)} · {escape(lesson)}</p>
+  </header>
+  {body_html}
+  <p class="snapshot-note">{escape(source_note)}</p>
+</body>
+</html>
+"""
+
+
+def form_response_markup(question: str) -> str:
+    if FILE_UPLOAD_QUESTION_RE.search(question):
+        return ""
+    return (
+        '<div class="response-surface" aria-disabled="true">'
+        "Long answer text"
+        "</div>"
+    )
+
+
+def format_google_form_snapshot(paragraphs: List[str]) -> str:
+    parts: List[str] = []
+    i = 0
+    pending_intro: List[str] = []
+
+    def flush_intro() -> None:
+        if not pending_intro:
+            return
+        parts.append(
+            '<div class="form-description">'
+            + "".join(f"<p>{escape(p)}</p>" for p in pending_intro)
+            + "</div>"
+        )
+        pending_intro.clear()
+
+    while i < len(paragraphs):
+        p = paragraphs[i]
+
+        if FIELD_RE.match(p):
+            i += 1
+            continue
+
+        if len(p) < 60 and p.endswith("Assessment") and not QUESTION_RE.match(p):
+            i += 1
+            continue
+
+        if QUESTION_RE.match(p) or SUB_QUESTION_RE.match(p):
+            flush_intro()
+            question_html = escape(p)
+            i += 1
+            scenarios, i = collect_scenario_options(paragraphs, i)
+            options, i = collect_mc_options(paragraphs, i)
+            choices = scenarios or options
+
+            block = [
+                '<div class="form-question">',
+                f'<p class="form-question-text">{question_html}</p>',
+            ]
+            if choices:
+                block.append(
+                    '<ul class="choice-list">'
+                    + "".join(f"<li>{escape(opt)}</li>" for opt in choices)
+                    + "</ul>"
+                )
+            else:
+                block.append(form_response_markup(p))
+            block.append("</div>")
+            parts.append("".join(block))
+            continue
+
+        pending_intro.append(p)
+        i += 1
+
+    flush_intro()
+    return "".join(parts)
+
+
+def google_form_snapshot_html(
+    *,
+    unit_id: str,
+    lesson: str,
+    assessment_title: str,
+    form_url: str,
+    source_file: str,
+    paragraphs: List[str],
+) -> str:
+    body_html = format_google_form_snapshot(paragraphs)
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{escape(assessment_title)} — Google Form snapshot</title>
+  <style>{google_form_snapshot_styles()}</style>
+</head>
+<body>
+  <header class="form-banner">
+    <h1>{escape(assessment_title)}</h1>
+    <p class="meta">Eddo digitized Google Form · OpenSciEd Unit {escape(unit_id)} · {escape(lesson)}</p>
+  </header>
+  {body_html}
+  <p class="snapshot-note">Static form preview generated from {escape(source_file)} — not a live embed. Open the linked Google Form to respond or upload files.</p>
+</body>
+</html>
+"""
+
+
+def write_google_form_snapshot(
+    *,
+    repo_root: Path,
+    unit_slug: str,
+    assessment_id: str,
+    unit_id: str,
+    lesson: str,
+    title: str,
+    form_url: str,
+    handout_path: Path,
+    paragraphs: List[str],
+) -> Dict[str, Any]:
+    out_dir = repo_root / "public" / "previews" / unit_slug / assessment_id
+    out_dir.mkdir(parents=True, exist_ok=True)
+    html_name = "google-form.html"
+    html_path = out_dir / html_name
+
+    snapshot_config = load_google_form_snapshot_config(out_dir)
+    if snapshot_config:
+        config_path = google_form_snapshot_config_path(out_dir)
+        html = google_form_snapshot_html_from_config(
+            unit_id=unit_id,
+            lesson=lesson,
+            config=snapshot_config,
+            source_note=(
+                f"Curated form preview from {config_path.name} — matches the digitized Google Form. "
+                "Open the linked form to respond or upload files."
+            ),
+        )
+        source_modified = file_modified_iso(config_path)
+        generated_from = config_path.name
+        preview_count = len(snapshot_config.get("blocks") or [])
+    else:
+        html = google_form_snapshot_html(
+            unit_id=unit_id,
+            lesson=lesson,
+            assessment_title=title,
+            form_url=form_url,
+            source_file=handout_path.name,
+            paragraphs=paragraphs,
+        )
+        source_modified = file_modified_iso(handout_path)
+        generated_from = handout_path.name
+        preview_count = len(paragraphs)
+
+    html_path.write_text(html, encoding="utf-8")
+    return {
+        "previewUrl": f"/previews/{unit_slug}/{assessment_id}/{html_name}",
+        "sourceModifiedAt": source_modified,
+        "formUrl": form_url,
+        "generatedFrom": generated_from,
+        "previewParagraphCount": preview_count,
+    }
+
+
 def format_body_html(kind: str, paragraphs: List[str]) -> str:
     if kind == "teacher-guide":
         return format_teacher_guide(paragraphs)
@@ -514,45 +1082,53 @@ def preview_html(
 """
 
 
+def trim_excerpt_start(paragraphs: List[str], start: int) -> int:
+    while start < len(paragraphs) and is_te_noise(paragraphs[start]):
+        start += 1
+    return start
+
+
 def teacher_guide_excerpt(paragraphs: List[str], assessment_title: str) -> Tuple[List[str], bool]:
     """Pull TE facilitation section for the named assessment."""
-    title_words = [w.lower() for w in assessment_title.split() if len(w) > 2]
-    start: Optional[int] = None
+    distribute = find_distribute_anchor(paragraphs, assessment_title)
+    building = find_building_towards_start(paragraphs, assessment_title)
 
-    for i, p in enumerate(paragraphs):
-        if not re.search(r"building towards:", p, re.IGNORECASE):
-            continue
-        window = " ".join(paragraphs[i : min(i + 10, len(paragraphs))]).lower()
-        if any(word in window for word in title_words):
-            start = i
-            break
+    building_score = (
+        excerpt_window_score(paragraphs, building, assessment_title) if building is not None else 0
+    )
+    distribute_score = (
+        excerpt_window_score(paragraphs, distribute, assessment_title)
+        if distribute is not None
+        else 0
+    )
+    dual_assessment_distribute = bool(
+        distribute is not None
+        and re.search(r"assessment 1 or|assessment 2 or", paragraphs[distribute], re.IGNORECASE)
+    )
 
-    if start is None:
-        for i, p in enumerate(paragraphs):
-            if SEE_KEY_RE.search(p) and any(word in p.lower() for word in title_words):
-                start = max(0, i - 2)
-                break
+    candidates: List[Tuple[int, int]] = []
+    if building is not None:
+        candidates.append((building, building_score))
+    if distribute is not None and (
+        building_score < 35
+        or (distribute_score >= building_score + 25 and not dual_assessment_distribute)
+    ):
+        candidates.append((distribute, distribute_score))
 
-    if start is None:
-        for i, p in enumerate(paragraphs):
-            if p.lower().strip() == assessment_title.lower() or (
-                assessment_title.lower() in p.lower()
-                and len(p) < len(assessment_title) + 20
-            ):
-                start = i
-                break
+    if candidates:
+        start = trim_excerpt_start(paragraphs, max(candidates, key=lambda item: item[1])[0])
+        end = excerpt_end_index(paragraphs, start)
+        return paragraphs[start:end], False
 
-    if start is None:
-        return paragraphs[:25], len(paragraphs) > 25
+    for i, paragraph in enumerate(paragraphs):
+        if paragraph.lower().strip() == assessment_title.lower() or (
+            assessment_title.lower() in paragraph.lower()
+            and len(paragraph) < len(assessment_title) + 20
+        ):
+            end = min(len(paragraphs), i + 12)
+            return paragraphs[i:end], end < len(paragraphs)
 
-    end = start + 1
-    while end < len(paragraphs):
-        if is_te_noise(paragraphs[end]):
-            break
-        end += 1
-
-    chunk = paragraphs[start:end]
-    return chunk, False
+    return paragraphs[:25], len(paragraphs) > 25
 
 
 def preview_paragraphs(
@@ -612,6 +1188,8 @@ def main() -> None:
 
         for kind, file_key in KIND_TO_FILE_KEY.items():
             rel = files.get(file_key)
+            if kind == "google-form" and is_remote_url(rel):
+                continue
             doc_path = resolve_file(unit_dir, rel)
             if not doc_path:
                 continue
@@ -644,6 +1222,23 @@ def main() -> None:
                 "paragraphCount": len(paragraphs),
                 "previewParagraphCount": len(preview_paras),
             }
+
+        form_url = files.get("googleForm")
+        handout_path = resolve_file(unit_dir, files.get("studentHandout"))
+        if is_remote_url(form_url) and handout_path:
+            handout_paragraphs = docx_paragraphs(handout_path)
+            if handout_paragraphs:
+                assessment_entry["google-form"] = write_google_form_snapshot(
+                    repo_root=repo_root,
+                    unit_slug=unit_slug,
+                    assessment_id=assessment_id,
+                    unit_id=unit_id,
+                    lesson=lesson,
+                    title=title,
+                    form_url=form_url,
+                    handout_path=handout_path,
+                    paragraphs=handout_paragraphs,
+                )
 
         if assessment_entry:
             index[assessment_id] = assessment_entry

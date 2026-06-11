@@ -1,5 +1,4 @@
 import type { PackageItemKind } from "@/lib/assessment-data";
-import previewsUnit81 from "@/data/material-previews/unit-8.1.json";
 
 export interface MaterialPreviewMeta {
   previewUrl: string;
@@ -10,9 +9,37 @@ export interface MaterialPreviewMeta {
 
 type PreviewIndex = Record<string, Partial<Record<PackageItemKind, MaterialPreviewMeta>>>;
 
-const PREVIEW_INDEX: PreviewIndex = {
-  ...(previewsUnit81 as PreviewIndex),
-};
+const previewModules = import.meta.glob<{ default: PreviewIndex } | PreviewIndex>(
+  "@/data/material-previews/unit-*.json",
+  {
+    eager: true,
+  },
+);
+
+function previewModuleData(module: { default: PreviewIndex } | PreviewIndex): PreviewIndex {
+  if (module && typeof module === "object" && "default" in module && module.default) {
+    return module.default;
+  }
+  return module as PreviewIndex;
+}
+
+const PREVIEW_INDEX: PreviewIndex = Object.values(previewModules).reduce<PreviewIndex>(
+  (merged, module) => ({ ...merged, ...previewModuleData(module) }),
+  {},
+);
+
+function unitSlugFromAssessmentId(assessmentId: string): string | null {
+  const match = assessmentId.match(/^(\d)(\d+)-/);
+  if (!match) return null;
+  return `${match[1]}-${match[2]}`;
+}
+
+/** Static snapshot path for digitized forms (generated under public/previews). */
+export function conventionalGoogleFormPreviewUrl(assessmentId: string): string | null {
+  const unitSlug = unitSlugFromAssessmentId(assessmentId);
+  if (!unitSlug) return null;
+  return `/previews/${unitSlug}/${assessmentId}/google-form.html`;
+}
 
 export function materialPreviewMeta(
   assessmentId: string,

@@ -1,4 +1,4 @@
-import { Download, Eye } from "lucide-react";
+import { Download, Eye, ExternalLink } from "lucide-react";
 
 import { MaterialProvenanceBlock } from "@/components/MaterialProvenanceBlock";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,9 @@ import type { Assessment, PackageItem, Unit } from "@/lib/assessment-data";
 import { exportSelectedMaterials } from "@/lib/library-actions";
 import {
   getMaterialQuickLookExcerpt,
-  materialQuickLookPreviewUrl,
+  materialQuickLookPreview,
+  materialQuickLookPreviewCaption,
+  materialQuickLookPreviewHeading,
 } from "@/lib/material-provenance";
 
 interface Props {
@@ -29,7 +31,11 @@ export function MaterialQuickLookDialog({ assessment, unit, item, open, onOpenCh
   if (!item) return null;
 
   const excerpt = getMaterialQuickLookExcerpt(assessment, item, unit);
-  const previewUrl = materialQuickLookPreviewUrl(assessment.id, item);
+  const preview = materialQuickLookPreview(assessment.id, item);
+  const externalFormUrl =
+    item.kind === "google-form" && item.available && item.url?.startsWith("http")
+      ? item.url
+      : null;
 
   const handleExport = () => {
     exportSelectedMaterials(assessment, [item]);
@@ -38,7 +44,9 @@ export function MaterialQuickLookDialog({ assessment, unit, item, open, onOpenCh
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl max-h-[92vh] overflow-y-auto font-ui">
+      <DialogContent
+        className={`max-h-[92vh] overflow-y-auto font-ui ${preview ? "max-w-3xl" : "max-w-xl"}`}
+      >
         <DialogHeader>
           <DialogDescription className="font-mono text-[10px] uppercase tracking-widest">
             Quick look · OpenSciEd source
@@ -52,18 +60,18 @@ export function MaterialQuickLookDialog({ assessment, unit, item, open, onOpenCh
 
         <MaterialProvenanceBlock unit={unit} assessment={assessment} item={item} />
 
-        {previewUrl ? (
+        {preview ? (
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Document preview
+              {materialQuickLookPreviewHeading(preview)}
             </p>
             <iframe
               title={`Preview of ${item.label}`}
-              src={previewUrl}
-              className="h-[min(28rem,55vh)] w-full rounded-md border border-border bg-background"
+              src={preview.url}
+              className="h-[min(36rem,65vh)] w-full rounded-md border border-border bg-background"
             />
             <p className="text-[11px] text-muted-foreground leading-relaxed">
-              Verbatim excerpt from the OpenSciEd file — scroll to review before exporting.
+              {materialQuickLookPreviewCaption(preview)}
             </p>
           </div>
         ) : (
@@ -83,6 +91,14 @@ export function MaterialQuickLookDialog({ assessment, unit, item, open, onOpenCh
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Close
           </Button>
+          {externalFormUrl ? (
+            <Button type="button" variant="outline" asChild>
+              <a href={externalFormUrl} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="size-4" aria-hidden />
+                Open form
+              </a>
+            </Button>
+          ) : null}
           <Button type="button" onClick={handleExport}>
             <Download className="size-4" aria-hidden />
             Export this file

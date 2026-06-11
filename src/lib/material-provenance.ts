@@ -1,6 +1,9 @@
 import type { Assessment, PackageItem, Unit } from "@/lib/assessment-data";
 import { assessmentGuideFor } from "@/lib/assessment-guide";
-import { materialPreviewMeta } from "@/lib/material-previews";
+import {
+  conventionalGoogleFormPreviewUrl,
+  materialPreviewMeta,
+} from "@/lib/material-previews";
 
 export const MATERIAL_PROVENANCE_FOOTNOTE =
   "Matched from your official unit download — not edited by Eddo.";
@@ -30,11 +33,72 @@ export function materialGuidancePreviewUrl(item: PackageItem): string | null {
   return null;
 }
 
+export type MaterialQuickLookPreviewSource = "document" | "google-form-snapshot" | "google-form-handout";
+
+export interface MaterialQuickLookPreview {
+  url: string;
+  source: MaterialQuickLookPreviewSource;
+}
+
+/**
+ * Google Forms with file-upload questions cannot be iframe-embedded (Google restriction).
+ * For digitized forms, preview the matching student handout content when available.
+ */
+export function materialQuickLookPreview(
+  assessmentId: string,
+  item: PackageItem,
+): MaterialQuickLookPreview | null {
+  const dedicated = materialPreviewMeta(assessmentId, item.kind)?.previewUrl;
+  if (dedicated) {
+    return {
+      url: dedicated,
+      source: item.kind === "google-form" ? "google-form-snapshot" : "document",
+    };
+  }
+
+  if (item.kind === "google-form" && item.available && item.url?.startsWith("http")) {
+    const snapshotUrl = conventionalGoogleFormPreviewUrl(assessmentId);
+    if (snapshotUrl) {
+      return { url: snapshotUrl, source: "google-form-snapshot" };
+    }
+  }
+
+  if (item.kind === "google-form" && item.available) {
+    const handoutPreview = materialPreviewMeta(assessmentId, "student-handout")?.previewUrl;
+    if (handoutPreview) {
+      return { url: handoutPreview, source: "google-form-handout" };
+    }
+  }
+
+  const guidance = materialGuidancePreviewUrl(item);
+  if (guidance) return { url: guidance, source: "document" };
+
+  return null;
+}
+
+/** @deprecated Use materialQuickLookPreview */
 export function materialQuickLookPreviewUrl(
   assessmentId: string,
   item: PackageItem,
 ): string | null {
-  return materialPreviewMeta(assessmentId, item.kind)?.previewUrl ?? materialGuidancePreviewUrl(item);
+  return materialQuickLookPreview(assessmentId, item)?.url ?? null;
+}
+
+export function materialQuickLookPreviewCaption(preview: MaterialQuickLookPreview): string {
+  if (preview.source === "google-form-snapshot") {
+    return "Static snapshot of the digitized Google Form — shows question layout and choices. Use Open form for the live version.";
+  }
+  if (preview.source === "google-form-handout") {
+    return "Question content from the OpenSciEd student handout — the digitized form is built from this source. Use Open form for the live version.";
+  }
+  return "Verbatim excerpt from the OpenSciEd file — scroll to review before exporting.";
+}
+
+export function materialQuickLookPreviewHeading(preview: MaterialQuickLookPreview): string {
+  if (preview.source === "google-form-snapshot" || preview.source === "google-form-handout") {
+    return "Form preview";
+  }
+  return "Document preview";
 }
 
 export function materialItemLastUpdated(
@@ -42,7 +106,14 @@ export function materialItemLastUpdated(
   item: PackageItem,
   unit: Unit,
 ): string | null {
-  const fromPreview = materialPreviewMeta(assessmentId, item.kind)?.sourceModifiedAt;
+  const preview = materialQuickLookPreview(assessmentId, item);
+  const previewKind =
+    preview?.source === "google-form-handout"
+      ? "student-handout"
+      : preview?.source === "google-form-snapshot"
+        ? "google-form"
+        : item.kind;
+  const fromPreview = materialPreviewMeta(assessmentId, previewKind)?.sourceModifiedAt;
   return formatMaterialLastUpdated(fromPreview ?? unit.ingestedAt);
 }
 
@@ -114,6 +185,9 @@ export function getMaterialQuickLookExcerpt(
       };
     }
     case "google-form":
+      if (item.available && item.url?.startsWith("http")) {
+        return null;
+      }
       return {
         title: "Google Form",
         body: "This assessment does not have a digitized Google Form yet. Export the student handout and key instead.",

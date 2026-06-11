@@ -50,7 +50,7 @@ export function exportSelectedMaterials(
   }
 
   for (const item of exported) {
-    if (item.url?.startsWith("/")) {
+    if (item.url?.startsWith("/") || item.url?.startsWith("http")) {
       window.open(item.url, "_blank", "noopener,noreferrer");
     }
   }

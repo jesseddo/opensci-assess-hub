@@ -18,7 +18,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Assessment, Unit } from "@/lib/assessment-data";
-import { formalAssessmentsInUnit, isTeOpportunity } from "@/lib/assessment-source";
+import {
+  formalAssessmentsInUnit,
+  isTeOpportunity,
+  teOpportunitiesInUnit,
+} from "@/lib/assessment-source";
 import { rhythmMarkerClassName } from "@/lib/rhythm-markers";
 import { lessonRowId } from "@/lib/unit-rhythm";
 import { buildUnitLessonSlots, formatLessonLength, type UnitLessonSlot } from "@/lib/unit-table-rows";
@@ -46,6 +50,8 @@ export function UnitAssessmentTable({
   const slots = buildUnitLessonSlots(unit, query, focus);
 
   const unitAssessmentTotal = formalAssessmentsInUnit(unit.assessments).length;
+  const allAssessmentTotal =
+    unitAssessmentTotal + teOpportunitiesInUnit(unit.assessments).length;
 
   const handleFocusChange = (next: TableFocusMode) => {
     setFocus(next);
@@ -79,6 +85,7 @@ export function UnitAssessmentTable({
           unit={unit}
           focus={focus}
           onFocusChange={handleFocusChange}
+          allAssessmentCount={allAssessmentTotal}
           unitAssessmentCount={unitAssessmentTotal}
         />
         <p className="text-sm text-muted-foreground py-12 text-center border border-dashed border-border rounded-lg bg-card">
@@ -96,6 +103,7 @@ export function UnitAssessmentTable({
         unit={unit}
         focus={focus}
         onFocusChange={handleFocusChange}
+        allAssessmentCount={allAssessmentTotal}
         unitAssessmentCount={unitAssessmentTotal}
       />
       <div className="rounded-lg border border-border overflow-hidden bg-card">
@@ -144,11 +152,13 @@ function TableToolbar({
   unit,
   focus,
   onFocusChange,
+  allAssessmentCount,
   unitAssessmentCount,
 }: {
   unit: Unit;
   focus: TableFocusMode;
   onFocusChange: (f: TableFocusMode) => void;
+  allAssessmentCount: number;
   unitAssessmentCount: number;
 }) {
   return (
@@ -156,6 +166,7 @@ function TableToolbar({
       <TableFocusToggle
         value={focus}
         onChange={onFocusChange}
+        allAssessmentCount={allAssessmentCount}
         unitAssessmentCount={unitAssessmentCount}
       />
       <TableTerminologyHelp unit={unit} />

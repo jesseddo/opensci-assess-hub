@@ -4,10 +4,16 @@ import type { TableFocusMode } from "@/lib/assessment-row-tier";
 interface Props {
   value: TableFocusMode;
   onChange: (value: TableFocusMode) => void;
+  allAssessmentCount: number;
   unitAssessmentCount: number;
 }
 
-export function TableFocusToggle({ value, onChange, unitAssessmentCount }: Props) {
+export function TableFocusToggle({
+  value,
+  onChange,
+  allAssessmentCount,
+  unitAssessmentCount,
+}: Props) {
   return (
     <div
       className="inline-flex h-8 items-center rounded-lg border border-border bg-card p-0.5 text-xs font-ui"
@@ -24,7 +30,7 @@ export function TableFocusToggle({ value, onChange, unitAssessmentCount }: Props
             : "text-muted-foreground hover:text-foreground",
         )}
       >
-        Prepare assessments ({unitAssessmentCount})
+        Assessments & opportunities ({allAssessmentCount})
       </button>
       <button
         type="button"
@@ -36,7 +42,7 @@ export function TableFocusToggle({ value, onChange, unitAssessmentCount }: Props
             : "text-muted-foreground hover:text-foreground",
         )}
       >
-        Assessments only ({unitAssessmentCount})
+        Assessments ({unitAssessmentCount})
       </button>
     </div>
   );

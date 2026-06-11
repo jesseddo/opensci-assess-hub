@@ -72,6 +72,8 @@ Not every assessment opportunity has a standalone document — most are guidance
 
 ## Terminology cheat sheet
 
+See **[OPENSCIED-TERMINOLOGY.md](./OPENSCIED-TERMINOLOGY.md)** for the full table. Short version:
+
 | Say in product UI | Do not say | Ingest `source` |
 | --- | --- | --- |
 | Assessment | Named assessment, formal assessment | `formal-assessment` |

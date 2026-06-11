@@ -58,6 +58,8 @@ open docs/diagrams.html
 
 Each row also has an OpenSciEd **category**: Pre-assessment, Formative, Summative, or Peer assessment (see `assessmentType` in manifest).
 
+Full glossary: **[OPENSCIED-TERMINOLOGY.md](./OPENSCIED-TERMINOLOGY.md)**
+
 ---
 
 ## Two guidance panels on detail

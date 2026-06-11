@@ -6,25 +6,18 @@ OpenSciEd Assessment Library uses **sans-serif only** — no serif body text any
 
 Use OpenSciEd’s language in all teacher-facing copy. Internal ingest code may still use `formal-assessment` / `te-opportunity`.
 
+**Full reference:** [OPENSCIED-TERMINOLOGY.md](./OPENSCIED-TERMINOLOGY.md) — master table of row kinds, categories, TE fields, materials, table tabs, and terms to avoid.
+
+Quick rules:
+
 | OpenSciEd term | Meaning | Internal `source` |
 | --- | --- | --- |
 | **Assessment** | Standalone document from unit materials (handout + key) | `formal-assessment` |
 | **Assessment opportunity** | TE call-out — Building towards, Look/listen for, What to do | `te-opportunity` |
 
-Do **not** say “named assessment” or “TE opportunity” in the UI.
+Do **not** say “named assessment”, “TE opportunity”, or “unit assessment” in the UI.
 
-### Assessment categories
-
-Every row shows an OpenSciEd **category** after the kind:
-
-| Category | When |
-| --- | --- |
-| Pre-assessment | Prior-knowledge check before instruction |
-| Formative assessment | During instruction — most assessment opportunities |
-| Summative assessment | End of lesson set or unit |
-| Peer assessment | Student-to-student feedback |
-
-Labels come from `src/lib/assessment-types.ts` (`assessmentTypeLabel`). The rhythm strip and table rows use the same vocabulary.
+Category labels (`Pre-assessment`, `Formative assessment`, etc.) come from `src/lib/assessment-types.ts`. The rhythm strip and table rows use the same vocabulary.
 
 ## Font roles
 
@@ -69,6 +62,7 @@ Hierarchy: section title → sub-heading → body (each one Tailwind step apart)
 
 ## Source of truth
 
+- OpenSciEd terms: `docs/OPENSCIED-TERMINOLOGY.md`
 - Theme & font stacks: `src/styles.css`
 - Guidance typography tokens: `src/components/guidance-panel-ui.ts`
 - Google Fonts load: `src/routes/__root.tsx` and `src/routes/index.tsx`
